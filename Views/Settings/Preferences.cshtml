@@ -1,0 +1,269 @@
+@{
+    ViewData["Title"] = "Предпочтения";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🎨 Предпочтения</h2>
+    <a href="/settings" class="btn btn-outline-secondary">← Настройки</a>
+</div>
+
+<div class="row g-4">
+    <!-- Preferences Form -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">⚙️ Настройки интерфейса</h5>
+            </div>
+            <div class="card-body">
+                <form id="preferencesForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="language" class="form-label">Язык интерфейса</label>
+                            <select class="form-select" id="language" name="language">
+                                <option value="ru" selected>Русский</option>
+                                <option value="en">English</option>
+                                <option value="de">Deutsch</option>
+                                <option value="fr">Français</option>
+                                <option value="es">Español</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="timezone" class="form-label">Часовой пояс</label>
+                            <select class="form-select" id="timezone" name="timezone">
+                                <option value="UTC+3" selected>UTC+3 (Москва)</option>
+                                <option value="UTC+2">UTC+2 (Калининград)</option>
+                                <option value="UTC+4">UTC+4 (Самара)</option>
+                                <option value="UTC+5">UTC+5 (Екатеринбург)</option>
+                                <option value="UTC+6">UTC+6 (Омск)</option>
+                                <option value="UTC+7">UTC+7 (Красноярск)</option>
+                                <option value="UTC+8">UTC+8 (Иркутск)</option>
+                                <option value="UTC+9">UTC+9 (Якутск)</option>
+                                <option value="UTC+10">UTC+10 (Владивосток)</option>
+                                <option value="UTC+11">UTC+11 (Магадан)</option>
+                                <option value="UTC+12">UTC+12 (Камчатка)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="emailUpdates" name="emailUpdates">
+                                <label class="form-check-label" for="emailUpdates">
+                                    📧 Email обновления
+                                </label>
+                                <small class="form-text text-muted d-block">Еженедельные отчёты</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="soundEffects" name="soundEffects" checked>
+                                <label class="form-check-label" for="soundEffects">
+                                    🔊 Звуковые эффекты
+                                </label>
+                                <small class="form-text text-muted d-block">Звуки при взаимодействии</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="animations" name="animations" checked>
+                                <label class="form-check-label" for="animations">
+                                    ✨ Анимации
+                                </label>
+                                <small class="form-text text-muted d-block">Плавные переходы</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="button" class="btn btn-primary" onclick="updatePreferences()">
+                            💾 Сохранить настройки
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary ms-2" onclick="resetPreferences()">
+                            🔄 Сбросить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preferences Info -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">ℹ️ О настройках</h6>
+            </div>
+            <div class="card-body">
+                <div class="preferences-info">
+                    <div class="info-item mb-3">
+                        <h6 class="text-primary">🌐 Язык</h6>
+                        <p class="small text-muted mb-0">Выберите язык интерфейса. Изменения применяются сразу.</p>
+                    </div>
+                    <div class="info-item mb-3">
+                        <h6 class="text-success">⏰ Часовой пояс</h6>
+                        <p class="small text-muted mb-0">Влияет на отображение времени в заметках и календаре.</p>
+                    </div>
+                    <div class="info-item">
+                        <h6 class="text-warning">📧 Email</h6>
+                        <p class="small text-muted mb-0">Еженедельные отчёты о прогрессе и статистике.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">⚡ Быстрые действия</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/settings/profile" class="btn btn-outline-primary btn-sm">👤 Профиль</a>
+                    <a href="/settings/privacy" class="btn btn-outline-warning btn-sm">🔒 Приватность</a>
+                    <a href="/settings" class="btn btn-outline-secondary btn-sm">← Назад</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.preferences-info {
+    space-y: 15px;
+}
+
+.info-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.card {
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.form-check-input:checked {
+    background-color: #6b7cff;
+    border-color: #6b7cff;
+}
+</style>
+
+<script>
+function updatePreferences() {
+    const form = document.getElementById('preferencesForm');
+    const formData = new FormData(form);
+    
+    const data = {
+        language: formData.get('language'),
+        timezone: formData.get('timezone'),
+        emailUpdates: formData.get('emailUpdates') === 'on',
+        soundEffects: formData.get('soundEffects') === 'on',
+        animations: formData.get('animations') === 'on'
+    };
+    
+    fetch('/settings/preferences', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showToast(result.message, 'success');
+        } else {
+            showToast('Ошибка при сохранении настроек', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Произошла ошибка', 'error');
+    });
+}
+
+function resetPreferences() {
+    if (confirm('Сбросить все настройки к значениям по умолчанию?')) {
+        document.getElementById('preferencesForm').reset();
+        showToast('Настройки сброшены', 'info');
+    }
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    
+    const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        info: '#3b82f6',
+        warning: '#f59e0b'
+    };
+    
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type]};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// Инициализация настроек
+document.addEventListener('DOMContentLoaded', function() {
+    const savedSettings = localStorage.getItem('sofiaPreferences');
+    if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        
+        if (settings.language) {
+            document.getElementById('language').value = settings.language;
+        }
+        if (settings.timezone) {
+            document.getElementById('timezone').value = settings.timezone;
+        }
+        if (settings.emailUpdates !== undefined) {
+            document.getElementById('emailUpdates').checked = settings.emailUpdates;
+        }
+        if (settings.soundEffects !== undefined) {
+            document.getElementById('soundEffects').checked = settings.soundEffects;
+        }
+        if (settings.animations !== undefined) {
+            document.getElementById('animations').checked = settings.animations;
+        }
+    }
+});
+
+// Сохранение настроек в localStorage при изменении
+document.querySelectorAll('#preferencesForm input, #preferencesForm select').forEach(element => {
+    element.addEventListener('change', function() {
+        const form = document.getElementById('preferencesForm');
+        const formData = new FormData(form);
+        
+        const settings = {
+            language: formData.get('language'),
+            timezone: formData.get('timezone'),
+            emailUpdates: formData.get('emailUpdates') === 'on',
+            soundEffects: formData.get('soundEffects') === 'on',
+            animations: formData.get('animations') === 'on'
+        };
+        
+        localStorage.setItem('sofiaPreferences', JSON.stringify(settings));
+    });
+});
+</script>

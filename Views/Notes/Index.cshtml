@@ -1,0 +1,218 @@
+@{
+    ViewData["Title"] = "Заметки";
+    var notes = ViewBag.Notes as List<Sofia.Web.Models.Note>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📝 Заметки</h2>
+    <div class="d-flex gap-2">
+        <a href="/notes/create" class="btn btn-primary btn-sm">+ Новая заметка</a>
+        <a href="/calendar" class="btn btn-outline-info btn-sm">📅 Календарь</a>
+        </div>
+    </div>
+
+@if (notes?.Any() == true)
+{
+    <div class="row g-3">
+        @foreach (var note in notes)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 note-card @(note.IsPinned ? "pinned" : "")">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center">
+                                <span class="me-2" style="font-size: 20px;">@GetEmotionEmoji(note.Emotion)</span>
+                                <span class="badge bg-primary">@note.Date.ToString("dd.MM.yyyy")</span>
+                    @if (note.IsPinned)
+                    {
+                                    <span class="badge bg-warning ms-1">📌</span>
+                                }
+                            @if (note.ShareWithPsychologist)
+                            {
+                                    <span class="badge bg-info ms-1">👨‍⚕️</span>
+                                }
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                                    ⋮
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/notes/edit/@note.Id">✏️ Редактировать</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="togglePin(@note.Id)">@(note.IsPinned ? "📌 Открепить" : "📌 Закрепить")</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#" onclick="deleteNote(@note.Id)">🗑️ Удалить</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="note-content">
+                            <p class="card-text">@note.Content</p>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(note.Tags))
+                        {
+                            <div class="note-tags mb-2">
+                                @foreach (var tag in note.Tags.Split(','))
+                                {
+                                    <span class="badge bg-secondary me-1">@tag.Trim()</span>
+                                }
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(note.Activity))
+                        {
+                            <div class="note-activity">
+                                <small class="text-muted">🏃 @note.Activity</small>
+                            </div>
+                        }
+                        
+                        <div class="note-meta mt-2">
+                            <small class="text-muted">@note.CreatedAt.ToString("HH:mm")</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <div style="font-size: 64px;">📝</div>
+        <h4 class="text-muted mt-3">Пока нет заметок</h4>
+        <p class="text-muted">Создайте свою первую заметку, чтобы начать вести дневник эмоций</p>
+        <a href="/notes/create" class="btn btn-primary">+ Создать заметку</a>
+    </div>
+}
+
+<div class="page-bottom-spacer" style="height: 100px;"></div>
+
+<style>
+.note-card {
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.note-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.note-card.pinned {
+    border-color: #ffc107;
+    background: linear-gradient(135deg, #fff9c4 0%, #ffffff 100%);
+}
+
+.note-content {
+    min-height: 60px;
+}
+
+.note-tags .badge {
+    font-size: 0.7rem;
+}
+
+.card-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+}
+</style>
+
+<script>
+function togglePin(noteId) {
+    fetch(`/notes/toggle-pin/${noteId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast('Ошибка: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Произошла ошибка', 'error');
+    });
+}
+
+function deleteNote(noteId) {
+    if (confirm('Вы уверены, что хотите удалить эту заметку?')) {
+        fetch(`/notes/delete/${noteId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast('Ошибка: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Произошла ошибка', 'error');
+        });
+    }
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    
+    const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        info: '#3b82f6',
+        warning: '#f59e0b'
+    };
+    
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type]};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(toast);
+    
+                setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+    </script>
+
+@functions {
+    string GetEmotionEmoji(Sofia.Web.Models.EmotionType emotion)
+    {
+        return emotion switch
+        {
+            Sofia.Web.Models.EmotionType.VerySad => "😢",
+            Sofia.Web.Models.EmotionType.Sad => "😔",
+            Sofia.Web.Models.EmotionType.Neutral => "😐",
+            Sofia.Web.Models.EmotionType.Happy => "😊",
+            Sofia.Web.Models.EmotionType.VeryHappy => "😄",
+            Sofia.Web.Models.EmotionType.Anxious => "😰",
+            Sofia.Web.Models.EmotionType.Calm => "😌",
+            Sofia.Web.Models.EmotionType.Excited => "🤩",
+            Sofia.Web.Models.EmotionType.Frustrated => "😤",
+            Sofia.Web.Models.EmotionType.Grateful => "🙏",
+            _ => "😐"
+        };
+    }
+}

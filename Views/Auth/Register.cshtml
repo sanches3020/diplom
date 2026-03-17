@@ -1,0 +1,148 @@
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<div class="auth-wrapper">
+    <div class="auth-split">
+        <div class="auth-art"></div>
+        <div class="auth-pane">
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="alert alert-danger mb-3">
+                    @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@err.ErrorMessage</div>
+                    }
+                </div>
+            }
+            <div class="mb-3">
+                <h3 class="auth-title mb-2">Регистрация</h3>
+            </div>
+            <p class="auth-subtitle mb-4">Создайте аккаунт, чтобы продолжить.</p>
+            <form asp-action="Register" method="post">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Имя пользователя *</label>
+                    <input type="text" class="form-control" id="username" name="username" required minlength="3" maxlength="30" placeholder="Придумайте уникальное имя">
+                    <div class="form-text">3–30 символов</div>
+                </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="email" name="email" required placeholder="your.email@example.com">
+                        <div class="form-text">Используется для восстановления доступа</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fullName" class="form-label">Полное имя</label>
+                        <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Иван Иванов">
+                        <div class="form-text">Необязательно, но помогает персонализировать опыт</div>
+                    </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Пароль *</label>
+                    <input type="password" class="form-control" id="password" name="password" required minlength="8" autocomplete="new-password" placeholder="Минимум 8 символов">
+                    <div class="form-text">Рекомендуется 1 заглавная, 1 цифра и 1 символ</div>
+                </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Подтвердите пароль *</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required autocomplete="new-password" placeholder="Повторите пароль">
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Тип аккаунта *</label>
+                        <select class="form-select" id="role" name="role" onchange="togglePsychologistFields()">
+                            <option value="user" selected>👤 Пользователь - веду дневник и работаю над собой</option>
+                            <option value="psychologist">👨‍⚕️ Психолог - помогаю другим в их пути</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Psychologist-specific fields -->
+                    <div id="psychologistFields" style="display: none;">
+                        <div class="alert alert-info">
+                            <h6 class="mb-2">👨‍⚕️ Информация для психологов</h6>
+                            <p class="mb-0 small">Заполните дополнительные поля для создания профиля психолога</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="specialization" class="form-label">Специализация *</label>
+                            <input type="text" class="form-control" id="specialization" name="specialization" placeholder="КПТ, семейная терапия, работа с тревогой">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Описание *</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Расскажите о своем подходе и опыте работы"></textarea>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="education" class="form-label">Образование *</label>
+                                <input type="text" class="form-control" id="education" name="education" placeholder="БГУ, факультет психологии">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="experience" class="form-label">Опыт работы *</label>
+                                <input type="text" class="form-control" id="experience" name="experience" placeholder="5 лет практики">
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-6">
+                                <label for="languages" class="form-label">Языки</label>
+                                <input type="text" class="form-control" id="languages" name="languages" placeholder="Русский, английский">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="methods" class="form-label">Методы работы</label>
+                                <input type="text" class="form-control" id="methods" name="methods" placeholder="КПТ, гештальт-терапия">
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-6">
+                                <label for="pricePerHour" class="form-label">Цена за час (BYN) *</label>
+                                <input type="number" class="form-control" id="pricePerHour" name="pricePerHour" placeholder="300" min="0" max="1000" step="1">
+                                <div class="form-text">Введите сумму в BYN (0–1000)</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contactPhone" class="form-label">Телефон</label>
+                                <input type="tel" class="form-control" id="contactPhone" name="contactPhone" placeholder="+375 29 123-45-67">
+                            </div>
+                        </div>
+                    </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 d-flex justify-content-center align-items-center">Создать аккаунт</button>
+                </div>
+            </form>
+            <div class="text-center mt-4 pb-3 border-bottom">
+                <small class="text-muted">
+                    Регистрируясь, вы соглашаетесь с <a href="/home/privacy" class="text-decoration-none">политикой конфиденциальности</a>
+                </small>
+            </div>
+            <div class="text-center mt-4">
+                <small class="text-muted">Уже есть аккаунт? <a asp-action="Login" class="text-primary fw-semibold text-decoration-none">Войти в систему</a></small>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/js/register.js"></script>
+    <script>
+        function togglePsychologistFields() {
+            const role = document.getElementById('role').value;
+            const psychologistFields = document.getElementById('psychologistFields');
+            
+            if (role === 'psychologist') {
+                psychologistFields.style.display = 'block';
+                // Делаем поля обязательными
+                document.getElementById('specialization').required = true;
+                document.getElementById('description').required = true;
+                document.getElementById('education').required = true;
+                document.getElementById('experience').required = true;
+                document.getElementById('pricePerHour').required = true;
+            } else {
+                psychologistFields.style.display = 'none';
+                // Убираем обязательность
+                document.getElementById('specialization').required = false;
+                document.getElementById('description').required = false;
+                document.getElementById('education').required = false;
+                document.getElementById('experience').required = false;
+                document.getElementById('pricePerHour').required = false;
+            }
+        }
+    </script>
+}
+

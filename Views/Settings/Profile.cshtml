@@ -1,0 +1,406 @@
+@{
+    ViewData["Title"] = "Профиль пользователя";
+    var user = ViewBag.User as Sofia.Web.Models.User;
+    var totalNotes = ViewBag.TotalNotes as int? ?? 0;
+    var totalGoals = ViewBag.TotalGoals as int? ?? 0;
+    var completedGoals = ViewBag.CompletedGoals as int? ?? 0;
+    var totalEmotions = ViewBag.TotalEmotions as int? ?? 0;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>👤 Профиль пользователя</h2>
+    <a href="/settings" class="btn btn-outline-secondary">← Настройки</a>
+</div>
+
+<div class="row g-4">
+    <!-- Profile Form -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📝 Личная информация</h5>
+            </div>
+            <div class="card-body">
+                <form id="profileForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="name" name="name" value="@(user?.FullName ?? user?.Username ?? "")" placeholder="Введите ваше имя">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="@(user?.Email ?? "")" placeholder="your@email.com">
+                        </div>
+                        <div class="col-12">
+                            <label for="bio" class="form-label">О себе</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Расскажите немного о себе...">@(user?.Bio ?? "")</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="timezone" class="form-label">Часовой пояс</label>
+                            <select class="form-select" id="timezone" name="timezone">
+                                <option value="UTC+3">UTC+3 (Москва)</option>
+                                <option value="UTC+2">UTC+2 (Калининград)</option>
+                                <option value="UTC+4">UTC+4 (Самара)</option>
+                                <option value="UTC+5">UTC+5 (Екатеринбург)</option>
+                                <option value="UTC+6">UTC+6 (Омск)</option>
+                                <option value="UTC+7">UTC+7 (Красноярск)</option>
+                                <option value="UTC+8">UTC+8 (Иркутск)</option>
+                                <option value="UTC+9">UTC+9 (Якутск)</option>
+                                <option value="UTC+10">UTC+10 (Владивосток)</option>
+                                <option value="UTC+11">UTC+11 (Магадан)</option>
+                                <option value="UTC+12">UTC+12 (Камчатка)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="language" class="form-label">Язык интерфейса</label>
+                            <select class="form-select" id="language" name="language">
+                                <option value="ru">Русский</option>
+                                <option value="en">English</option>
+                                <option value="de">Deutsch</option>
+                                <option value="fr">Français</option>
+                                <option value="es">Español</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="button" class="btn btn-primary" onclick="updateProfile()">
+                            💾 Сохранить изменения
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary ms-2" onclick="resetForm()">
+                            🔄 Сбросить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Avatar Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">🖼️ Аватар</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="avatar-preview text-center">
+                            <div class="avatar-circle mb-3">
+                                <div class="avatar-initial">@(string.IsNullOrEmpty(user?.FullName) ? user?.Username?.FirstOrDefault().ToString().ToUpper() ?? "П" : user.FullName.FirstOrDefault().ToString().ToUpper())</div>
+                            </div>
+                            <p class="text-muted small">Текущий аватар</p>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="avatar-options">
+                            <h6>Выберите аватар:</h6>
+                            <div class="row g-2">
+                                <div class="col-3">
+                                    <div class="avatar-option active" data-avatar="P">
+                                        <div class="avatar-circle-small">
+                                            <div class="avatar-initial-small">П</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="avatar-option" data-avatar="А">
+                                        <div class="avatar-circle-small">
+                                            <div class="avatar-initial-small">А</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="avatar-option" data-avatar="М">
+                                        <div class="avatar-circle-small">
+                                            <div class="avatar-initial-small">М</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="avatar-option" data-avatar="Е">
+                                        <div class="avatar-circle-small">
+                                            <div class="avatar-initial-small">Е</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <label for="avatarUpload" class="btn btn-outline-primary btn-sm">
+                                    📁 Загрузить фото
+                                </label>
+                                <input type="file" id="avatarUpload" class="d-none" accept="image/*" onchange="handleAvatarUpload(event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Info -->
+    <div class="col-lg-4">
+        <!-- Account Stats -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">📊 Статистика аккаунта</h6>
+            </div>
+            <div class="card-body">
+                <div class="account-stats">
+                    <div class="stat-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Дата регистрации</span>
+                            <span class="text-muted">@(user?.CreatedAt.ToString("dd.MM.yyyy") ?? "Неизвестно")</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Последний вход</span>
+                            <span class="text-muted">Сегодня</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Всего заметок</span>
+                            <span class="text-primary">@totalNotes</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Активных целей</span>
+                            <span class="text-success">@(totalGoals - completedGoals)</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Завершённых целей</span>
+                            <span class="text-info">@completedGoals</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Записей эмоций</span>
+                            <span class="text-warning">@totalEmotions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preferences Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">⚙️ Текущие настройки</h6>
+            </div>
+            <div class="card-body">
+                <div class="preferences-summary">
+                    <div class="preference-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Тема</span>
+                            <span class="badge bg-primary">Светлая</span>
+                        </div>
+                    </div>
+                    <div class="preference-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Email обновления</span>
+                            <span class="badge bg-secondary">Выключены</span>
+                        </div>
+                    </div>
+                    <div class="preference-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Приватность</span>
+                            <span class="badge bg-info">Стандартная</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+</div>
+
+<style>
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6b7cff 0%, #9c88ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 4px 12px rgba(107, 124, 255, 0.3);
+}
+
+.avatar-initial {
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+}
+
+.avatar-circle-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6b7cff 0%, #9c88ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.avatar-circle-small:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(107, 124, 255, 0.4);
+}
+
+.avatar-initial-small {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+}
+
+.avatar-option {
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.avatar-option:hover {
+    background: #f8f9fa;
+}
+
+.avatar-option.active {
+    background: #e3f2fd;
+    border: 2px solid #6b7cff;
+}
+
+.account-stats, .preferences-summary {
+    space-y: 10px;
+}
+
+.stat-item, .preference-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.stat-item:last-child, .preference-item:last-child {
+    border-bottom: none;
+}
+
+.card {
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+function updateProfile() {
+    const form = document.getElementById('profileForm');
+    const formData = new FormData(form);
+    
+    const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        bio: formData.get('bio'),
+        timezone: formData.get('timezone'),
+        language: formData.get('language')
+    };
+    
+    fetch('/settings/profile', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showToast(result.message, 'success');
+        } else {
+            showToast('Ошибка при обновлении профиля', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Произошла ошибка', 'error');
+    });
+}
+
+function resetForm() {
+    if (confirm('Сбросить все изменения?')) {
+        document.getElementById('profileForm').reset();
+        showToast('Форма сброшена', 'info');
+    }
+}
+
+function handleAvatarUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // В реальном приложении здесь была бы загрузка на сервер
+            showToast('Аватар загружен', 'success');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Обработка выбора аватара
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarOptions = document.querySelectorAll('.avatar-option');
+    const avatarPreview = document.querySelector('.avatar-initial');
+    
+    avatarOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // Убираем активный класс со всех опций
+            avatarOptions.forEach(opt => opt.classList.remove('active'));
+            
+            // Добавляем активный класс к выбранной опции
+            this.classList.add('active');
+            
+            // Обновляем превью
+            const avatar = this.dataset.avatar;
+            avatarPreview.textContent = avatar;
+            
+            showToast('Аватар изменён', 'success');
+        });
+    });
+});
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    
+    const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        info: '#3b82f6',
+        warning: '#f59e0b'
+    };
+    
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type]};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+</script>

@@ -1,0 +1,529 @@
+@{
+    ViewData["Title"] = "Добро пожаловать в Sofia";
+}
+
+<!-- Onboarding Modal Trigger -->
+@if (Context.Session.GetString("UserId") != null && Context.Session.GetString("OnboardingCompleted") != "true")
+{
+    <div class="onboarding-welcome mb-4">
+        <div class="alert alert-info d-inline-flex align-items-center gap-3">
+            <div>
+                <strong>Добро пожаловать!</strong> Давайте настроим ваше пространство для максимальной пользы.
+                <button class="btn btn-primary btn-sm ms-3" onclick="startOnboarding()">Начать настройку</button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Carousel removed per request -->
+
+<div class="container">
+    <!-- Features Overview -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h4>Заметки и эмоции</h4>
+                <p>Ведите дневник эмоций, записывайте мысли и отслеживайте настроение каждый день.</p>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h4>Эмоциональный календарь</h4>
+                <p>Визуализируйте свои эмоции на календаре с цветовой кодировкой и статистикой.</p>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h4>Статистика и аналитика</h4>
+                <p>Получайте подробную статистику эмоций, активности и прогресса по целям.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h4>Цели и достижения</h4>
+                <p>Ставьте цели, отслеживайте прогресс и отмечайте достижения в разных сферах жизни.</p>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon">🧘</div>
+                <h4>Практики медитации</h4>
+                <p>Изучайте техники релаксации, медитации и работы с эмоциями.</p>
+            </div>
+        </div>
+        @if (Context.Session.GetString("UserRole") != "psychologist") {
+        <div class="col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon">🐾</div>
+                <h4>Интерактивный компаньон</h4>
+                <p>Общайтесь с виртуальным питомцем, который реагирует на ваше настроение.</p>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h4>Психологи и специалисты</h4>
+                <p>Найдите подходящего психолога, запишитесь на консультацию и получите профессиональную помощь.</p>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon">🔔</div>
+                <h4>Уведомления и напоминания</h4>
+                <p>Получайте умные напоминания о записях, целях и практиках в удобное время.</p>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="feature-card">
+                <div class="feature-icon">⚙️</div>
+                <h4>Настройки и профиль</h4>
+                <p>Персонализируйте приложение, экспортируйте данные и управляйте аккаунтом.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tests Feature -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">🧪</div>
+                        <h4>Тесты и интерпретации</h4>
+                        <p>Пройдите психологические тесты и получите персональные интерпретации результатов.</p>
+                    </div>
+        </div>
+    </div>
+
+    <!-- Quick Start Guide -->
+    <div class="card mb-5">
+        <div class="card-header">
+            <h3 class="mb-0">🚀 Быстрый старт</h3>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Создайте первую заметку</h5>
+                            <p>Запишите свои мысли и выберите эмоцию, которую вы сейчас испытываете.</p>
+                            <a href="/notes/create" class="btn btn-primary btn-sm">Создать заметку</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Поставьте первую цель</h5>
+                            <p>Определите, чего вы хотите достичь, и начните отслеживать прогресс.</p>
+                            <a href="/goals/create" class="btn btn-primary btn-sm">Создать цель</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Просмотрите календарь</h5>
+                            <p>Отслеживайте эмоции и настроение в календаре.</p>
+                            <a href="/calendar" class="btn btn-primary btn-sm">Открыть календарь</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h5>Изучите практики</h5>
+                            <p>Попробуйте техники медитации и релаксации для улучшения самочувствия.</p>
+                            <a href="/practices" class="btn btn-primary btn-sm">Выбрать практику</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips and Benefits -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">💡 Советы по использованию</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="tips-list">
+                        <li>📝 Записывайте заметки каждый день для лучшего отслеживания эмоций</li>
+                        <li>🎯 Ставьте реалистичные цели и отмечайте даже маленькие достижения</li>
+                        <li>📊 Регулярно проверяйте статистику для понимания паттернов</li>
+                        <li>🧘 Используйте практики медитации в стрессовые моменты</li>
+                        <li>👥 Не стесняйтесь обращаться к психологам при необходимости</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">🌟 Преимущества Sofia</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="benefits-list">
+                        <li>🔒 Полная конфиденциальность ваших данных</li>
+                        <li>📱 Работает в любом браузере без установки</li>
+                        <li>🌙 Поддержка светлой и темной темы</li>
+                        <li>📊 Подробная аналитика и отчеты</li>
+                        <li>🎨 Красивый и интуитивный интерфейс</li>
+                        <li>🆓 Полностью бесплатное использование</li>
+                        <li>📥 Экспорт данных в различных форматах</li>
+                        <li>🤖 Умные напоминания и рекомендации</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center py-5">
+        <h2 class="mb-4">Готовы начать путь к лучшему самочувствию?</h2>
+        <p class="lead mb-4">Присоединяйтесь к тысячам пользователей, которые уже улучшили свою жизнь с помощью Sofia</p>
+        <div class="d-flex gap-3 justify-content-center">
+            @if (Context.Session.GetString("UserId") != null) {
+                <a href="/notes/create" class="btn btn-primary btn-lg">📝 Создать первую заметку</a>
+                <a href="/goals/create" class="btn btn-outline-primary btn-lg">🎯 Поставить цель</a>
+            } else {
+                <a href="/auth/login" class="btn btn-primary btn-lg">Войти, чтобы начать</a>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Карусель удалена — инициализация отключена
+        
+        // Onboarding system
+        let currentOnboardingStep = 0;
+        const onboardingSteps = [
+            {
+                title: "Добро пожаловать в Sofia! 🌟",
+                content: "Я - ваш персональный помощник для отслеживания эмоций и достижения целей. Давайте настроим всё для комфортной работы.",
+                action: "Продолжить",
+                highlight: null
+            },
+            {
+                title: "Создайте первую заметку 📝",
+                content: "Начните с записи ваших текущих мыслей и эмоций. Это поможет вам лучше понимать себя.",
+                action: "Создать заметку",
+                highlight: ".feature-card:has(.feature-icon:contains('📝'))",
+                actionUrl: "/notes/create"
+            },
+            {
+                title: "Поставьте первую цель 🎯",
+                content: "Цели помогают структурировать жизнь и отслеживать прогресс. Начните с чего-то небольшого и достижимого.",
+                action: "Создать цель",
+                highlight: ".feature-card:has(.feature-icon:contains('🎯'))",
+                actionUrl: "/goals/create"
+            },
+            {
+                title: "Познакомьтесь с компаньоном 🐾",
+                content: "Ваш виртуальный друг будет реагировать на ваше настроение и помогать в трудные моменты.",
+                action: "Встретить компаньона",
+                highlight: ".feature-card:has(.feature-icon:contains('🐾'))",
+                actionFunction: "openCompanionDialog"
+            }
+        ];
+
+        function startOnboarding() {
+            currentOnboardingStep = 0;
+            showOnboardingModal();
+        }
+
+        function showOnboardingModal() {
+                const step = onboardingSteps[currentOnboardingStep];
+                const modal = document.createElement('div');
+                modal.className = 'onboarding-modal';
+
+                // safe progress calculation
+                const totalSteps = onboardingSteps.length;
+                const displayStep = totalSteps > 0 ? Math.min(currentOnboardingStep + 1, totalSteps) : 0;
+                const progressPercent = totalSteps > 0 ? Math.round((displayStep / totalSteps) * 100) : 0;
+
+                modal.innerHTML = `
+                    <div class="onboarding-dialog">
+                        <div class="onboarding-header">
+                            <h3>${step.title}</h3>
+                            <button class="onboarding-close" onclick="closeOnboarding()">&times;</button>
+                        </div>
+                        <div class="onboarding-body">
+                            <p>${step.content}</p>
+                            <div class="onboarding-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${Math.max(0, Math.min(100, progressPercent))}%"></div>
+                                </div>
+                                <span class="progress-text">${displayStep} из ${totalSteps}</span>
+                            </div>
+                        </div>
+                        <div class="onboarding-footer">
+                            <button class="btn btn-secondary" onclick="closeOnboarding()">Пропустить</button>
+                            <button class="btn btn-primary" onclick="nextOnboardingStep()">${step.action}</button>
+                        </div>
+                    </div>
+                `;
+
+            document.body.appendChild(modal);
+
+            // Highlight element if specified
+            if (step.highlight) {
+                setTimeout(() => {
+                    const element = document.querySelector(step.highlight);
+                    if (element) {
+                        element.classList.add('onboarding-highlight');
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 300);
+            }
+        }
+
+        function nextOnboardingStep() {
+            const step = onboardingSteps[currentOnboardingStep];
+
+            // Perform action based on step
+            if (step.actionUrl) {
+                window.location.href = step.actionUrl;
+                return;
+            } else if (step.actionFunction) {
+                window[step.actionFunction]();
+            }
+
+            // Remove previous highlight
+            document.querySelectorAll('.onboarding-highlight').forEach(el => el.classList.remove('onboarding-highlight'));
+
+            currentOnboardingStep++;
+
+            if (currentOnboardingStep >= onboardingSteps.length) {
+                completeOnboarding();
+                return;
+            }
+
+            // Close current modal and show next
+            document.querySelector('.onboarding-modal').remove();
+            showOnboardingModal();
+        }
+
+        function closeOnboarding() {
+            document.querySelectorAll('.onboarding-modal').forEach(modal => modal.remove());
+            document.querySelectorAll('.onboarding-highlight').forEach(el => el.classList.remove('onboarding-highlight'));
+        }
+
+        function completeOnboarding() {
+            closeOnboarding();
+            // Mark as completed in session
+            fetch('/api/onboarding/complete', { method: 'POST' })
+                .then(() => {
+                    // Hide welcome message
+                    const welcome = document.querySelector('.onboarding-welcome');
+                    if (welcome) welcome.style.display = 'none';
+                    // Show celebration
+                    if (window.sofiaCompanion) {
+                        window.sofiaCompanion.celebrate();
+                        setTimeout(() => {
+                            window.sofiaCompanion.showMessage("Отлично! Теперь вы готовы к работе! 🚀");
+                        }, 1000);
+                    }
+                })
+                .catch(() => {
+                    const welcome = document.querySelector('.onboarding-welcome');
+                    if (welcome) welcome.style.display = 'none';
+                    if (window.sofiaCompanion) {
+                        window.sofiaCompanion.celebrate();
+                        setTimeout(() => {
+                            window.sofiaCompanion.showMessage("Отлично! Теперь вы готовы к работе! 🚀");
+                        }, 1000);
+                    }
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add companion interactions to buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Random companion reaction based on button type
+                    if (this.classList.contains('btn-primary')) {
+                        if (Math.random() < 0.3) { // 30% chance
+                            celebrateCompanion();
+                        }
+                    } else if (this.textContent.includes('заметк') || this.textContent.includes('запис')) {
+                        if (Math.random() < 0.4) { // 40% chance
+                            remindCompanion();
+                        }
+                    } else if (this.textContent.includes('цел') || this.textContent.includes('достижени')) {
+                        if (Math.random() < 0.3) { // 30% chance
+                            encourageCompanion();
+                        }
+                    } else if (this.textContent.includes('компаньон')) {
+                        openCompanionDialog();
+                    }
+                });
+            });
+
+            // Special interaction for feature cards
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    if (Math.random() < 0.1) { // 10% chance
+                        if (window.sofiaCompanion) {
+                            const messages = [
+                                "Этот раздел очень полезный! 🌟",
+                                "Попробуй этот функционал! 💫",
+                                "Отличный выбор! 👍"
+                            ];
+                            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                            window.sofiaCompanion.showMessage(randomMessage);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 0 0 20px 20px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.feature-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.feature-card h4 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.feature-card p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px 0;
+}
+
+.step-number {
+    background: #667eea;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.step-content h5 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.step-content p {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.tips-list, .benefits-list {
+    list-style: none;
+    padding: 0;
+}
+
+.tips-list li, .benefits-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.tips-list li:last-child, .benefits-list li:last-child {
+    border-bottom: none;
+}
+
+.card {
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+@@media (max-width: 768px) {
+    .hero-section {
+        padding: 30px 0;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .feature-card {
+        padding: 20px;
+    }
+    
+    .step-item {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>

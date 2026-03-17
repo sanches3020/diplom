@@ -1,0 +1,218 @@
+@{
+    ViewData["Title"] = "Отчет";
+    dynamic reportData = ViewBag.ReportData;
+    string format = ViewBag.Format as string;
+}
+
+@if (format == "pdf")
+{
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .report-header { text-align: center; margin-bottom: 30px; }
+        .report-section { margin-bottom: 25px; }
+        .chart-placeholder { background: #f8f9fa; padding: 20px; text-align: center; border: 1px solid #dee2e6; }
+        .no-print { display: none; }
+    </style>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <h2>📊 Отчет по данным</h2>
+    <div class="d-flex gap-2">
+        <a href="/stats" class="btn btn-outline-secondary">← Статистика</a>
+        <button class="btn btn-outline-primary" onclick="window.print()">🖨️ Печать</button>
+        <a href="/stats/report?days=@reportData.Period.Days&format=json" class="btn btn-outline-success">📥 JSON</a>
+    </div>
+</div>
+
+<div class="report-header">
+    <h1>Sofia — Отчет о самочувствии</h1>
+    <p class="text-muted">
+        Период: @reportData.Period.Start.ToString("dd.MM.yyyy") —
+        @reportData.Period.End.ToString("dd.MM.yyyy")
+        (@reportData.Period.Days дней)
+    </p>
+    <p class="text-muted">Сгенерирован: @reportData.GeneratedAt.ToString("dd.MM.yyyy HH:mm")</p>
+</div>
+
+<!-- Summary -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="h3 text-primary">@reportData.Summary.TotalNotes</div>
+                <div class="text-muted">Заметок</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="h3 text-success">@reportData.Summary.CompletedGoals</div>
+                <div class="text-muted">Завершённых целей</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="h3 text-info">@reportData.Summary.ActiveGoals</div>
+                <div class="text-muted">Активных целей</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="h3 text-warning">@reportData.Summary.AverageMood.ToString("F1")</div>
+                <div class="text-muted">Среднее настроение</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Emotion Analysis -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">🎭 Анализ эмоций</h5>
+    </div>
+    <div class="card-body">
+        @if (((IEnumerable<dynamic>)reportData.EmotionStats).Any())
+        {
+            <div class="row">
+                <div class="col-md-8">
+                    @foreach (var emotion in reportData.EmotionStats)
+                    {
+                        double percentage = reportData.Summary.TotalNotes > 0
+                            ? (emotion.Count / (double)reportData.Summary.TotalNotes) * 100
+                            : 0;
+
+                        <div class="emotion-bar mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div class="d-flex align-items-center">
+                                    <div class="emotion-legend-color me-2" style="background-color:@GetEmotionColor(emotion.Emotion)"></div>
+                                    <span class="small">@GetEmotionEmoji(emotion.Emotion) @GetEmotionName(emotion.Emotion)</span>
+                                </div>
+                                <span class="small text-muted">@emotion.Count (@percentage.ToString("F1")%)</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar"
+                                     style="width:@percentage%; background-color:@GetEmotionColor(emotion.Emotion)">
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-4">
+                    <div class="chart-placeholder">
+                        <h6>📈 График эмоций</h6>
+                        <p class="text-muted">Распределение эмоций за период</p>
+
+                        @if (reportData.Summary.MostFrequentEmotion != null)
+                        {
+                            <div class="alert alert-info">
+                                <strong>Самая частая эмоция:</strong><br>
+                                @GetEmotionEmoji(reportData.Summary.MostFrequentEmotion)
+                                @GetEmotionName(reportData.Summary.MostFrequentEmotion)
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center text-muted py-4">
+                <div style="font-size:48px;">📊</div>
+                <p>Нет данных об эмоциях за выбранный период</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Activity -->
+@if (((IEnumerable<dynamic>)reportData.ActivityStats).Any())
+{
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">🏃 Анализ активности</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Топ активностей:</h6>
+                    @foreach (var activity in reportData.ActivityStats.Take(5))
+                    {
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>🏃 @activity.Activity</span>
+                            <span class="badge bg-primary">@activity.Count</span>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-6">
+                    @if (reportData.Summary.MostFrequentActivity != null)
+                    {
+                        <div class="alert alert-success">
+                            <h6 class="alert-heading">⭐ Самая частая активность</h6>
+                            <p>@reportData.Summary.MostFrequentActivity</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Goals -->
+@if (((IEnumerable<dynamic>)reportData.Goals).Any())
+{
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">🎯 Анализ целей</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3 text-center">
+                    <div class="h4 text-primary">@reportData.GoalStats.Total</div>
+                    <div class="text-muted">Всего целей</div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="h4 text-success">@reportData.GoalStats.Completed</div>
+                    <div class="text-muted">Завершено</div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="h4 text-info">@reportData.GoalStats.Active</div>
+                    <div class="text-muted">Активных</div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="h4 text-warning">@reportData.GoalStats.AverageProgress.ToString("F0")%</div>
+                    <div class="text-muted">Средний прогресс</div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h6>Активные цели:</h6>
+                <div class="row g-2">
+                    @foreach (var goal in ((IEnumerable<dynamic>)reportData.Goals)
+                        .Where(g => g.Status == Sofia.Web.Models.GoalStatus.Active)
+                        .Take(6))
+                    {
+                        <div class="col-md-6">
+                            <div class="goal-item p-3 border rounded">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <h6 class="mb-0">@goal.Title</h6>
+                                    <span class="badge bg-primary">@goal.Progress%</span>
+                                </div>
+                                <div class="progress" style="height:4px;">
+                                    <div class="progress-bar bg-primary" style="width:@goal.Progress%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Mood Trends -->
+@if (((IEnumerable<dynamic>)reportData.MoodTrends).

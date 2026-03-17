@@ -1,0 +1,484 @@
+@{
+    ViewData["Title"] = "Профиль психолога";
+    var psychologist = ViewBag.Psychologist as Sofia.Web.Models.Psychologist;
+    var reviews = ViewBag.Reviews as List<Sofia.Web.Models.PsychologistReview>;
+    var availableSlots = ViewBag.AvailableSlots as List<Sofia.Web.Models.PsychologistTimeSlot>;
+
+    // Заполнения по умолчанию для профиля (Республика Беларусь)
+    var displayName = psychologist?.Name ?? "Иван Иванов";
+    var displaySpecialization = psychologist?.Specialization ?? "Когнитивно-поведенческая терапия, работа с тревогой";
+    var displayDescription = psychologist?.Description ?? "Практикующий психолог из Республики Беларусь. Помогаю с тревогой, депрессией и семейными проблемами. Провожу индивидуальные консультации очно и онлайн.";
+    var displayEducation = psychologist?.Education ?? "Белорусский государственный университет, факультет психологии";
+    var displayExperience = psychologist?.Experience ?? "5 лет практической работы с взрослыми и подростками";
+    var displayLanguages = psychologist?.Languages ?? "Русский, Белорусский";
+    var displayMethods = psychologist?.Methods ?? "КПТ, семейная терапия, работа с тревогой";
+    var displayPhone = string.IsNullOrEmpty(psychologist?.ContactPhone) ? "+375 29 123-45-67" : psychologist.ContactPhone;
+    var displayEmail = string.IsNullOrEmpty(psychologist?.ContactEmail) ? "info@sofia.by" : psychologist.ContactEmail;
+
+    // Price: ensure BYN and clamp to 1..1000
+    var rawPrice = psychologist?.PricePerHour ?? 100;
+    var pricePerHour = (rawPrice < 1) ? 1 : (rawPrice > 1000 ? 1000 : rawPrice);
+
+    // Prepare reviews for display — используем только реальные отзывы
+    var approvedReviews = reviews?.Where(r => r.IsApproved && r.IsVisible).ToList();
+    var displayReviews = new List<dynamic>();
+    if (approvedReviews != null && approvedReviews.Any()) {
+        foreach (var r in approvedReviews) displayReviews.Add(r);
+    }
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>👨‍⚕️ @psychologist?.Name</h2>
+    <a href="/psychologist" class="btn btn-outline-secondary">← Назад к списку</a>
+</div>
+
+<div class="row g-4 psychologist-page">
+    <!-- Psychologist Info -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                                <div class="col-md-8">
+                                    <h4 class="text-primary">@displayName</h4>
+                                    <p class="text-muted mb-3">@displaySpecialization</p>
+                                    <p class="mb-3">@displayDescription</p>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <h6 class="text-success">🎓 Образование</h6>
+                                <p class="small">@displayEducation</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-info">💼 Опыт</h6>
+                                <p class="small">@displayExperience</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-warning">🌍 Языки</h6>
+                                <p class="small">@displayLanguages</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary">🔬 Методы</h6>
+                                <p class="small">@displayMethods</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="psychologist-avatar mb-3">
+                            <div class="avatar-circle">
+                                <div class="avatar-initial">@(psychologist?.Name?.FirstOrDefault().ToString().ToUpper() ?? "П")</div>
+                            </div>
+                        </div>
+                        <div class="price-info">
+                            <h5 class="text-success">@($"{pricePerHour} BYN")</h5>
+                            <small class="text-muted">за час</small>
+                        </div>
+                        <div class="contact-info mt-3">
+                            <small class="text-muted">📞 @displayPhone</small><br>
+                            <small class="text-muted">📧 @displayEmail</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">⭐ Отзывы (@reviews?.Count(r => r.IsApproved && r.IsVisible))</h5>
+            </div>
+            <div class="card-body">
+                @if (displayReviews != null && displayReviews.Any())
+                {
+                    @foreach (var review in displayReviews)
+                    {
+                        <div class="review-item mb-3 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rating me-2">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <span class="star @(i <= (int)review.Rating ? "filled" : "")">⭐</span>
+                                            }
+                                        </div>
+                                        @if (!string.IsNullOrEmpty((string)review.Title))
+                                        {
+                                            <strong>@review.Title</strong>
+                                        }
+                                    </div>
+                                    @if (review.User != null)
+                                    {
+                                        <small class="text-muted">От: @review.User.Username</small>
+                                    }
+                                    <small class="text-muted ms-2">@((DateTime)review.CreatedAt).ToString("dd.MM.yyyy")</small>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty((string)review.Comment))
+                            {
+                                <p class="mb-0">@review.Comment</p>
+                            }
+                        </div>
+                    }
+                }
+                
+                <!-- Форма для оставления отзыва -->
+                @if (Context.Session.GetString("UserId") != null && Context.Session.GetString("UserRole") != "psychologist")
+                {
+                    <div class="mt-4 pt-4 border-top">
+                        <h6>Оставить отзыв</h6>
+                        <form id="reviewForm">
+                            <div class="mb-3">
+                                <label for="reviewTitle" class="form-label">Заголовок (необязательно)</label>
+                                <input type="text" class="form-control" id="reviewTitle" placeholder="Краткое описание">
+                            </div>
+                            <div class="mb-3">
+                                <label for="reviewRating" class="form-label">Оценка</label>
+                                <select class="form-select" id="reviewRating" required>
+                                    <option value="">Выберите оценку</option>
+                                    <option value="5">5 - Отлично</option>
+                                    <option value="4">4 - Хорошо</option>
+                                    <option value="3">3 - Удовлетворительно</option>
+                                    <option value="2">2 - Плохо</option>
+                                    <option value="1">1 - Очень плохо</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="reviewComment" class="form-label">Комментарий</label>
+                                <textarea class="form-control" id="reviewComment" rows="4" placeholder="Поделитесь своим опытом..." required></textarea>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="submitReview(@psychologist?.Id)">Отправить отзыв</button>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Section -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">📅 Записаться на консультацию</h5>
+            </div>
+            <div class="card-body">
+                <form id="bookingForm">
+                    <input type="hidden" id="psychologistId" value="@psychologist?.Id">
+                    
+                    <div class="mb-3">
+                        <label for="appointmentDate" class="form-label">Выберите удобное время</label>
+                        <div class="time-slots-container">
+                            @if (availableSlots?.Any() == true)
+                            {
+                                <div class="row g-2">
+                                    @foreach (var slot in availableSlots.Where(s => s.IsAvailable && !s.IsBooked).OrderBy(s => s.Date).ThenBy(s => s.StartTime))
+                                    {
+                                        var slotDateTime = slot.Date.Add(slot.StartTime);
+                                        <div class="col-md-4 col-sm-6 col-12">
+                                            <button type="button" 
+                                                    class="btn w-100 text-start time-slot-btn @(slot.IsBooked ? "btn-secondary disabled" : "btn-outline-primary")"
+                                                    @(slot.IsBooked ? "disabled" : "")
+                                                    data-slot-date="@slot.Date.ToString("yyyy-MM-dd")"
+                                                    data-slot-time="@((slot.StartTime).ToString(@"hh\:mm"))"
+                                                    onclick="selectTimeSlot('@slot.Date.ToString("yyyy-MM-dd")', '@((slot.StartTime).ToString(@"hh\:mm"))')">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <div class="fw-bold">@slotDateTime.ToString("dd.MM (ddd)")</div>
+                                                        <div class="small">@slotDateTime.ToString("HH:mm") - @((slot.EndTime).ToString(@"hh\:mm"))</div>
+                                                    </div>
+                                                    @if (slot.IsBooked)
+                                                    {
+                                                        <span class="badge bg-danger">Занято</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-success">Свободно</span>
+                                                    }
+                                                </div>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info text-center">
+                                    <i class="fas fa-calendar-times me-2"></i>
+                                    На данный момент нет доступных слотов для записи.
+                                </div>
+                            }
+                        </div>
+                        <input type="hidden" id="selectedDateTime" name="appointmentDate" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Комментарий (необязательно)</label>
+                        <textarea class="form-control" id="notes" rows="3" placeholder="Опишите, что вас беспокоит или что хотите обсудить..."></textarea>
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary w-100" onclick="bookAppointment()">
+                        📝 Записаться
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Info -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">ℹ️ Информация</h6>
+            </div>
+            <div class="card-body">
+                <div class="info-item mb-3">
+                    <h6 class="text-primary">⏰ Длительность</h6>
+                    <p class="small text-muted mb-0">Консультация длится 1 час</p>
+                </div>
+                <div class="info-item mb-3">
+                    <h6 class="text-success">💰 Оплата</h6>
+                    <p class="small text-muted mb-0">Оплата после консультации</p>
+                </div>
+                <div class="info-item mb-3">
+                    <h6 class="text-info">📞 Отмена</h6>
+                    <p class="small text-muted mb-0">Можно отменить за 24 часа</p>
+                </div>
+                <div class="info-item">
+                    <h6 class="text-warning">🔒 Конфиденциальность</h6>
+                    <p class="small text-muted mb-0">Все данные строго конфиденциальны</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.psychologist-avatar {
+    margin-bottom: 20px;
+}
+
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6b7cff 0%, #9c88ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 4px 12px rgba(107, 124, 255, 0.3);
+}
+
+.avatar-initial {
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+}
+
+.price-info h5 {
+    margin-bottom: 0;
+}
+
+.review-item {
+    transition: all 0.2s ease;
+}
+
+.review-item:hover {
+    background-color: #f8f9fa;
+    border-color: #6b7cff !important;
+}
+
+.rating .star {
+    font-size: 16px;
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
+}
+
+.rating .star.filled {
+    opacity: 1;
+}
+
+.info-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.card {
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Для страницы профиля: не даём обрезаться низу */
+.psychologist-page { padding-bottom: 80px; }
+
+/* Стили для выбора времени */
+.time-slots-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+}
+
+.time-slot-btn {
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    min-height: 60px;
+}
+
+.time-slot-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-color: #6b7cff;
+}
+
+.time-slot-btn.btn-primary {
+    background-color: #6b7cff;
+    border-color: #6b7cff;
+    color: white;
+}
+
+.time-slot-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #6b7cff;
+    box-shadow: 0 0 0 0.2rem rgba(107, 124, 255, 0.25);
+}
+</style>
+
+<script>
+// Показываем уведомления
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+
+    const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        info: '#3b82f6',
+        warning: '#f59e0b'
+    };
+
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type]};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// Выбор слота времени
+function selectTimeSlot(date, time, el) {
+    // Снимаем выделение со всех кнопок
+    document.querySelectorAll('.time-slot-btn').forEach(btn => {
+        btn.classList.remove('btn-primary', 'active');
+        btn.classList.add('btn-outline-primary');
+    });
+
+    // Выделяем выбранную кнопку
+    el.classList.remove('btn-outline-primary');
+    el.classList.add('btn-primary', 'active');
+
+    // Сохраняем ISO‑дату
+    const iso = date + 'T' + time;
+    document.getElementById('selectedDateTime').value = iso;
+}
+
+// Отправка отзыва
+function submitReview(psychologistId) {
+    const title = document.getElementById('reviewTitle').value;
+    const rating = parseInt(document.getElementById('reviewRating').value);
+    const comment = document.getElementById('reviewComment').value;
+
+    if (!rating || !comment) {
+        alert('Пожалуйста, заполните все обязательные поля');
+        return;
+    }
+
+    fetch('/psychologist/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            psychologistId: psychologistId,
+            rating: rating,
+            title: title || null,
+            comment: comment
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'success');
+            document.getElementById('reviewForm').reset();
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            showToast('Ошибка: ' + data.message, 'error');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showToast('Произошла ошибка при отправке отзыва', 'error');
+    });
+}
+
+// Финальная, единственная версия записи на консультацию
+function bookAppointment() {
+    const selectedDateTime = document.getElementById('selectedDateTime').value;
+    if (!selectedDateTime) {
+        alert('Пожалуйста, выберите время для записи');
+        return;
+    }
+
+    const psychologistId = document.getElementById('psychologistId').value;
+    const notes = document.getElementById('notes').value;
+
+    const appointmentDateTime = new Date(selectedDateTime);
+
+    fetch('/psychologist/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            psychologistId: parseInt(psychologistId),
+            appointmentDate: appointmentDateTime.toISOString(),
+            notes: notes || ''
+        })
+    })
+    .then(r => r.json())
+    .then(result => {
+        if (result.success) {
+            alert(result.message);
+            setTimeout(() => {
+                window.location.href = '/psychologist/appointments';
+            }, 1000);
+        } else {
+            alert('Ошибка: ' + (result.message || 'Неизвестная ошибка'));
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Произошла ошибка при записи на консультацию');
+    });
+}
+
+// Интервал обновления слотов (пока заглушка)
+setInterval(() => {}, 30000);
+</script>
+

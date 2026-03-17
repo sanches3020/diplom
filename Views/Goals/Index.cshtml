@@ -1,0 +1,429 @@
+@model IEnumerable<Sofia.Web.Models.Goal>
+@{
+    ViewData["Title"] = "Цели";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🎯 Цели</h2>
+    <div class="d-flex gap-2 align-items-center">
+        <select id="sortSelect" class="form-select form-select-sm" data-current-sort="@(ViewBag.CurrentSort ?? String.Empty)">
+            <option value="">Сортировка: По умолчанию (активные сверху)</option>
+            <option value="created_desc">По дате (новые сначала)</option>
+            <option value="created_asc">По дате (старые сначала)</option>
+            <option value="deadline_asc">По дедлайну (сначала ближайшие)</option>
+            <option value="deadline_desc">По дедлайну (сначала дальние)</option>
+            <option value="progress_desc">По прогрессу (сначала большие)</option>
+            <option value="progress_asc">По прогрессу (сначала маленькие)</option>
+        </select>
+        <a href="/goals/create" class="btn btn-primary btn-sm">+ Новая цель</a>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="row g-3">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-success">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">👤</span>
+                        <span class="badge bg-success">Активна</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Улучшить сон</h5>
+                    <p class="card-text">Режим сна, ритуалы и трекер для регулярности.</p>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">Прогресс</small>
+                            <small class="text-muted">20%</small>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 20%"></div>
+                        </div>
+                    </div>
+                    <div class="small text-muted">
+                        <div>📅 Создано: @DateTime.Now.ToString("dd.MM.yyyy")</div>
+                        <div>🎯 Цель до: @DateTime.Now.AddMonths(1).ToString("dd.MM.yyyy")</div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="/goals/edit/1" class="btn btn-sm btn-outline-primary">✏️</a>
+                            <form method="post" action="/goals/delete/1" class="d-inline" onsubmit="return confirm('Удалить цель?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">🗑️</button>
+                            </form>
+                        </div>
+                        <div>
+                            <form method="post" action="/goals/update-progress/1" class="d-inline">
+                                <div class="input-group input-group-sm" style="width: 120px;">
+                                    <input type="number" name="progress" class="form-control" min="0" max="100" value="20" />
+                                    <button type="submit" class="btn btn-outline-success">✓</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-success">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">💼</span>
+                        <span class="badge bg-success">Активна</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Сделать презентацию</h5>
+                    <p class="card-text">Подготовьте слайды, репетиции и дедлайны.</p>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">Прогресс</small>
+                            <small class="text-muted">45%</small>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 45%"></div>
+                        </div>
+                    </div>
+                    <div class="small text-muted">
+                        <div>📅 Создано: @DateTime.Now.AddDays(-7).ToString("dd.MM.yyyy")</div>
+                        <div>🎯 Цель до: @DateTime.Now.AddDays(14).ToString("dd.MM.yyyy")</div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="/goals/edit/2" class="btn btn-sm btn-outline-primary">✏️</a>
+                            <form method="post" action="/goals/delete/2" class="d-inline" onsubmit="return confirm('Удалить цель?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">🗑️</button>
+                            </form>
+                        </div>
+                        <div>
+                            <form method="post" action="/goals/update-progress/2" class="d-inline">
+                                <div class="input-group input-group-sm" style="width: 120px;">
+                                    <input type="number" name="progress" class="form-control" min="0" max="100" value="45" />
+                                    <button type="submit" class="btn btn-outline-success">✓</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-success">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">🌱</span>
+                        <span class="badge bg-success">Активна</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Пройти курс</h5>
+                    <p class="card-text">Разделите обучение на шаги и отслеживайте прогресс.</p>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">Прогресс</small>
+                            <small class="text-muted">10%</small>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 10%"></div>
+                        </div>
+                    </div>
+                    <div class="small text-muted">
+                        <div>📅 Создано: @DateTime.Now.ToString("dd.MM.yyyy")</div>
+                        <div>🎯 Цель до: @DateTime.Now.AddMonths(2).ToString("dd.MM.yyyy")</div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="/goals/edit/3" class="btn btn-sm btn-outline-primary">✏️</a>
+                            <form method="post" action="/goals/delete/3" class="d-inline" onsubmit="return confirm('Удалить цель?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">🗑️</button>
+                            </form>
+                        </div>
+                        <div>
+                            <form method="post" action="/goals/update-progress/3" class="d-inline">
+                                <div class="input-group input-group-sm" style="width: 120px;">
+                                    <input type="number" name="progress" class="form-control" min="0" max="100" value="10" />
+                                    <button type="submit" class="btn btn-outline-success">✓</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var goal in Model)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 @GetStatusClass(goal.Status)">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <span class="me-2">@GetTypeEmoji(goal.Type)</span>
+                            <span class="badge @GetStatusBadgeClass(goal.Status)">@GetStatusText(goal.Status)</span>
+                        </div>
+                        @if (goal.IsFromPsychologist)
+                        {
+                            <span class="badge bg-info">👥 Психолог</span>
+                        }
+                    </div>
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">@goal.Title</h5>
+                        @if (!string.IsNullOrEmpty(goal.Description))
+                        {
+                            <p class="card-text">@goal.Description</p>
+                        }
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Прогресс</small>
+                                <small class="text-muted">@goal.Progress%</small>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar @GetProgressBarClass(goal.Status)" 
+                                     role="progressbar" 
+                                     style="width: @goal.Progress%" 
+                                     aria-valuenow="@goal.Progress" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="small text-muted">
+                            <div>📅 Создано: @goal.CreatedAt.ToString("dd.MM.yyyy")</div>
+                            @if (goal.TargetDate.HasValue)
+                            {
+                                <div>🎯 Цель до: @goal.TargetDate.Value.ToString("dd.MM.yyyy")</div>
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="/goals/edit/@goal.Id" class="btn btn-sm btn-outline-primary">✏️</a>
+                                <form method="post" action="/goals/delete/@goal.Id" class="d-inline" onsubmit="return confirm('Удалить цель?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">🗑️</button>
+                                </form>
+                            </div>
+                            @if (goal.Status == Sofia.Web.Models.GoalStatus.Active)
+                            {
+                                <form method="post" action="/goals/update-progress/@goal.Id" class="d-inline">
+                                    <div class="input-group input-group-sm" style="width: 120px;">
+                                        <input type="number" name="progress" class="form-control" min="0" max="100" value="@goal.Progress" />
+                                        <button type="submit" class="btn btn-outline-success">✓</button>
+                                    </div>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="page-bottom-spacer" style="height: 100px;"></div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Companion reactions for goal actions
+            const createButton = document.querySelector('a[href="/goals/create"]');
+            if (createButton) {
+                createButton.addEventListener('click', function() {
+                    if (Math.random() < 0.6) { // 60% chance
+                        if (window.sofiaCompanion) {
+                            const messages = [
+                                "Отлично! Ставь цели и достигай их! 🎯",
+                                "Цели - это путь к успеху! ⭐",
+                                "Планируй и достигай! 💪"
+                            ];
+                            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                            window.sofiaCompanion.showMessage(randomMessage);
+                        }
+                    }
+                    // Track goal creation
+                    onGoalCreated();
+                });
+            }
+            
+            // React to progress updates
+            const progressInputs = document.querySelectorAll('input[name="progress"]');
+            progressInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const progress = parseInt(this.value);
+                    if (window.sofiaCompanion) {
+                        let message = "";
+                        
+                        if (progress >= 100) {
+                            message = "Поздравляю! Цель достигнута! 🎉🎊";
+                            celebrateCompanion();
+                            onGoalCompleted();
+                        } else if (progress >= 75) {
+                            message = "Почти у цели! Продолжай! 🔥";
+                        } else if (progress >= 50) {
+                            message = "Отличный прогресс! Половина пути! 👏";
+                        } else if (progress >= 25) {
+                            message = "Хорошее начало! Не останавливайся! 💪";
+                        } else {
+                            message = "Каждый шаг важен! Продолжай! 🌟";
+                        }
+                        
+                        if (message) {
+                            window.sofiaCompanion.showMessage(message);
+                        }
+                    }
+                });
+            });
+
+            // Sorting select: initialize value from server and redirect on change
+            const sortSelect = document.getElementById('sortSelect');
+            if (sortSelect) {
+                const current = sortSelect.getAttribute('data-current-sort');
+                if (current) sortSelect.value = current;
+
+                sortSelect.addEventListener('change', function() {
+                    const v = this.value;
+                    const base = '/goals';
+                    if (v) window.location.href = base + '?sort=' + encodeURIComponent(v);
+                    else window.location.href = base;
+                });
+            }
+            
+            // React to goal cards based on status
+            const goalCards = document.querySelectorAll('.card');
+            goalCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    if (Math.random() < 0.2) { // 20% chance
+                        if (window.sofiaCompanion) {
+                            const statusBadge = this.querySelector('.badge');
+                            if (statusBadge) {
+                                const status = statusBadge.textContent.toLowerCase();
+                                let message = "";
+                                
+                                if (status.includes('активн')) {
+                                    message = "Активная цель! Вперёд! 🚀";
+                                } else if (status.includes('выполнен')) {
+                                    message = "Поздравляю с достижением! 🏆";
+                                } else if (status.includes('приостановлен')) {
+                                    message = "Иногда нужна пауза. Это нормально! ⏸️";
+                                } else if (status.includes('отменен')) {
+                                    message = "Иногда нужно пересмотреть планы! 🔄";
+                                }
+                                
+                                if (message) {
+                                    window.sofiaCompanion.showMessage(message);
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+            
+            // React to progress bars
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                bar.addEventListener('mouseenter', function() {
+                    if (Math.random() < 0.3) { // 30% chance
+                        if (window.sofiaCompanion) {
+                            const progress = parseInt(this.style.width);
+                            let message = "";
+                            
+                            if (progress >= 100) {
+                                message = "100%! Ты молодец! 🎊";
+                            } else if (progress >= 75) {
+                                message = "Почти финиш! 🏁";
+                            } else if (progress >= 50) {
+                                message = "Половина пути пройдена! 📈";
+                            } else {
+                                message = "Каждый процент важен! 📊";
+                            }
+                            
+                            if (message) {
+                                window.sofiaCompanion.showMessage(message);
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+@functions {
+    string GetTypeEmoji(Sofia.Web.Models.GoalType type)
+    {
+        return type switch
+        {
+            Sofia.Web.Models.GoalType.Personal => "👤",
+            Sofia.Web.Models.GoalType.Therapy => "🧠",
+            Sofia.Web.Models.GoalType.Wellness => "🌱",
+            Sofia.Web.Models.GoalType.Social => "👥",
+            Sofia.Web.Models.GoalType.Professional => "💼",
+            _ => "🎯"
+        };
+    }
+    
+    string GetStatusText(Sofia.Web.Models.GoalStatus status)
+    {
+        return status switch
+        {
+            Sofia.Web.Models.GoalStatus.Active => "Активна",
+            Sofia.Web.Models.GoalStatus.Completed => "Выполнена",
+            Sofia.Web.Models.GoalStatus.Paused => "Приостановлена",
+            Sofia.Web.Models.GoalStatus.Cancelled => "Отменена",
+            _ => status.ToString()
+        };
+    }
+    
+    string GetStatusBadgeClass(Sofia.Web.Models.GoalStatus status)
+    {
+        return status switch
+        {
+            Sofia.Web.Models.GoalStatus.Active => "bg-success",
+            Sofia.Web.Models.GoalStatus.Completed => "bg-primary",
+            Sofia.Web.Models.GoalStatus.Paused => "bg-warning",
+            Sofia.Web.Models.GoalStatus.Cancelled => "bg-secondary",
+            _ => "bg-secondary"
+        };
+    }
+    
+    string GetStatusClass(Sofia.Web.Models.GoalStatus status)
+    {
+        return status switch
+        {
+            Sofia.Web.Models.GoalStatus.Completed => "border-success",
+            Sofia.Web.Models.GoalStatus.Paused => "border-warning",
+            Sofia.Web.Models.GoalStatus.Cancelled => "border-secondary",
+            _ => ""
+        };
+    }
+    
+    string GetProgressBarClass(Sofia.Web.Models.GoalStatus status)
+    {
+        return status switch
+        {
+            Sofia.Web.Models.GoalStatus.Active => "bg-success",
+            Sofia.Web.Models.GoalStatus.Completed => "bg-primary",
+            Sofia.Web.Models.GoalStatus.Paused => "bg-warning",
+            Sofia.Web.Models.GoalStatus.Cancelled => "bg-secondary",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+

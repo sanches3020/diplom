@@ -1,0 +1,325 @@
+@{
+    ViewData["Title"] = "Новая заметка";
+    var targetDate = ViewBag.TargetDate as DateTime? ?? DateTime.Today;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📝 Новая заметка</h2>
+    <a href="/notes" class="btn btn-outline-secondary">← Назад к заметкам</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">✍️ Создание заметки</h5>
+            </div>
+            <div class="card-body">
+                <form id="noteForm">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="content" class="form-label">Содержание заметки *</label>
+                            <textarea class="form-control" id="content" name="content" rows="6" 
+                                      placeholder="Опишите, что произошло, как вы себя чувствуете, о чем думаете..." required></textarea>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="emotion" class="form-label">Эмоция *</label>
+                            <select class="form-select" id="emotion" name="emotion" required>
+                                <option value="">Выберите эмоцию</option>
+                                <option value="VerySad">😢 Очень грустно</option>
+                                <option value="Sad">😔 Грустно</option>
+                                <option value="Neutral">😐 Нейтрально</option>
+                                <option value="Happy">😊 Радостно</option>
+                                <option value="VeryHappy">😄 Очень радостно</option>
+                                <option value="Anxious">😰 Тревожно</option>
+                                <option value="Calm">😌 Спокойно</option>
+                                <option value="Excited">🤩 Взволнованно</option>
+                                <option value="Frustrated">😤 Раздражённо</option>
+                                <option value="Grateful">🙏 Благодарно</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="date" class="form-label">Дата</label>
+                            <input type="date" class="form-control" id="date" name="date" value="@targetDate.ToString("yyyy-MM-dd")">
+                            <div id="dateHint" class="form-text mt-1">Дата: сегодня</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="tags" class="form-label">Теги</label>
+                            <input type="text" class="form-control" id="tags" name="tags" 
+                                   placeholder="работа, семья, здоровье (через запятую)">
+                            <small class="form-text text-muted">Разделяйте теги запятыми</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="activity" class="form-label">Активность</label>
+                            <input type="text" class="form-control" id="activity" name="activity" 
+                                   placeholder="прогулка, работа, чтение">
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isPinned" name="isPinned">
+                                <label class="form-check-label" for="isPinned">
+                                    📌 Закрепить заметку
+                                </label>
+                                <small class="form-text text-muted d-block">Закрепленные заметки отображаются вверху списка</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="shareWithPsychologist" name="shareWithPsychologist">
+                                <label class="form-check-label" for="shareWithPsychologist">
+                                    👨‍⚕️ Поделиться с психологом
+                                </label>
+                                <small class="form-text text-muted d-block">Позволяет психологу видеть эту заметку</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="button" class="btn btn-primary" onclick="saveNote()">
+                            💾 Сохранить заметку
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary ms-2" onclick="resetForm()">
+                            🔄 Очистить
+                        </button>
+                        <a href="/notes" class="btn btn-outline-danger ms-2">❌ Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">💡 Советы</h6>
+            </div>
+            <div class="card-body">
+                <div class="tips">
+                    <div class="tip-item mb-3">
+                        <h6 class="text-primary">📝 Содержание</h6>
+                        <p class="small text-muted mb-0">Опишите события дня, свои мысли и чувства. Не бойтесь быть честными.</p>
+                    </div>
+                    <div class="tip-item mb-3">
+                        <h6 class="text-success">😊 Эмоции</h6>
+                        <p class="small text-muted mb-0">Выберите эмоцию, которая лучше всего описывает ваше состояние.</p>
+                    </div>
+                    <div class="tip-item mb-3">
+                        <h6 class="text-info">🏷️ Теги</h6>
+                        <p class="small text-muted mb-0">Используйте теги для категоризации заметок: работа, семья, здоровье.</p>
+                    </div>
+                    <div class="tip-item">
+                        <h6 class="text-warning">📌 Закрепление</h6>
+                        <p class="small text-muted mb-0">Закрепляйте важные заметки, чтобы они всегда были на виду.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">📊 Статистика</h6>
+            </div>
+            <div class="card-body">
+                <div class="stats">
+                    <div class="stat-item d-flex justify-content-between mb-2">
+                        <span>Заметок сегодня:</span>
+                        <span class="text-primary" id="todayNotes">0</span>
+                    </div>
+                    <div class="stat-item d-flex justify-content-between mb-2">
+                        <span>Закрепленных:</span>
+                        <span class="text-warning" id="pinnedNotes">0</span>
+                    </div>
+                    <div class="stat-item d-flex justify-content-between">
+                        <span>Для психолога:</span>
+                        <span class="text-info" id="sharedNotes">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tips {
+    space-y: 15px;
+}
+
+.tip-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.tip-item:last-child {
+    border-bottom: none;
+}
+
+.stats .stat-item {
+    padding: 5px 0;
+}
+
+.card {
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #6b7cff;
+    box-shadow: 0 0 0 0.2rem rgba(107, 124, 255, 0.25);
+}
+</style>
+
+<script>
+function saveNote() {
+    const form = document.getElementById('noteForm');
+    const formData = new FormData(form);
+
+    // Проверяем обязательные поля
+    if (!formData.get('content') || !formData.get('emotion')) {
+        showToast('Пожалуйста, заполните все обязательные поля', 'error');
+        return;
+    }
+
+    // Validate date and possibly confirm when too far
+    const dateStr = formData.get('date');
+    const dateCheck = evaluateDate(dateStr);
+    if (dateCheck.level === 'red') {
+        if (!confirm('Вы выбрали очень далёкую дату. Уверены, что хотите сохранить заметку?')) {
+            return;
+        }
+    }
+
+    const data = {
+        content: formData.get('content'),
+        tags: formData.get('tags'),
+        emotion: formData.get('emotion'),
+        activity: formData.get('activity'),
+        date: formData.get('date'),
+        isPinned: formData.get('isPinned') === 'on',
+        shareWithPsychologist: formData.get('shareWithPsychologist') === 'on'
+    };
+
+    fetch('/notes/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showToast(result.message, 'success');
+            setTimeout(() => {
+                window.location.href = '/notes';
+            }, 1000);
+        } else {
+            showToast('Ошибка при сохранении: ' + result.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Произошла ошибка', 'error');
+    });
+}
+
+// Date evaluation helpers
+function evaluateDate(dateStr) {
+    const today = new Date();
+    let d = dateStr ? new Date(dateStr) : today;
+    if (isNaN(d)) d = today;
+    const diffMs = Math.abs(today - d);
+    const diffYears = diffMs / (1000 * 60 * 60 * 24 * 365);
+
+    if (diffYears <= 1) {
+        return { level: 'green', message: 'Дата в пределах года — хорошая практическая запись', color: '#16a34a' };
+    }
+    if (diffYears <= 5) {
+        return { level: 'yellow', message: 'Дата в пределах 1–5 лет — проверьте, актуальна ли запись', color: '#f59e0b' };
+    }
+    return { level: 'red', message: 'Вы выбрали очень далёкую дату — это не рекомендуется', color: '#ef4444' };
+}
+
+function updateDateHint(dateStr) {
+    const hint = document.getElementById('dateHint');
+    if (!hint) return;
+    const res = evaluateDate(dateStr);
+    hint.textContent = res.message;
+    hint.style.color = res.color;
+}
+
+// Hook date input change
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+        updateDateHint(dateInput.value);
+        dateInput.addEventListener('change', function() {
+            updateDateHint(this.value);
+        });
+    }
+});
+
+function resetForm() {
+    if (confirm('Очистить все поля формы?')) {
+        document.getElementById('noteForm').reset();
+        showToast('Форма очищена', 'info');
+    }
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    
+    const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        info: '#3b82f6',
+        warning: '#f59e0b'
+    };
+    
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type]};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// Загружаем статистику
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/notes/stats')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('todayNotes').textContent = data.todayNotes || 0;
+                document.getElementById('pinnedNotes').textContent = data.pinnedNotes || 0;
+                document.getElementById('sharedNotes').textContent = data.sharedNotes || 0;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading stats:', error);
+        });
+});
+</script>
+
+<div class="page-bottom-spacer" style="height: 100px;"></div>
