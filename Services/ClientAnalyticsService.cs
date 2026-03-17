@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sofia.Web.Data;
 using Sofia.Web.Services.Interfaces;
-using Sofia.Web.ViewModels.Psychologist;
+using Sofia.Web.ViewModels.PsychologistArea;
 
 namespace Sofia.Web.Services;
 
@@ -14,7 +14,7 @@ public class ClientAnalyticsService : IClientAnalyticsService
         _context = context;
     }
 
-    public async Task<PsychologistDashboardViewModel?> GetDashboardAsync(int psychologistUserId)
+    public async Task<PsychologistDashboardViewModel?> GetDashboardAsync(string psychologistUserId)
     {
         var psychologist = await _context.Psychologists
             .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);

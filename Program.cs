@@ -53,6 +53,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 // 5. DI: сервисы приложения
 // ----------------------------
 // (здесь ты регистрируешь свои сервисы)
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserTestService, UserTestService>();
 builder.Services.AddScoped<IPsychologistService, PsychologistService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();

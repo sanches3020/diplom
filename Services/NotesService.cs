@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sofia.Web.Data;
 using Sofia.Web.DTO.Notes;
-using Sofia.Web.Models;
 using Sofia.Web.Services.Interfaces;
+using NoteModel = Sofia.Web.Models.Note;
 
 namespace Sofia.Web.Services;
 
@@ -15,7 +15,7 @@ public class NotesService : INotesService
         _context = context;
     }
 
-    public async Task<List<Note>> GetUserNotesAsync(int userId)
+    public async Task<List<NoteModel>> GetUserNotesAsync(string userId)
     {
         return await _context.Notes
             .Where(n => n.UserId == userId)
@@ -24,7 +24,7 @@ public class NotesService : INotesService
             .ToListAsync();
     }
 
-    public async Task<(bool Success, string Message)> CreateNoteAsync(int userId, DTO.Notes.CreateNoteRequest request)
+    public async Task<(bool Success, string Message)> CreateNoteAsync(string userId, DTO.Notes.CreateNoteRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Content))
             return (false, "Содержание заметки обязательно");
@@ -37,7 +37,7 @@ public class NotesService : INotesService
             ? parsedDate
             : DateTime.Today;
 
-        var note = new Note
+        var note = new NoteModel
         {
             UserId = userId,
             Content = request.Content,
@@ -56,7 +56,7 @@ public class NotesService : INotesService
         return (true, "Заметка создана!");
     }
 
-    public async Task<(bool Success, string Message)> UpdateNoteAsync(int userId, int noteId, UpdateNoteRequest request)
+    public async Task<(bool Success, string Message)> UpdateNoteAsync(string userId, int noteId, UpdateNoteRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Content))
             return (false, "Содержание заметки обязательно");
@@ -90,7 +90,7 @@ public class NotesService : INotesService
         return (true, "Заметка обновлена!");
     }
 
-    public async Task<(bool Success, string Message)> DeleteNoteAsync(int userId, int noteId)
+    public async Task<(bool Success, string Message)> DeleteNoteAsync(string userId, int noteId)
     {
         var note = await _context.Notes
             .FirstOrDefaultAsync(n => n.Id == noteId && n.UserId == userId);
@@ -104,7 +104,7 @@ public class NotesService : INotesService
         return (true, "Заметка удалена!");
     }
 
-    public async Task<(bool Success, string Message, bool? IsPinned)> TogglePinAsync(int userId, int noteId)
+    public async Task<(bool Success, string Message, bool? IsPinned)> TogglePinAsync(string userId, int noteId)
     {
         var note = await _context.Notes
             .FirstOrDefaultAsync(n => n.Id == noteId && n.UserId == userId);
@@ -119,7 +119,7 @@ public class NotesService : INotesService
         return (true, message, note.IsPinned);
     }
 
-    public async Task<(bool Success, int TodayNotes, int PinnedNotes, int SharedNotes)> GetStatsAsync(int userId)
+    public async Task<(bool Success, int TodayNotes, int PinnedNotes, int SharedNotes)> GetStatsAsync(string userId)
     {
         var today = DateTime.Today;
 
@@ -135,8 +135,4 @@ public class NotesService : INotesService
         return (true, todayNotes, pinnedNotes, sharedNotes);
     }
 
-    public Task<(bool Success, string Message)> CreateNoteAsync(int userId, Models.CreateNoteRequest request)
-    {
-        throw new NotImplementedException();
-    }
 }

@@ -1,10 +1,10 @@
 ﻿using Sofia.Web.Models;
 
-namespace Sofia.Web.ViewModels.Psychologist;
+namespace Sofia.Web.ViewModels.PsychologistArea;
 
 public class ClientDataViewModel
 {
-    public User User { get; set; } = null!;
+    public ApplicationUser User { get; set; } = null!;
     public List<Note> Notes { get; set; } = new();
     public List<Goal> Goals { get; set; } = new();
     public List<EmotionEntry> Emotions { get; set; } = new();

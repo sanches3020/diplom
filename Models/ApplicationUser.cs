@@ -30,10 +30,10 @@ public class ApplicationUser : IdentityUser
     // -----------------------------
     // Профиль психолога (1:1)
     // -----------------------------
-    public int? PsychologistProfileId { get; set; }
+    public int? PsychologistId { get; set; }
 
-    [ForeignKey(nameof(PsychologistProfileId))]
-    public virtual PsychologistProfile? PsychologistProfile { get; set; }
+    [ForeignKey(nameof(PsychologistId))]
+    public virtual Psychologist? Psychologist { get; set; }
 
     // -----------------------------
     // Навигационные свойства

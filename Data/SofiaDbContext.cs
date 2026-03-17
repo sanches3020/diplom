@@ -39,12 +39,12 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
         base.OnModelCreating(builder);
 
         // -----------------------------
-        // ApplicationUser → PsychologistProfile (1:1)
+        // ApplicationUser → Psychologist (1:1)
         // -----------------------------
         builder.Entity<ApplicationUser>()
-            .HasOne(u => u.PsychologistProfile)
+            .HasOne(u => u.Psychologist)
             .WithOne(p => p.User)
-            .HasForeignKey<ApplicationUser>(u => u.PsychologistProfileId)
+            .HasForeignKey<ApplicationUser>(u => u.PsychologistId)
             .OnDelete(DeleteBehavior.SetNull);
 
         // -----------------------------

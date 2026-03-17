@@ -1,7 +1,7 @@
 ﻿using Sofia.Web.Controllers;
 using Sofia.Web.Models;
 
-namespace Sofia.Web.ViewModels.Psychologist;
+namespace Sofia.Web.ViewModels.PsychologistArea;
 
 public class PsychologistDashboardViewModel
 {

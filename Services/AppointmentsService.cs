@@ -15,7 +15,7 @@ public class AppointmentsService : IAppointmentsService
         _context = context;
     }
 
-    public async Task<BookAppointmentResult> BookAppointmentAsync(int userId, BookAppointmentRequest request)
+    public async Task<BookAppointmentResult> BookAppointmentAsync(string userId, BookAppointmentRequest request)
     {
         // Парсим дату
         if (!TryParseDate(request.AppointmentDate, out var appointmentDateLocal))

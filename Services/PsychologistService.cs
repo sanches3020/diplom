@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sofia.Web.Data;
 using Sofia.Web.Services.Interfaces;
-using Sofia.Web.ViewModels.Psychologist;
+using Sofia.Web.ViewModels.PsychologistArea;
 
 namespace Sofia.Web.Services;
 
