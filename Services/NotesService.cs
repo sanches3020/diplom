@@ -15,7 +15,7 @@ public class NotesService : INotesService
         _context = context;
     }
 
-    public async Task<List<Note>> GetUserNotesAsync(int userId)
+    public async Task<List<Note>> GetUserNotesAsync(string userId)
     {
         return await _context.Notes
             .Where(n => n.UserId == userId)
@@ -24,39 +24,28 @@ public class NotesService : INotesService
             .ToListAsync();
     }
 
-    public async Task<(bool Success, string Message)> CreateNoteAsync(int userId, DTO.Notes.CreateNoteRequest request)
+    public async Task<(bool Success, string Message)> CreateNoteAsync(
+        string userId,
+        DTO.Notes.CreateNoteRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Content))
             return (false, "Содержание заметки обязательно");
-
-        if (!Enum.TryParse<EmotionType>(request.Emotion, true, out var emotionType))
-            return (false, "Неверный тип эмоции");
-
-        var targetDate = !string.IsNullOrEmpty(request.Date) &&
-                         DateTime.TryParse(request.Date, out var parsedDate)
-            ? parsedDate
-            : DateTime.Today;
 
         var note = new Note
         {
             UserId = userId,
             Content = request.Content,
-            Tags = request.Tags,
-            Emotion = emotionType,
-            Activity = request.Activity,
-            Date = targetDate,
-            IsPinned = request.IsPinned,
-            ShareWithPsychologist = request.ShareWithPsychologist,
-            CreatedAt = DateTime.Now
+            Date = request.Date,
+            CreatedAt = DateTime.UtcNow
         };
 
         _context.Notes.Add(note);
         await _context.SaveChangesAsync();
 
-        return (true, "Заметка создана!");
+        return (true, "Заметка успешно создана");
     }
 
-    public async Task<(bool Success, string Message)> UpdateNoteAsync(int userId, int noteId, UpdateNoteRequest request)
+    public async Task<(bool Success, string Message)> UpdateNoteAsync(string userId, int noteId, UpdateNoteRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Content))
             return (false, "Содержание заметки обязательно");
@@ -90,7 +79,7 @@ public class NotesService : INotesService
         return (true, "Заметка обновлена!");
     }
 
-    public async Task<(bool Success, string Message)> DeleteNoteAsync(int userId, int noteId)
+    public async Task<(bool Success, string Message)> DeleteNoteAsync(string userId, int noteId)
     {
         var note = await _context.Notes
             .FirstOrDefaultAsync(n => n.Id == noteId && n.UserId == userId);
@@ -104,7 +93,7 @@ public class NotesService : INotesService
         return (true, "Заметка удалена!");
     }
 
-    public async Task<(bool Success, string Message, bool? IsPinned)> TogglePinAsync(int userId, int noteId)
+    public async Task<(bool Success, string Message, bool? IsPinned)> TogglePinAsync(string userId, int noteId)
     {
         var note = await _context.Notes
             .FirstOrDefaultAsync(n => n.Id == noteId && n.UserId == userId);
@@ -119,7 +108,7 @@ public class NotesService : INotesService
         return (true, message, note.IsPinned);
     }
 
-    public async Task<(bool Success, int TodayNotes, int PinnedNotes, int SharedNotes)> GetStatsAsync(int userId)
+    public async Task<(bool Success, int TodayNotes, int PinnedNotes, int SharedNotes)> GetStatsAsync(string userId)
     {
         var today = DateTime.Today;
 
@@ -135,7 +124,7 @@ public class NotesService : INotesService
         return (true, todayNotes, pinnedNotes, sharedNotes);
     }
 
-    public Task<(bool Success, string Message)> CreateNoteAsync(int userId, Models.CreateNoteRequest request)
+    public Task<Note> GetNoteAsync(string userId, int id)
     {
         throw new NotImplementedException();
     }

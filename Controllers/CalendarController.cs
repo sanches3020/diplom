@@ -22,9 +22,6 @@ public class CalendarController : Controller
         return User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 
-    // -----------------------------
-    // Календарь
-    // -----------------------------
     [HttpGet("")]
     public async Task<IActionResult> Index(int? year, int? month)
     {
@@ -36,9 +33,6 @@ public class CalendarController : Controller
         return View(vm);
     }
 
-    // -----------------------------
-    // Сохранение эмоции
-    // -----------------------------
     [HttpPost("save-emotion")]
     public async Task<IActionResult> SaveEmotion([FromBody] SaveEmotionRequest? request)
     {
@@ -54,9 +48,6 @@ public class CalendarController : Controller
         return Json(new { success = result.Success, message = result.Message });
     }
 
-    // -----------------------------
-    // Детали дня
-    // -----------------------------
     [HttpGet("day-details")]
     public async Task<IActionResult> DayDetails(string date)
     {
@@ -75,9 +66,6 @@ public class CalendarController : Controller
         return PartialView("_DayDetails", vm);
     }
 
-    // -----------------------------
-    // Статистика эмоций
-    // -----------------------------
     [HttpGet("emotion-stats")]
     public async Task<IActionResult> EmotionStats(int? days)
     {

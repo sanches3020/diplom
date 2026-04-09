@@ -1,4 +1,5 @@
 ﻿using Sofia.Web.ViewModels.Psychologist;
+using Sofia.Web.ViewModels.Psychologists;
 
 namespace Sofia.Web.Services.Interfaces;
 

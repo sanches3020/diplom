@@ -18,22 +18,40 @@ public class UserTestService : IUserTestService
 
     public async Task<UserTestListViewModel> GetTestsAsync()
     {
-        var tests = await _context.Tests.OrderBy(t => t.Name).ToListAsync();
+        var tests = await _context.Tests
+            .AsNoTracking()
+            .OrderBy(t => t.Name)
+            .ToListAsync();
+
         return new UserTestListViewModel { Tests = tests };
     }
 
     public async Task<UserTestAnalyticsViewModel> GetAnalyticsAsync()
     {
-        var tests = await _context.Tests.OrderBy(t => t.Name).ToListAsync();
+        var tests = await _context.Tests
+            .AsNoTracking()
+            .OrderBy(t => t.Name)
+            .ToListAsync();
+
         return new UserTestAnalyticsViewModel { Tests = tests };
     }
 
-    public async Task<object> GetAnalyticsDataAsync(int userId, UserTestAnalyticsRequest req)
+    public async Task<object> GetAnalyticsDataAsync(string userId, UserTestAnalyticsRequest req)
     {
         var results = await _context.TestResults
-            .Where(r => r.UserId == userId && r.TestId == req.TestId && r.TakenAt >= req.From && r.TakenAt <= req.To)
+            .AsNoTracking()
+            .Where(r => r.UserId == userId &&
+                        r.TestId == req.TestId &&
+                        r.TakenAt >= req.From &&
+                        r.TakenAt <= req.To)
             .OrderBy(r => r.TakenAt)
-            .Select(r => new { date = r.TakenAt, score = r.Score, level = r.Level, interpretation = r.Interpretation })
+            .Select(r => new
+            {
+                date = r.TakenAt,
+                score = r.Score,
+                level = r.Level,
+                interpretation = r.Interpretation
+            })
             .ToListAsync();
 
         if (!results.Any())
@@ -43,8 +61,9 @@ public class UserTestService : IUserTestService
         var firstHalf = results.Take(results.Count / 2).DefaultIfEmpty(results.First()).Average(r => r.score);
         var secondHalf = results.Skip(results.Count / 2).DefaultIfEmpty(results.Last()).Average(r => r.score);
 
-        var trend = secondHalf > firstHalf ? "Рост" :
-                    secondHalf < firstHalf ? "Падение" : "Стабильно";
+        var trend = secondHalf > firstHalf ? "Рост"
+                   : secondHalf < firstHalf ? "Падение"
+                   : "Стабильно";
 
         return new { success = true, data = results, avg, trend };
     }
@@ -54,17 +73,22 @@ public class UserTestService : IUserTestService
         var test = await _context.Tests
             .Include(t => t.Questions.OrderBy(q => q.Id))
                 .ThenInclude(q => q.Answers.OrderBy(a => a.Order))
+            .AsNoTracking()
             .FirstOrDefaultAsync(t => t.Id == id);
 
         return test == null ? null : new UserTestTakeViewModel { Test = test };
     }
 
-    public async Task<UserTestHistoryViewModel?> GetHistoryAsync(int userId, int testId)
+    public async Task<UserTestHistoryViewModel?> GetHistoryAsync(string userId, int testId)
     {
-        var test = await _context.Tests.FirstOrDefaultAsync(t => t.Id == testId);
+        var test = await _context.Tests
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == testId);
+
         if (test == null) return null;
 
         var results = await _context.TestResults
+            .AsNoTracking()
             .Where(r => r.UserId == userId && r.TestId == testId)
             .OrderByDescending(r => r.TakenAt)
             .ToListAsync();
@@ -72,7 +96,7 @@ public class UserTestService : IUserTestService
         return new UserTestHistoryViewModel { Test = test, Results = results };
     }
 
-    public async Task<UserTestSubmitResult> SubmitAsync(int userId, int testId, IFormCollection form)
+    public async Task<UserTestSubmitResult> SubmitAsync(string userId, int testId, IFormCollection form)
     {
         var test = await _context.Tests
             .Include(t => t.Questions)
@@ -94,14 +118,28 @@ public class UserTestService : IUserTestService
 
             if (q.Type == AnswerType.Text)
             {
-                answers.Add(new UserAnswer { UserId = userId, QuestionId = q.Id, TextAnswer = value, CreatedAt = DateTime.Now });
+                answers.Add(new UserAnswer
+                {
+                    UserId = userId,
+                    QuestionId = q.Id,
+                    TextAnswer = value,
+                    CreatedAt = DateTime.Now
+                });
                 continue;
             }
 
             foreach (var part in value.Split(',', StringSplitOptions.RemoveEmptyEntries))
             {
                 if (int.TryParse(part, out var ansId))
-                    answers.Add(new UserAnswer { UserId = userId, QuestionId = q.Id, AnswerId = ansId, CreatedAt = DateTime.Now });
+                {
+                    answers.Add(new UserAnswer
+                    {
+                        UserId = userId,
+                        QuestionId = q.Id,
+                        AnswerId = ansId,
+                        CreatedAt = DateTime.Now
+                    });
+                }
             }
         }
 
@@ -111,19 +149,34 @@ public class UserTestService : IUserTestService
             await _context.SaveChangesAsync();
         }
 
-        var selectedIds = answers.Where(a => a.AnswerId.HasValue).Select(a => a.AnswerId!.Value).ToList();
-        var selectedAnswers = await _context.Answers.Where(a => selectedIds.Contains(a.Id)).ToListAsync();
+        var selectedIds = answers
+            .Where(a => a.AnswerId.HasValue)
+            .Select(a => a.AnswerId!.Value)
+            .ToList();
+
+        var selectedAnswers = await _context.Answers
+            .Where(a => selectedIds.Contains(a.Id))
+            .ToListAsync();
+
         var score = selectedAnswers.Sum(a => a.Value);
 
-        var maxScore = test.Questions.Sum(q => q.Answers.Any() ? q.Answers.Max(a => a.Value) : 0);
+        var maxScore = test.Questions.Sum(q =>
+            q.Answers.Any() ? q.Answers.Max(a => a.Value) : 0);
+
         var percent = maxScore > 0 ? (double)score / maxScore * 100 : 0;
 
         var rule = await _context.TestInterpretations
-            .Where(ti => ti.TestId == test.Id && percent >= ti.MinPercent && percent <= ti.MaxPercent)
+            .Where(ti => ti.TestId == test.Id &&
+                         percent >= ti.MinPercent &&
+                         percent <= ti.MaxPercent)
             .FirstOrDefaultAsync();
 
-        var level = rule?.Level ?? (percent < 33 ? "Низкий" : percent < 66 ? "Средний" : "Высокий");
-        var interpretation = rule?.InterpretationText ?? $"{level} уровень";
+        var level = rule?.Level ??
+                    (percent < 33 ? "Низкий" :
+                     percent < 66 ? "Средний" : "Высокий");
+
+        var interpretation = rule?.InterpretationText ??
+                            $"{level} уровень";
 
         var result = new TestResult
         {
@@ -145,15 +198,17 @@ public class UserTestService : IUserTestService
         };
     }
 
-    public async Task<UserTestResultViewModel?> GetResultAsync(int userId, int resultId)
+    public async Task<UserTestResultViewModel?> GetResultAsync(string userId, int resultId)
     {
         var result = await _context.TestResults
             .Include(r => r.Test)
+            .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == resultId && r.UserId == userId);
 
         if (result == null) return null;
 
         var history = await _context.TestResults
+            .AsNoTracking()
             .Where(r => r.UserId == userId && r.TestId == result.TestId)
             .OrderBy(r => r.TakenAt)
             .Select(r => new { r.TakenAt, r.Score })

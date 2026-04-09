@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Данные клиента";
-    var client = ViewBag.Client as Sofia.Web.Models.User;
+    var client = ViewBag.Client as Sofia.Web.Models.ApplicationUser;
     var clientNotes = ViewBag.ClientNotes as List<Sofia.Web.Models.Note>;
     var clientGoals = ViewBag.ClientGoals as List<Sofia.Web.Models.Goal>;
     var clientEmotions = ViewBag.ClientEmotions as List<Sofia.Web.Models.EmotionEntry>;
@@ -9,10 +9,10 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>👤 Данные клиента: @(client?.Username ?? "Неизвестный")</h2>
+    <h2>👤 Данные клиента: @(client?.UserName ?? "Неизвестный")</h2>
     <div>
         <a href="/psychologist/dashboard/@(psychologist?.Id ?? 0)" class="btn btn-outline-secondary">← Назад к дашборду</a>
-        <a href="/psychologist/client/@(client?.Id ?? 0)/results" class="btn btn-outline-info ms-2">📊 Просмотреть тесты</a>
+        <a href="/psychologist/client/@(client?.Id ?? "")/results" class="btn btn-outline-info ms-2">📊 Просмотреть тесты</a>
         <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addRecommendationModal">
             💡 Добавить рекомендацию
         </button>
@@ -29,10 +29,10 @@
             <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar-circle me-3">
-                        <div class="avatar-initial">@(client?.Username?.FirstOrDefault().ToString().ToUpper() ?? "К")</div>
+                        <div class="avatar-initial">@(client?.UserName?.FirstOrDefault().ToString().ToUpper() ?? "К")</div>
                     </div>
                     <div>
-                        <h6 class="mb-0">@(client?.Username ?? "Неизвестный")</h6>
+                        <h6 class="mb-0">@(client?.UserName ?? "Неизвестный")</h6>
                         <small class="text-muted">@(client?.Email ?? "")</small>
                     </div>
                 </div>
@@ -219,7 +219,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addRecommendationModalLabel">Добавить рекомендацию для @(client?.Username ?? "клиента")</h5>
+                <h5 class="modal-title" id="addRecommendationModalLabel">Добавить рекомендацию для @(client?.UserName ?? "клиента")</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -297,14 +297,15 @@ function addRecommendation() {
     const formData = new FormData(form);
     
     const data = {
-        clientId: @(client?.Id ?? 0),
+        clientId: @(client?.Id ?? ""),
         recommendationType: formData.get('recommendationType'),
         recommendationText: formData.get('recommendationText'),
         priority: formData.get('priority')
     };
     
     // Здесь можно добавить отправку рекомендации
-    alert('Рекомендация добавлена для клиента @(client?.Username ?? "клиента")! (Функция будет реализована в следующей версии)');
+    alert('Рекомендация добавлена для клиента @(client?.UserName ?? "клиента")! (Функция будет реализована в следующей версии)');
+
     
     // Закрываем модальное окно
     const modal = bootstrap.Modal.getInstance(document.getElementById('addRecommendationModal'));

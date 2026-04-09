@@ -2,7 +2,7 @@
     ViewData["Title"] = "Дашборд психолога";
     var psychologist = ViewBag.Psychologist as Sofia.Web.Models.Psychologist;
     var appointments = ViewBag.Appointments as List<Sofia.Web.Models.PsychologistAppointment>;
-    var clientData = ViewBag.ClientData as List<Sofia.Web.Controllers.ClientDataViewModel>;
+    var clientData = ViewBag.ClientData as List<Sofia.Web.ViewModels.Psychologist.ClientDataViewModel>;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -73,7 +73,7 @@
                                 <div class="time-badge">@appointment.AppointmentDate.ToString("HH:mm")</div>
                             </div>
                             <div class="appointment-info flex-grow-1">
-                                <h6 class="mb-1">@appointment.User?.Username</h6>
+                                <h6 class="mb-1">@appointment.User?user.Username</h6>
                                 @if (!string.IsNullOrEmpty(appointment.Notes))
                                 {
                                     <p class="small text-muted mb-1">@appointment.Notes</p>
@@ -133,7 +133,7 @@
                                     <tr>
                                         <td>@appointment.AppointmentDate.ToString("dd.MM.yyyy")</td>
                                         <td>@appointment.AppointmentDate.ToString("HH:mm")</td>
-                                        <td>@appointment.User?.Username</td>
+                                        <td>@appointment.User?user.Username</td>
                                         <td>
                                             <span class="badge @GetStatusBadgeClass(appointment.Status)">@GetStatusName(appointment.Status)</span>
                                         </td>

@@ -6,10 +6,10 @@ namespace Sofia.Web.Services.Interfaces;
 
 public interface IGoalsService
 {
-    Task<GoalsListViewModel> GetGoalsAsync(int userId, string? sort);
-    Task<Goal?> GetGoalAsync(int userId, int id);
-    Task<bool> CreateGoalAsync(int userId, CreateGoalRequest request);
-    Task<bool> UpdateGoalAsync(int userId, UpdateGoalRequest request);
-    Task<bool> DeleteGoalAsync(int userId, int id);
-    Task<bool> UpdateProgressAsync(int userId, int id, int progress);
+    Task<GoalsListViewModel> GetGoalsAsync(string userId, string? sort);
+    Task<Goal?> GetGoalAsync(string userId, int id);
+    Task<bool> CreateGoalAsync(string userId, CreateGoalRequest request);
+    Task<bool> UpdateGoalAsync(string userId, UpdateGoalRequest request);
+    Task<bool> DeleteGoalAsync(string userId, int id);
+    Task<bool> UpdateProgressAsync(string userId, int id, int progress);
 }

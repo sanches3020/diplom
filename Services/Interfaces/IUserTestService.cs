@@ -7,11 +7,14 @@ public interface IUserTestService
 {
     Task<UserTestListViewModel> GetTestsAsync();
     Task<UserTestAnalyticsViewModel> GetAnalyticsAsync();
-    Task<object> GetAnalyticsDataAsync(int userId, UserTestAnalyticsRequest request);
+
+    Task<object> GetAnalyticsDataAsync(string userId, UserTestAnalyticsRequest request);
 
     Task<UserTestTakeViewModel?> GetTestForTakingAsync(int id);
-    Task<UserTestHistoryViewModel?> GetHistoryAsync(int userId, int testId);
 
-    Task<UserTestSubmitResult> SubmitAsync(int userId, int testId, IFormCollection form);
-    Task<UserTestResultViewModel?> GetResultAsync(int userId, int resultId);
+    Task<UserTestHistoryViewModel?> GetHistoryAsync(string userId, int testId);
+
+    Task<UserTestSubmitResult> SubmitAsync(string userId, int testId, IFormCollection form);
+
+    Task<UserTestResultViewModel?> GetResultAsync(string userId, int resultId);
 }

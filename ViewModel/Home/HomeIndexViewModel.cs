@@ -1,8 +1,6 @@
-﻿using Sofia.Web.Models;
-
-namespace Sofia.Web.ViewModels.Home;
+﻿namespace Sofia.Web.ViewModels.Home;
 
 public class HomeIndexViewModel
 {
-    public List<Psychologist> Psychologists { get; set; } = new();
+    public List<Sofia.Web.Models.Psychologist> Psychologists { get; set; } = new();
 }

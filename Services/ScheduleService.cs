@@ -16,9 +16,10 @@ public class ScheduleService : IScheduleService
         _context = context;
     }
 
-    public async Task<ScheduleViewModel?> GetScheduleAsync(int psychologistUserId)
+    public async Task<ScheduleViewModel?> GetScheduleAsync(string psychologistUserId)
     {
         var psychologist = await _context.Psychologists
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
 
         if (psychologist == null)
@@ -28,24 +29,20 @@ public class ScheduleService : IScheduleService
         var endDate = startDate.AddDays(14);
 
         var schedules = await _context.PsychologistSchedules
+            .AsNoTracking()
             .Where(s => s.PsychologistId == psychologist.Id)
-            .ToListAsync();
-
-        schedules = schedules
             .OrderBy(s => s.DayOfWeek)
             .ThenBy(s => s.StartTime)
-            .ToList();
+            .ToListAsync();
 
         var slots = await _context.PsychologistTimeSlots
+            .AsNoTracking()
             .Where(t => t.PsychologistId == psychologist.Id &&
                         t.Date >= startDate &&
                         t.Date <= endDate)
-            .ToListAsync();
-
-        slots = slots
             .OrderBy(t => t.Date)
             .ThenBy(t => t.StartTime)
-            .ToList();
+            .ToListAsync();
 
         return new ScheduleViewModel
         {
@@ -57,7 +54,7 @@ public class ScheduleService : IScheduleService
         };
     }
 
-    public async Task<(bool Success, string Message)> AddScheduleAsync(int psychologistUserId, AddScheduleRequest request)
+    public async Task<(bool Success, string Message)> AddScheduleAsync(string psychologistUserId, AddScheduleRequest request)
     {
         var psychologist = await _context.Psychologists
             .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
@@ -97,7 +94,7 @@ public class ScheduleService : IScheduleService
         return (true, "Расписание добавлено");
     }
 
-    public async Task<(bool Success, string Message)> RemoveScheduleAsync(int psychologistUserId, int scheduleId)
+    public async Task<(bool Success, string Message)> RemoveScheduleAsync(string psychologistUserId, int scheduleId)
     {
         var psychologist = await _context.Psychologists
             .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
@@ -117,7 +114,7 @@ public class ScheduleService : IScheduleService
         return (true, "Расписание удалено");
     }
 
-    public async Task<(bool Success, string Message, int SlotsCreated)> AddTimeSlotsAsync(int psychologistUserId, AddTimeSlotRequest request)
+    public async Task<(bool Success, string Message, int SlotsCreated)> AddTimeSlotsAsync(string psychologistUserId, AddTimeSlotRequest request)
     {
         var psychologist = await _context.Psychologists
             .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);

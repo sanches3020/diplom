@@ -1,3 +1,5 @@
+@using Sofia.Web.Helpers;
+
 @{
     ViewData["Title"] = "Мой компаньон";
     var petMood = ViewBag.PetMood as string;
@@ -87,8 +89,12 @@
                 <div class="pet-mood-info">
                     <div class="pet-mood-icon @petMood" id="moodIcon"></div>
                     <div class="pet-mood-text">
-                        <div class="pet-mood-name" id="moodName">@GetMoodName(petMood ?? "neutral")</div>
-                        <div class="pet-mood-description" id="moodDescription">@GetMoodDescription(petMood ?? "neutral")</div>
+                        <div class="pet-mood-name" id="moodName">
+                            @EmotionHelper.GetMoodName(petMood ?? "neutral")
+                        </div>
+                        <div class="pet-mood-description" id="moodDescription">
+                            @EmotionHelper.GetMoodDescription(petMood ?? "neutral")
+                        </div>
                     </div>
                 </div>
             </div>
@@ -100,15 +106,16 @@
                 <h6 class="mb-0">📊 Последние эмоции</h6>
             </div>
             <div class="card-body">
+
                 @if (recentNotes?.Any() == true)
                 {
                     <div class="recent-emotions">
                         @foreach (var note in recentNotes.Take(3))
                         {
                             <div class="emotion-item">
-                                <div class="emotion-emoji">@GetEmotionEmoji(note.Emotion)</div>
+                                <div class="emotion-emoji">@EmotionHelper.GetEmotionEmoji(note.Emotion)</div>
                                 <div class="emotion-info">
-                                    <div class="emotion-name">@GetEmotionName(note.Emotion)</div>
+                                    <div class="emotion-name">@EmotionHelper.GetEmotionName(note.Emotion)</div>
                                     <div class="emotion-time">@note.CreatedAt.ToString("HH:mm")</div>
                                 </div>
                             </div>
@@ -122,9 +129,6 @@
                         <p class="mb-0">Создайте заметку, чтобы питомец узнал о ваших эмоциях</p>
                     </div>
                 }
-            </div>
-        </div>
-
         <!-- Pet Tips -->
         <div class="card">
             <div class="card-header">

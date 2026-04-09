@@ -1,3 +1,5 @@
+@using Sofia.Web.Helpers;
+
 @{
     ViewData["Title"] = "Эмоциональный календарь";
     var currentMonth = (DateTime)ViewBag.CurrentMonth;
@@ -46,42 +48,62 @@
             </div>
 
             <!-- Calendar Days -->
-            @{
-                var startDate = currentMonth.AddDays(-(int)currentMonth.DayOfWeek);
-                if (currentMonth.DayOfWeek == DayOfWeek.Sunday) startDate = startDate.AddDays(-6);
-                else startDate = startDate.AddDays(1);
-            }
+@{
+    var startDate = currentMonth.AddDays(-(int)currentMonth.DayOfWeek);
+    if (currentMonth.DayOfWeek == DayOfWeek.Sunday)
+        startDate = startDate.AddDays(-6);
+    else
+        startDate = startDate.AddDays(1);
+}
 
-            @for (int week = 0; week < 6; week++)
-            {
+@for (int week = 0; week < 6; week++)
+{
                 <div class="calendar-week">
                     @for (int day = 0; day < 7; day++)
                     {
                         var date = startDate.AddDays(week * 7 + day);
-                        var dayNotes = calendarData?.ContainsKey(date) == true ? calendarData[date] : new List<Sofia.Web.Models.Note>();
-                        var dayEmotions = emotionData?.ContainsKey(date) == true ? emotionData[date] : new List<Sofia.Web.Models.EmotionEntry>();
+
+                        var dayNotes = calendarData?.ContainsKey(date) == true
+                        ? calendarData[date]
+                        : new List<Sofia.Web.Models.Note>();
+
+                        var dayEmotions = emotionData?.ContainsKey(date) == true
+                        ? emotionData[date]
+                        : new List<Sofia.Web.Models.EmotionEntry>();
+
                         var isCurrentMonth = date.Month == currentMonth.Month;
                         var isToday = date.Date == DateTime.Today;
-                        var dominantEmotion = GetDominantEmotion(dayEmotions);
+
+                        // ✔ доминирующая эмоция — теперь строго EmotionType
+                        var dominantEmotion = EmotionHelper.GetDominantEmotion(
+                        dayEmotions.Select(e => e.Emotion)
+                        );
 
                         <div class="calendar-day @(isCurrentMonth ? "" : "other-month") @(isToday ? "today" : "")"
-                              data-date="@date.ToString("yyyy-MM-dd")"
-                              style="background-color: @GetEmotionColor(dominantEmotion)"
-                              onclick="openDayDetails('@date.ToString("yyyy-MM-dd")', @(dayNotes.Count + dayEmotions.Count))">
+                             data-date="@date.ToString("yyyy-MM-dd")"
+                             style="background-color: @EmotionHelper.GetEmotionColor(dominantEmotion)"
+                             onclick="openDayDetails('@date.ToString("yyyy-MM-dd")', @(dayNotes.Count + dayEmotions.Count))">
+
                             <div class="calendar-day-number">@date.Day</div>
+
                             @if (dayEmotions.Any())
                             {
                                 <div class="calendar-day-emotions">
                                     @foreach (var emotion in dayEmotions.Take(3))
                                     {
-                                        <span class="emotion-dot" title="@GetEmotionName(emotion.Emotion)">@GetEmotionEmoji(emotion.Emotion)</span>
+                                        <span class="emotion-dot"
+                                              title="@EmotionHelper.GetEmotionName(emotion.Emotion)">
+                                            @EmotionHelper.GetEmotionEmoji(emotion.Emotion)
+                                        </span>
                                     }
+
                                     @if (dayEmotions.Count > 3)
                                     {
                                         <span class="emotion-count">+@(dayEmotions.Count - 3)</span>
                                     }
                                 </div>
                             }
+
                             @if (isToday && !dayEmotions.Any() && !dayNotes.Any())
                             {
                                 <div class="calendar-day-hint">💭</div>
@@ -89,10 +111,8 @@
                         </div>
                     }
                 </div>
-            }
-        </div>
-    </div>
-</div>
+}
+
 
 <!-- Day Details Modal -->
 <div class="modal fade" id="dayDetailsModal" tabindex="-1" aria-labelledby="dayDetailsModalLabel" aria-hidden="true">
@@ -216,16 +236,16 @@
                     @foreach (var emotion in Enum.GetValues<Sofia.Web.Models.EmotionType>())
                     {
                         <div class="col-6 col-md-4">
-                            <button type="button" class="btn btn-outline-secondary w-100 emotion-btn" 
-                                    data-emotion="@emotion" 
-                                    data-emotion-name="@GetEmotionName(emotion)"
-                                    data-emotion-emoji="@GetEmotionEmoji(emotion)">
-                                <span class="me-2">@GetEmotionEmoji(emotion)</span>
-                                @GetEmotionName(emotion)
+                            <button type="button" class="btn btn-outline-secondary w-100 emotion-btn"
+                                    data-emotion="@emotion"
+                                    data-emotion-name="@EmotionHelper.GetEmotionName(emotion)"
+                                    data-emotion-emoji="@EmotionHelper.GetEmotionEmoji(emotion)">
+                                <span class="me-2">@EmotionHelper.GetEmotionEmoji(emotion)</span>
+                                @EmotionHelper.GetEmotionName(emotion)
                             </button>
                         </div>
                     }
-                </div>
+
                 <div class="mt-3">
                     <label for="emotionNote" class="form-label">Добавить заметку к эмоции (необязательно)</label>
                     <textarea class="form-control" id="emotionNote" rows="3" placeholder="Опишите, что вы чувствуете..."></textarea>
@@ -240,7 +260,7 @@
 </div>
 
 <script>
-// Глобальные переменные
+
 window.selectedDate = null;
 window.selectedEmotion = null;
 

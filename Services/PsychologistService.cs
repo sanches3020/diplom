@@ -14,22 +14,25 @@ public class PsychologistService : IPsychologistService
         _context = context;
     }
 
-    public async Task<int?> GetPsychologistIdForUserAsync(int userId)
+    public async Task<int?> GetPsychologistIdForUserAsync(string userId)
     {
         var psychologist = await _context.Psychologists
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.UserId == userId);
 
         return psychologist?.Id;
     }
 
-    public async Task<PsychologistIndexViewModel> GetIndexDataAsync(int userId)
+    public async Task<PsychologistIndexViewModel> GetIndexDataAsync(string userId)
     {
         var psychologists = await _context.Psychologists
+            .AsNoTracking()
             .Where(p => p.IsActive)
             .OrderBy(p => p.Name)
             .ToListAsync();
 
         var recentNotes = await _context.Notes
+            .AsNoTracking()
             .Where(n => n.UserId == userId && n.ShareWithPsychologist)
             .OrderByDescending(n => n.CreatedAt)
             .Take(5)

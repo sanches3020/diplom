@@ -16,7 +16,7 @@ public class PsychologistController : Controller
     private readonly IClientResultsService _clientResultsService;
     private readonly IScheduleService _scheduleService;
 
-    public PsychologistController(
+    public PsychologistController(string userId,
         IPsychologistService psychologistService,
         IClientAnalyticsService clientAnalyticsService,
         IPsychologistProfileService psychologistProfileService,
@@ -44,9 +44,6 @@ public class PsychologistController : Controller
         return User.IsInRole("psychologist");
     }
 
-    // ---------------------------------------------------------
-    // 1) INDEX — список психологов или редирект на Dashboard
-    // ---------------------------------------------------------
     [HttpGet("")]
     public async Task<IActionResult> Index()
     {
@@ -65,9 +62,6 @@ public class PsychologistController : Controller
         return View(vm);
     }
 
-    // ---------------------------------------------------------
-    // 2) DASHBOARD — панель психолога
-    // ---------------------------------------------------------
     [HttpGet("dashboard/{id}")]
     public async Task<IActionResult> Dashboard(int id)
     {
@@ -82,19 +76,13 @@ public class PsychologistController : Controller
         return View("PsychologistDashboard", vm);
     }
 
-    // ---------------------------------------------------------
-    // 3) PROFILE — профиль психолога
-    // ---------------------------------------------------------
     [HttpGet("profile/{id}")]
-    public async Task<IActionResult> Profile(int id)
+    public async Task<IActionResult> Profile(string userId, int id)
     {
         var vm = await _psychologistProfileService.GetProfileAsync(id);
         return vm == null ? NotFound() : View(vm);
     }
 
-    // ---------------------------------------------------------
-    // 4) BOOK APPOINTMENT — запись на консультацию
-    // ---------------------------------------------------------
     [HttpPost("book")]
     public async Task<IActionResult> BookAppointment([FromBody] BookAppointmentRequest request)
     {
@@ -106,9 +94,6 @@ public class PsychologistController : Controller
         return Json(result);
     }
 
-    // ---------------------------------------------------------
-    // 5) REVIEWS — управление отзывами
-    // ---------------------------------------------------------
     [HttpGet("reviews")]
     public async Task<IActionResult> Reviews()
     {
@@ -153,9 +138,6 @@ public class PsychologistController : Controller
         return Json(result);
     }
 
-    // ---------------------------------------------------------
-    // 6) CLIENT RESULTS — результаты тестов клиента
-    // ---------------------------------------------------------
     [HttpGet("client/{clientId}/results")]
     public async Task<IActionResult> ClientResults(int clientId)
     {
@@ -182,9 +164,11 @@ public class PsychologistController : Controller
         return File(result.FileBytes!, "text/csv; charset=utf-8", result.FileName);
     }
 
-    // ---------------------------------------------------------
-    // 7) SCHEDULE — расписание психолога
-    // ---------------------------------------------------------
+    private IActionResult File(object v1, string v2, bool fileName)
+    {
+        throw new NotImplementedException();
+    }
+
     [HttpGet("schedule")]
     public async Task<IActionResult> Schedule()
     {

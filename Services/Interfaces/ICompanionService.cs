@@ -5,10 +5,10 @@ namespace Sofia.Web.Services.Interfaces;
 
 public interface ICompanionService
 {
-    Task<CompanionViewModel> GetCompanionDataAsync(int userId);
-    Task<CompanionStatusResponse> GetStatusAsync(int userId);
+    Task<CompanionViewModel> GetCompanionDataAsync(string userId);
+    Task<CompanionStatusResponse> GetStatusAsync(string userId);
 
-    (int Value, string Message, string Mood) Feed();
-    (int Value, string Message, string Mood) Play();
-    (int Value, string Message, string Mood) Comfort();
+    Task<(int Value, string Message, string Mood)> FeedAsync(string userId);
+    Task<(int Value, string Message, string Mood)> PlayAsync(string userId);
+    Task<(int Value, string Message, string Mood)> ComfortAsync(string userId);
 }

@@ -17,9 +17,12 @@ public class SettingsService : ISettingsService
         _context = context;
     }
 
-    public async Task<SettingsIndexViewModel?> GetIndexAsync(int userId)
+    public async Task<SettingsIndexViewModel?> GetIndexAsync(string userId)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        var user = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
         if (user == null) return null;
 
         var totalNotes = await _context.Notes.CountAsync(n => n.UserId == userId);
@@ -30,12 +33,14 @@ public class SettingsService : ISettingsService
         var totalEmotions = await _context.EmotionEntries.CountAsync(e => e.UserId == userId);
 
         var recentNotes = await _context.Notes
+            .AsNoTracking()
             .Where(n => n.UserId == userId)
             .OrderByDescending(n => n.CreatedAt)
             .Take(5)
             .ToListAsync();
 
         var recentGoals = await _context.Goals
+            .AsNoTracking()
             .Where(g => g.UserId == userId)
             .OrderByDescending(g => g.CreatedAt)
             .Take(3)
@@ -55,9 +60,12 @@ public class SettingsService : ISettingsService
         };
     }
 
-    public async Task<ProfileViewModel?> GetProfileAsync(int userId)
+    public async Task<ProfileViewModel?> GetProfileAsync(string userId)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        var user = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
         if (user == null) return null;
 
         var totalNotes = await _context.Notes.CountAsync(n => n.UserId == userId);
@@ -75,7 +83,7 @@ public class SettingsService : ISettingsService
         };
     }
 
-    public async Task<(bool Success, string Message)> UpdateProfileAsync(int userId, string name, string email, string bio)
+    public async Task<(bool Success, string Message)> UpdateProfileAsync(string userId, string name, string email, string bio)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null) return (false, "Пользователь не найден");
@@ -88,19 +96,22 @@ public class SettingsService : ISettingsService
         return (true, "Профиль успешно обновлён");
     }
 
-    public async Task<(bool Success, string Message, byte[]? Bytes, string? ContentType, string? FileName)> ExportDataAsync(int userId, string format)
+    public async Task<(bool Success, string Message, byte[]? Bytes, string? ContentType, string? FileName)> ExportDataAsync(string userId, string format)
     {
         var notes = await _context.Notes
+            .AsNoTracking()
             .Where(n => n.UserId == userId)
             .OrderByDescending(n => n.CreatedAt)
             .ToListAsync();
 
         var goals = await _context.Goals
+            .AsNoTracking()
             .Where(g => g.UserId == userId)
             .OrderByDescending(g => g.CreatedAt)
             .ToListAsync();
 
         var fileName = $"sofia_export_{DateTime.Now:yyyy-MM-dd}";
+
         if (format == "json")
         {
             var exportData = new

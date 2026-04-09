@@ -16,18 +16,26 @@ public class TestsService : ITestsService
         _context = context;
     }
 
-    public async Task<int?> GetPsychologistIdAsync(int userId)
+    public async Task<int?> GetPsychologistIdAsync(string userId)
     {
-        var psy = await _context.Psychologists.FirstOrDefaultAsync(p => p.UserId == userId);
+        var psy = await _context.Psychologists
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.UserId == userId);
+
         return psy?.Id;
     }
 
-    public async Task<PsychologistTestsListViewModel?> GetTestsAsync(int psychologistUserId)
+    public async Task<PsychologistTestsListViewModel?> GetTestsAsync(string psychologistUserId)
     {
-        var psy = await _context.Psychologists.FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
-        if (psy == null) return null;
+        var psy = await _context.Psychologists
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
+
+        if (psy == null)
+            return null;
 
         var tests = await _context.Tests
+            .AsNoTracking()
             .Where(t => t.CreatedByPsychologistId == psy.Id)
             .OrderByDescending(t => t.Id)
             .ToListAsync();
@@ -38,15 +46,18 @@ public class TestsService : ITestsService
         };
     }
 
-    public async Task<(bool Success, string Message)> CreateTestAsync(int psychologistUserId, CreateTestRequest request)
+    public async Task<(bool Success, string Message)> CreateTestAsync(string psychologistUserId, CreateTestRequest request)
     {
-        var psy = await _context.Psychologists.FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
+        var psy = await _context.Psychologists
+            .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
+
         if (psy == null)
             return (false, "Психолог не найден");
 
         if (string.IsNullOrWhiteSpace(request.Name))
             return (false, "Название обязательно");
 
+        // Создаём тест
         var test = new Test
         {
             Name = request.Name,
@@ -58,6 +69,7 @@ public class TestsService : ITestsService
         _context.Tests.Add(test);
         await _context.SaveChangesAsync();
 
+        // Создаём вопросы и ответы
         foreach (var q in request.Questions)
         {
             var question = new Question
@@ -87,9 +99,11 @@ public class TestsService : ITestsService
         return (true, "Тест создан");
     }
 
-    public async Task<(bool Success, string Message)> DeleteTestAsync(int psychologistUserId, int testId)
+    public async Task<(bool Success, string Message)> DeleteTestAsync(string psychologistUserId, int testId)
     {
-        var psy = await _context.Psychologists.FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
+        var psy = await _context.Psychologists
+            .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
+
         if (psy == null)
             return (false, "Психолог не найден");
 

@@ -14,9 +14,10 @@ public class HomeService : IHomeService
         _context = context;
     }
 
-    public async Task<int?> GetPsychologistIdForUserAsync(int userId)
+    public async Task<int?> GetPsychologistIdForUserAsync(string userId)
     {
         var psychologist = await _context.Psychologists
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.UserId == userId);
 
         return psychologist?.Id;
@@ -25,6 +26,7 @@ public class HomeService : IHomeService
     public async Task<HomeIndexViewModel> GetHomePageDataAsync()
     {
         var psychologists = await _context.Psychologists
+            .AsNoTracking()
             .Where(p => p.IsActive)
             .OrderBy(p => p.Name)
             .ToListAsync();

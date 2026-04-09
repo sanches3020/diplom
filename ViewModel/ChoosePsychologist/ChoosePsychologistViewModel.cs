@@ -1,6 +1,6 @@
 ﻿using Sofia.Web.Models;
 
-namespace Sofia.Web.ViewModels.ChoosePsychologist;
+namespace Sofia.Web.ViewModel.ChoosePsychologist;
 
 public class ChoosePsychologistViewModel
 {

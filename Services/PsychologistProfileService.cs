@@ -2,7 +2,7 @@
 using Sofia.Web.Data;
 using Sofia.Web.Models;
 using Sofia.Web.Services.Interfaces;
-using Sofia.Web.ViewModels.Psychologist;
+using Sofia.Web.ViewModels.Psychologists;
 
 namespace Sofia.Web.Services;
 
@@ -18,6 +18,7 @@ public class PsychologistProfileService : IPsychologistProfileService
     public async Task<PsychologistProfileViewModel?> GetProfileAsync(int psychologistId)
     {
         var psychologist = await _context.Psychologists
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == psychologistId && p.IsActive);
 
         if (psychologist == null)
@@ -25,7 +26,10 @@ public class PsychologistProfileService : IPsychologistProfileService
 
         // Загружаем отзывы
         var reviews = await _context.PsychologistReviews
-            .Where(r => r.PsychologistId == psychologistId && r.IsApproved && r.IsVisible)
+            .AsNoTracking()
+            .Where(r => r.PsychologistId == psychologistId &&
+                        r.IsApproved &&
+                        r.IsVisible)
             .OrderByDescending(r => r.CreatedAt)
             .Take(10)
             .ToListAsync();
@@ -34,12 +38,13 @@ public class PsychologistProfileService : IPsychologistProfileService
 
         foreach (var review in reviews)
         {
-            User? user = null;
+            ApplicationUser? user = null;
 
-            if (review.UserId.HasValue)
+            if (!string.IsNullOrEmpty(review.UserId))
             {
                 user = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Id == review.UserId.Value);
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(u => u.Id == review.UserId);
             }
 
             reviewVMs.Add(new ReviewViewModel
@@ -51,7 +56,10 @@ public class PsychologistProfileService : IPsychologistProfileService
 
         // Доступные слоты
         var availableSlots = await _context.PsychologistTimeSlots
-            .Where(t => t.PsychologistId == psychologistId && t.IsAvailable && !t.IsBooked)
+            .AsNoTracking()
+            .Where(t => t.PsychologistId == psychologistId &&
+                        t.IsAvailable &&
+                        !t.IsBooked)
             .OrderBy(t => t.Date)
             .ThenBy(t => t.StartTime)
             .ToListAsync();

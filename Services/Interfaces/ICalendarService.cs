@@ -5,8 +5,8 @@ namespace Sofia.Web.Services.Interfaces;
 
 public interface ICalendarService
 {
-    Task<CalendarIndexViewModel> GetCalendarAsync(int userId, int? year, int? month);
-    Task<(bool Success, string Message)> SaveEmotionAsync(int userId, SaveEmotionRequest request);
-    Task<DayDetailsViewModel?> GetDayDetailsAsync(int userId, DateTime date);
-    Task<(IEnumerable<object> EmotionStats, int DaysBack)> GetEmotionStatsAsync(int? days);
+    Task<CalendarIndexViewModel> GetCalendarAsync(string userId, int? year, int? month);
+    Task<(bool Success, string Message)> SaveEmotionAsync(string userId, SaveEmotionRequest request);
+    Task<DayDetailsViewModel?> GetDayDetailsAsync(string userId, DateTime date);
+    Task<(IEnumerable<object> EmotionStats, int DaysBack)> GetEmotionStatsAsync(string userId, int? days);
 }

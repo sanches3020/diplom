@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Sofia.Web.Models;
 using Sofia.Web.ViewModels.Auth;
+using Sofia.Web.Data;
 using System.Security.Claims;
 
 namespace Sofia.Web.Controllers;
@@ -12,13 +13,13 @@ public class AuthController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly ApplicationDbContext _db;
+    private readonly SofiaDbContext _db;
 
     public AuthController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         RoleManager<ApplicationRole> roleManager,
-        ApplicationDbContext db)
+        SofiaDbContext db)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -61,9 +62,6 @@ public class AuthController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    // -----------------------------
-    // REGISTER
-    // -----------------------------
     [HttpGet("register")]
     public IActionResult Register() => View(new RegisterViewModel());
 
@@ -123,9 +121,6 @@ public class AuthController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    // -----------------------------
-    // LOGOUT
-    // -----------------------------
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
@@ -133,9 +128,6 @@ public class AuthController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    // -----------------------------
-    // FORGOT PASSWORD
-    // -----------------------------
     [HttpGet("forgot-password")]
     public IActionResult ForgotPassword() => View(new ForgotPasswordViewModel());
 
@@ -158,9 +150,6 @@ public class AuthController : Controller
         return View(model);
     }
 
-    // -----------------------------
-    // RESET PASSWORD
-    // -----------------------------
     [HttpGet("reset-password")]
     public IActionResult ResetPassword(string email, string token)
         => View(new ResetPasswordViewModel { Email = email, Token = token });

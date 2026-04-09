@@ -19,6 +19,7 @@ public class NotificationsService : INotificationsService
     public async Task<NotificationsViewModel> GetNotificationsAsync()
     {
         var notifications = await _context.Notifications
+            .AsNoTracking()
             .Where(n => n.IsActive)
             .OrderByDescending(n => n.CreatedAt)
             .Take(50)
@@ -108,7 +109,9 @@ public class NotificationsService : INotificationsService
             Type = request.Type,
             Priority = request.Priority,
             ScheduledAt = request.ScheduledAt,
-            CreatedAt = DateTime.Now
+            CreatedAt = DateTime.Now,
+            IsActive = true,
+            IsRead = false
         };
 
         _context.Notifications.Add(notification);
@@ -117,7 +120,7 @@ public class NotificationsService : INotificationsService
         return notification.Id;
     }
 
-    public async Task<List<NotificationResponse>> CheckNotificationsAsync()
+    public async Task<List<NotificationResponse>> CheckNotificationsAsync(string userId)
     {
         var now = DateTime.Now;
         var settings = await GetSettingsAsync();
@@ -129,7 +132,7 @@ public class NotificationsService : INotificationsService
             IsTimeMatch(now.TimeOfDay, settings.DailyReminderTime))
         {
             var lastNote = await _context.Notes
-                .Where(n => n.CreatedAt.Date == now.Date)
+                .Where(n => n.UserId == userId && n.CreatedAt.Date == now.Date)
                 .FirstOrDefaultAsync();
 
             if (lastNote == null)
@@ -151,7 +154,7 @@ public class NotificationsService : INotificationsService
             IsTimeMatch(now.TimeOfDay, settings.MoodCheckTime))
         {
             var lastMood = await _context.Notes
-                .Where(n => n.CreatedAt.Date == now.Date)
+                .Where(n => n.UserId == userId && n.CreatedAt.Date == now.Date)
                 .FirstOrDefaultAsync();
 
             if (lastMood == null)
@@ -172,13 +175,16 @@ public class NotificationsService : INotificationsService
         if (settings.GoalReminder)
         {
             var goals = await _context.Goals
-                .Where(g => g.Status == GoalStatus.Active && g.Progress < 100)
+                .Where(g => g.UserId == userId &&
+                            g.Status == GoalStatus.Active &&
+                            g.Progress < 100)
                 .ToListAsync();
 
             foreach (var goal in goals)
             {
                 var lastUpdate = await _context.Notes
-                    .Where(n => n.CreatedAt >= goal.CreatedAt &&
+                    .Where(n => n.UserId == userId &&
+                                n.CreatedAt >= goal.CreatedAt &&
                                 n.Content.Contains(goal.Title))
                     .OrderByDescending(n => n.CreatedAt)
                     .FirstOrDefaultAsync();
@@ -203,7 +209,9 @@ public class NotificationsService : INotificationsService
         if (settings.PracticeReminder)
         {
             var lastPractice = await _context.Notes
-                .Where(n => n.CreatedAt >= now.AddDays(-2) && !string.IsNullOrEmpty(n.Activity))
+                .Where(n => n.UserId == userId &&
+                            n.CreatedAt >= now.AddDays(-2) &&
+                            !string.IsNullOrEmpty(n.Activity))
                 .OrderByDescending(n => n.CreatedAt)
                 .FirstOrDefaultAsync();
 
@@ -228,5 +236,40 @@ public class NotificationsService : INotificationsService
     {
         return now >= target.Add(TimeSpan.FromMinutes(-5)) &&
                now <= target.Add(TimeSpan.FromMinutes(5));
+    }
+
+    public Task<NotificationsViewModel> GetNotificationsAsync(string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> MarkAsReadAsync(string userId, int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> MarkAllAsReadAsync(string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> DismissAsync(string userId, int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<NotificationSettings> GetSettingsAsync(string userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> UpdateSettingsAsync(string userId, UpdateNotificationSettingsRequest request)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<int> CreateNotificationAsync(string userId, CreateNotificationRequest request)
+    {
+        throw new NotImplementedException();
     }
 }

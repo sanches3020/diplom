@@ -2,6 +2,7 @@
 using Sofia.Web.Data;
 using Sofia.Web.Services.Interfaces;
 using Sofia.Web.ViewModels.Psychologist;
+using Sofia.Web.ViewModels.Psychologists;
 
 namespace Sofia.Web.Services;
 
@@ -14,9 +15,11 @@ public class ClientAnalyticsService : IClientAnalyticsService
         _context = context;
     }
 
-    public async Task<PsychologistDashboardViewModel?> GetDashboardAsync(int psychologistUserId)
+    public async Task<PsychologistDashboardViewModel?> GetDashboardAsync(string psychologistUserId)
     {
+        // Находим психолога по UserId (string)
         var psychologist = await _context.Psychologists
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
 
         if (psychologist == null)

@@ -16,18 +16,49 @@ public class GoalsService : IGoalsService
         _context = context;
     }
 
-    public async Task<GoalsListViewModel> GetGoalsAsync(int userId, string? sort)
+    public async Task<GoalsListViewModel> GetGoalsAsync(string userId, string? sort)
     {
-        var query = _context.Goals.Where(g => g.UserId == userId);
+        var query = _context.Goals
+            .Where(g => g.UserId == userId);
 
         // Seed sample goals if none exist
         if (!await query.AnyAsync())
         {
             var samples = new List<Goal>
             {
-                new Goal { Title = "Улучшить сон", Description = "Режим сна", Type = GoalType.Wellness, Status = GoalStatus.Active, Progress = 0, CreatedAt = DateTime.Now, Date = DateTime.Today, TargetDate = DateTime.Today.AddMonths(1), UserId = userId },
-                new Goal { Title = "Сделать презентацию", Description = "Подготовить слайды", Type = GoalType.Professional, Status = GoalStatus.Active, Progress = 0, CreatedAt = DateTime.Now.AddDays(-7), Date = DateTime.Today.AddDays(-7), TargetDate = DateTime.Today.AddDays(14), UserId = userId },
-                new Goal { Title = "Пройти курс", Description = "Онлайн-курс", Type = GoalType.Professional, Status = GoalStatus.Active, Progress = 0, CreatedAt = DateTime.Now, Date = DateTime.Today, TargetDate = DateTime.Today.AddMonths(2), UserId = userId }
+                new Goal {
+                    Title = "Улучшить сон",
+                    Description = "Режим сна",
+                    Type = GoalType.Wellness,
+                    Status = GoalStatus.Active,
+                    Progress = 0,
+                    CreatedAt = DateTime.Now,
+                    Date = DateTime.Today,
+                    TargetDate = DateTime.Today.AddMonths(1),
+                    UserId = userId
+                },
+                new Goal {
+                    Title = "Сделать презентацию",
+                    Description = "Подготовить слайды",
+                    Type = GoalType.Professional,
+                    Status = GoalStatus.Active,
+                    Progress = 0,
+                    CreatedAt = DateTime.Now.AddDays(-7),
+                    Date = DateTime.Today.AddDays(-7),
+                    TargetDate = DateTime.Today.AddDays(14),
+                    UserId = userId
+                },
+                new Goal {
+                    Title = "Пройти курс",
+                    Description = "Онлайн-курс",
+                    Type = GoalType.Professional,
+                    Status = GoalStatus.Active,
+                    Progress = 0,
+                    CreatedAt = DateTime.Now,
+                    Date = DateTime.Today,
+                    TargetDate = DateTime.Today.AddMonths(2),
+                    UserId = userId
+                }
             };
 
             _context.Goals.AddRange(samples);
@@ -56,14 +87,14 @@ public class GoalsService : IGoalsService
         };
     }
 
-    public async Task<Goal?> GetGoalAsync(int userId, int id)
+    public async Task<Goal?> GetGoalAsync(string userId, int id)
     {
         return await _context.Goals
             .Where(g => g.Id == id && g.UserId == userId)
             .FirstOrDefaultAsync();
     }
 
-    public async Task<bool> CreateGoalAsync(int userId, CreateGoalRequest request)
+    public async Task<bool> CreateGoalAsync(string userId, CreateGoalRequest request)
     {
         var goal = new Goal
         {
@@ -83,7 +114,7 @@ public class GoalsService : IGoalsService
         return true;
     }
 
-    public async Task<bool> UpdateGoalAsync(int userId, UpdateGoalRequest request)
+    public async Task<bool> UpdateGoalAsync(string userId, UpdateGoalRequest request)
     {
         var goal = await GetGoalAsync(userId, request.Id);
         if (goal == null) return false;
@@ -100,7 +131,7 @@ public class GoalsService : IGoalsService
         return true;
     }
 
-    public async Task<bool> DeleteGoalAsync(int userId, int id)
+    public async Task<bool> DeleteGoalAsync(string userId, int id)
     {
         var goal = await GetGoalAsync(userId, id);
         if (goal == null) return false;
@@ -110,7 +141,7 @@ public class GoalsService : IGoalsService
         return true;
     }
 
-    public async Task<bool> UpdateProgressAsync(int userId, int id, int progress)
+    public async Task<bool> UpdateProgressAsync(string userId, int id, int progress)
     {
         var goal = await GetGoalAsync(userId, id);
         if (goal == null) return false;

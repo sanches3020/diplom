@@ -17,7 +17,9 @@ public class PracticesService : IPracticesService
 
     public async Task<PracticesListViewModel> GetPracticesAsync(string? category, int? duration)
     {
-        var query = _context.Practices.Where(p => p.IsActive);
+        var query = _context.Practices
+            .AsNoTracking()
+            .Where(p => p.IsActive);
 
         if (!string.IsNullOrEmpty(category) &&
             Enum.TryParse<PracticeCategory>(category, out var cat))
@@ -46,6 +48,8 @@ public class PracticesService : IPracticesService
 
     public async Task<Practice?> GetPracticeAsync(int id)
     {
-        return await _context.Practices.FindAsync(id);
+        return await _context.Practices
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 }

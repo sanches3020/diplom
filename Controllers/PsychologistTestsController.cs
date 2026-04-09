@@ -25,9 +25,6 @@ public class PsychologistTestsController : Controller
         return User.IsInRole("psychologist");
     }
 
-    // ---------------------------------------------------------
-    // LIST TESTS
-    // ---------------------------------------------------------
     [HttpGet("")]
     public async Task<IActionResult> Index()
     {
@@ -42,9 +39,6 @@ public class PsychologistTestsController : Controller
         return View(vm);
     }
 
-    // ---------------------------------------------------------
-    // CREATE TEST (VIEW)
-    // ---------------------------------------------------------
     [HttpGet("create")]
     public IActionResult Create()
     {
@@ -54,9 +48,6 @@ public class PsychologistTestsController : Controller
         return View();
     }
 
-    // ---------------------------------------------------------
-    // CREATE TEST (POST)
-    // ---------------------------------------------------------
     [HttpPost("create")]
     public async Task<IActionResult> Create([FromBody] CreateTestRequest request)
     {
@@ -68,9 +59,6 @@ public class PsychologistTestsController : Controller
         return Json(result);
     }
 
-    // ---------------------------------------------------------
-    // DELETE TEST
-    // ---------------------------------------------------------
     [HttpPost("delete/{id}")]
     public async Task<IActionResult> Delete(int id)
     {

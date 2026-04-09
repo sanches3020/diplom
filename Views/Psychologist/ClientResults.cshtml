@@ -1,15 +1,15 @@
 @{
     ViewData["Title"] = "Результаты тестов клиента";
-    var client = ViewBag.Client as Sofia.Web.Models.User;
+    var client = ViewBag.Client as Sofia.Web.Models.ApplicationUser;
     var psychologist = ViewBag.Psychologist as Sofia.Web.Models.Psychologist;
     var results = Model as List<Sofia.Web.Models.TestResult> ?? new List<Sofia.Web.Models.TestResult>();
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>📊 Результаты тестов: @(client?.Username ?? "Неизвестный")</h2>
+    <h2>📊 Результаты тестов: @(client?.UserName ?? "Неизвестный")</h2>
     <div>
         <a href="/psychologist/dashboard/@(psychologist?.Id ?? 0)" class="btn btn-outline-secondary">← Назад к дашборду</a>
-        <a href="/psychologist/client/@(client?.Id ?? 0)/results/csv" class="btn btn-outline-success ms-2">⬇ Экспорт CSV</a>
+        <a href="/psychologist/client/@(client?.Id ?? "")/results/csv" class="btn btn-outline-success ms-2">⬇ Экспорт CSV</a>
     </div>
 </div>
 

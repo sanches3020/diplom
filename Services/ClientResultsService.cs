@@ -15,9 +15,11 @@ public class ClientResultsService : IClientResultsService
         _context = context;
     }
 
-    public async Task<ClientResultsViewModel?> GetClientResultsAsync(int psychologistUserId, int clientId)
+    public async Task<ClientResultsViewModel?> GetClientResultsAsync(string psychologistUserId, string clientUserId)
     {
+        // Находим психолога по UserId
         var psychologist = await _context.Psychologists
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
 
         if (psychologist == null)
@@ -25,17 +27,22 @@ public class ClientResultsService : IClientResultsService
 
         // Проверяем, что клиент действительно связан с психологом
         var hasRelation = await _context.PsychologistAppointments
-            .AnyAsync(a => a.PsychologistId == psychologist.Id && a.UserId == clientId);
+            .AnyAsync(a => a.PsychologistId == psychologist.Id && a.UserId == clientUserId);
 
         if (!hasRelation)
             return null;
 
-        var client = await _context.Users.FirstOrDefaultAsync(u => u.Id == clientId);
+        // Находим клиента (Identity User)
+        var client = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == clientUserId);
+
         if (client == null)
             return null;
 
+        // Получаем результаты тестов
         var results = await _context.TestResults
-            .Where(r => r.UserId == clientId)
+            .Where(r => r.UserId == clientUserId)
             .Include(r => r.Test)
             .OrderByDescending(r => r.TakenAt)
             .ToListAsync();
@@ -48,9 +55,14 @@ public class ClientResultsService : IClientResultsService
         };
     }
 
-    public async Task<(bool Success, string Message, byte[]? FileBytes, string? FileName)> GetClientResultsCsvAsync(int psychologistUserId, int clientId)
+    public Task<ClientResultsViewModel?> GetClientResultsAsync(string psychologistUserId, int clientId)
     {
-        var vm = await GetClientResultsAsync(psychologistUserId, clientId);
+        throw new NotImplementedException();
+    }
+
+    public async Task<(bool Success, string Message, byte[]? FileBytes, string? FileName)> GetClientResultsCsvAsync(string psychologistUserId, string clientUserId)
+    {
+        var vm = await GetClientResultsAsync(psychologistUserId, clientUserId);
         if (vm == null)
             return (false, "Доступ запрещён или данные не найдены", null, null);
 
@@ -70,8 +82,13 @@ public class ClientResultsService : IClientResultsService
         }
 
         var bytes = Encoding.UTF8.GetBytes(sb.ToString());
-        var fileName = $"client_{clientId}_results_{DateTime.Now:yyyyMMdd}.csv";
+        var fileName = $"client_{clientUserId}_results_{DateTime.Now:yyyyMMdd}.csv";
 
         return (true, "CSV сформирован", bytes, fileName);
+    }
+
+    public Task<ClientResultsCsvResponse> GetClientResultsCsvAsync(string psychologistUserId, int clientId)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Sofia.Web.Data;
 using Sofia.Web.DTO.Auth;
-using Sofia.Web.Helpers;
 using Sofia.Web.Models;
 using Sofia.Web.Services.Interfaces;
 
@@ -9,43 +9,63 @@ namespace Sofia.Web.Services;
 
 public class AuthService : IAuthService
 {
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly SofiaDbContext _context;
 
-    public AuthService(SofiaDbContext context)
+    public AuthService(
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        SofiaDbContext context)
     {
+        _userManager = userManager;
+        _signInManager = signInManager;
         _context = context;
     }
 
-    public async Task<(bool Success, string Message, int? UserId, string? Role)> LoginAsync(LoginRequest request)
+    // -----------------------------
+    // LOGIN
+    // -----------------------------
+    public async Task<(bool Success, string Message, string? UserId, string? Role)> LoginAsync(LoginRequest request)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Username == request.Username && u.IsActive);
+        var user = await _userManager.Users
+            .FirstOrDefaultAsync(u => u.UserName == request.Username);
 
-        if (user == null || !PasswordHasher.Verify(request.Password, user.Password))
+        if (user == null)
             return (false, "Неверное имя пользователя или пароль", null, null);
 
-        return (true, "Успешный вход", user.Id, user.Role);
+        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+
+        if (!result.Succeeded)
+            return (false, "Неверное имя пользователя или пароль", null, null);
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var role = roles.FirstOrDefault();
+
+        return (true, "Успешный вход", user.Id, role);
     }
 
-    public async Task<(bool Success, string Message, int? UserId, string? Role, int? PsychologistId)> RegisterAsync(RegisterRequest request)
+    // -----------------------------
+    // REGISTER
+    // -----------------------------
+    public async Task<(bool Success, string Message, string? UserId, string? Role, int? PsychologistId)> RegisterAsync(RegisterRequest request)
     {
-        if (await _context.Users.AnyAsync(u => u.Username == request.Username))
+        var existingUser = await _userManager.FindByNameAsync(request.Username);
+        if (existingUser != null)
             return (false, "Пользователь с таким именем уже существует", null, null, null);
 
-        if (await _context.Users.AnyAsync(u => u.Email == request.Email))
-            return (false, "Пользователь с таким email уже существует", null, null, null);
-
-        var user = new User
+        var user = new ApplicationUser
         {
-            Username = request.Username,
-            Email = request.Email,
-            Password = PasswordHasher.Hash(request.Password),
-            Role = request.Role,
-            CreatedAt = DateTime.Now
+            UserName = request.Username,
+            Email = request.Email
         };
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        var createResult = await _userManager.CreateAsync(user, request.Password);
+
+        if (!createResult.Succeeded)
+            return (false, string.Join("; ", createResult.Errors.Select(e => e.Description)), null, null, null);
+
+        await _userManager.AddToRoleAsync(user, request.Role);
 
         int? psychologistId = null;
 
@@ -72,47 +92,47 @@ public class AuthService : IAuthService
             await _context.SaveChangesAsync();
 
             psychologistId = psychologist.Id;
-
-            // базовое расписание
-            var schedules = Enumerable.Range(1, 5).Select(day => new PsychologistSchedule
-            {
-                PsychologistId = psychologist.Id,
-                DayOfWeek = (DayOfWeek)day,
-                StartTime = new TimeSpan(10, 0, 0),
-                EndTime = new TimeSpan(18, 0, 0),
-                IsAvailable = true,
-                CreatedAt = DateTime.Now
-            });
-
-            _context.PsychologistSchedules.AddRange(schedules);
-            await _context.SaveChangesAsync();
         }
 
-        return (true, "Регистрация успешна", user.Id, user.Role, psychologistId);
+        return (true, "Регистрация успешна", user.Id, request.Role, psychologistId);
     }
 
-    public async Task<(bool Success, string Message, int? UserId, string? Email)> ForgotPasswordAsync(ForgotPasswordRequest request)
+    // -----------------------------
+    // SEND PASSWORD RESET EMAIL
+    // -----------------------------
+    public async Task<(bool Success, string Message)> SendPasswordResetEmailAsync(string email)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u =>
-                (u.Email == request.EmailOrUsername || u.Username == request.EmailOrUsername)
-                && u.IsActive);
+        var user = await _userManager.FindByEmailAsync(email);
 
         if (user == null)
-            return (true, "Если аккаунт существует, мы отправим инструкции", null, null);
+            return (false, "Пользователь с таким email не найден");
 
-        return (true, "Инструкции отправлены", user.Id, user.Email);
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var encodedToken = Uri.EscapeDataString(token);
+
+        // Формируем ссылку (замени домен на свой)
+        var resetLink = $"https://your-domain.com/auth/reset-password?email={email}&token={encodedToken}";
+
+        // TODO: отправка email через EmailService
+        Console.WriteLine($"Password reset link for {email}: {resetLink}");
+
+        return (true, "Ссылка для сброса пароля отправлена");
     }
 
-    public async Task<(bool Success, string Message)> ResetPasswordAsync(int userId, ResetPasswordRequest request)
+    // -----------------------------
+    // RESET PASSWORD
+    // -----------------------------
+    public async Task<(bool Success, string Message)> ResetPasswordAsync(string email, string token, string newPassword)
     {
-        var user = await _context.Users.FindAsync(userId);
+        var user = await _userManager.FindByEmailAsync(email);
 
         if (user == null)
             return (false, "Пользователь не найден");
 
-        user.Password = PasswordHasher.Hash(request.Password);
-        await _context.SaveChangesAsync();
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+        if (!result.Succeeded)
+            return (false, string.Join("; ", result.Errors.Select(e => e.Description)));
 
         return (true, "Пароль успешно изменён");
     }

@@ -16,27 +16,31 @@ public class CalendarService : ICalendarService
         _context = context;
     }
 
-    public async Task<CalendarIndexViewModel> GetCalendarAsync(int userId, int? year, int? month)
+    public async Task<CalendarIndexViewModel> GetCalendarAsync(string userId, int? year, int? month)
     {
         var targetDate = DateTime.Now;
+
         if (year.HasValue && month.HasValue)
             targetDate = new DateTime(year.Value, month.Value, 1);
 
         var firstDayOfMonth = new DateTime(targetDate.Year, targetDate.Month, 1);
-        var startDate = firstDayOfMonth.AddDays(-(int)firstDayOfMonth.DayOfWeek);
+
+        var startDate = firstDayOfMonth.AddDays(-(int)firstDayOfMonth.DayOfWeek + 1);
         if (firstDayOfMonth.DayOfWeek == DayOfWeek.Sunday)
             startDate = startDate.AddDays(-6);
-        else
-            startDate = startDate.AddDays(1);
 
         var endDate = startDate.AddDays(41);
 
         var notes = await _context.Notes
-            .Where(n => n.UserId == userId && n.Date.Date >= startDate.Date && n.Date.Date < endDate.Date)
+            .Where(n => n.UserId == userId &&
+                        n.Date.Date >= startDate.Date &&
+                        n.Date.Date < endDate.Date)
             .ToListAsync();
 
         var emotions = await _context.EmotionEntries
-            .Where(e => e.UserId == userId && e.Date.Date >= startDate.Date && e.Date.Date < endDate.Date)
+            .Where(e => e.UserId == userId &&
+                        e.Date.Date >= startDate.Date &&
+                        e.Date.Date < endDate.Date)
             .ToListAsync();
 
         var days = new List<CalendarDayViewModel>();
@@ -44,6 +48,7 @@ public class CalendarService : ICalendarService
         for (var date = startDate.Date; date < endDate.Date; date = date.AddDays(1))
         {
             var dateKey = date.Date;
+
             days.Add(new CalendarDayViewModel
             {
                 Date = dateKey,
@@ -61,7 +66,7 @@ public class CalendarService : ICalendarService
         };
     }
 
-    public async Task<(bool Success, string Message)> SaveEmotionAsync(int userId, DTO.Calendar.SaveEmotionRequest request)
+    public async Task<(bool Success, string Message)> SaveEmotionAsync(string userId, DTO.Calendar.SaveEmotionRequest request)
     {
         if (string.IsNullOrEmpty(request.Date))
             return (false, "Дата не указана");
@@ -95,7 +100,7 @@ public class CalendarService : ICalendarService
         return (true, "Эмоция сохранена!");
     }
 
-    public async Task<DayDetailsViewModel?> GetDayDetailsAsync(int userId, DateTime date)
+    public async Task<DayDetailsViewModel?> GetDayDetailsAsync(string userId, DateTime date)
     {
         var targetDate = date.Date;
 
@@ -122,17 +127,22 @@ public class CalendarService : ICalendarService
         };
     }
 
-    public async Task<(IEnumerable<object> EmotionStats, int DaysBack)> GetEmotionStatsAsync(int? days)
-    {
-        var daysBack = days ?? 30;
-        var startDate = DateTime.Now.AddDays(-daysBack);
+public async Task<(IEnumerable<object> EmotionStats, int DaysBack)> GetEmotionStatsAsync(string userId, int? days)
+{
+    var daysBack = days ?? 30;
+    var startDate = DateTime.Now.AddDays(-daysBack);
 
-        var emotionStats = await _context.Notes
-            .Where(n => n.CreatedAt >= startDate)
-            .GroupBy(n => n.Emotion)
-            .Select(g => new { Emotion = g.Key, Count = g.Count() })
-            .ToListAsync();
+    var emotionStats = await _context.EmotionEntries
+        .Where(e => e.UserId == userId && e.CreatedAt >= startDate)
+        .GroupBy(e => e.Emotion)
+        .Select(g => new
+        {
+            Emotion = g.Key.ToString(),
+            Count = g.Count()
+        })
+        .ToListAsync();
 
-        return (emotionStats, daysBack);
-    }
+    return (emotionStats, daysBack);
+}
+
 }

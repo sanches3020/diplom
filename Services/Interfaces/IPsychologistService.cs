@@ -4,6 +4,6 @@ namespace Sofia.Web.Services.Interfaces;
 
 public interface IPsychologistService
 {
-    Task<int?> GetPsychologistIdForUserAsync(int userId);
-    Task<PsychologistIndexViewModel> GetIndexDataAsync(int userId);
+    Task<int?> GetPsychologistIdForUserAsync(string userId);
+    Task<PsychologistIndexViewModel> GetIndexDataAsync(string userId);
 }

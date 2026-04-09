@@ -1,3 +1,5 @@
+@using Sofia.Web.Helpers
+
 @{
     ViewData["Title"] = "Отчет";
     dynamic reportData = ViewBag.ReportData;
@@ -89,14 +91,14 @@
                         <div class="emotion-bar mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <div class="d-flex align-items-center">
-                                    <div class="emotion-legend-color me-2" style="background-color:@GetEmotionColor(emotion.Emotion)"></div>
-                                    <span class="small">@GetEmotionEmoji(emotion.Emotion) @GetEmotionName(emotion.Emotion)</span>
+                                    <div class="emotion-legend-color me-2" style="background-color:@EmotionHelper.GetEmotionColor(emotion.Emotion)"></div>
+                                    <span class="small">@EmotionHelper.GetEmotionEmoji(emotion.Emotion) @@EmotionHelper.GetEmotionName(emotion.Emotion)</span>
                                 </div>
                                 <span class="small text-muted">@emotion.Count (@percentage.ToString("F1")%)</span>
                             </div>
                             <div class="progress" style="height: 8px;">
                                 <div class="progress-bar"
-                                     style="width:@percentage%; background-color:@GetEmotionColor(emotion.Emotion)">
+                                     style="width:@percentage%; background-color:@EmotionHelper.GetEmotionColor(emotion.Emotion)">
                                 </div>
                             </div>
                         </div>
@@ -111,8 +113,8 @@
                         {
                             <div class="alert alert-info">
                                 <strong>Самая частая эмоция:</strong><br>
-                                @GetEmotionEmoji(reportData.Summary.MostFrequentEmotion)
-                                @GetEmotionName(reportData.Summary.MostFrequentEmotion)
+                                @EmotionHelper.GetEmotionEmoji(reportData.Summary.MostFrequentEmotion)
+                                @EmotionHelper.GetEmotionName(reportData.Summary.MostFrequentEmotion)
                             </div>
                         }
                     </div>
@@ -213,6 +215,3 @@
         </div>
     </div>
 }
-
-<!-- Mood Trends -->
-@if (((IEnumerable<dynamic>)reportData.MoodTrends).

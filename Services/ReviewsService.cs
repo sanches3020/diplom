@@ -14,17 +14,19 @@ public class ReviewsService : IReviewsService
         _context = context;
     }
 
-    public async Task<PsychologistReviewsViewModel?> GetReviewsAsync(int psychologistUserId)
+    public async Task<PsychologistReviewsViewModel?> GetReviewsAsync(string psychologistUserId)
     {
         var psychologist = await _context.Psychologists
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
 
         if (psychologist == null)
             return null;
 
         var reviews = await _context.PsychologistReviews
+            .AsNoTracking()
             .Where(r => r.PsychologistId == psychologist.Id)
-            .Include(r => r.User)
+            .Include(r => r.User) // ApplicationUser
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync();
 
@@ -35,7 +37,7 @@ public class ReviewsService : IReviewsService
         };
     }
 
-    public async Task<(bool Success, string Message)> ApproveReviewAsync(int psychologistUserId, int reviewId)
+    public async Task<(bool Success, string Message)> ApproveReviewAsync(string psychologistUserId, int reviewId)
     {
         var psychologist = await _context.Psychologists
             .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
@@ -57,7 +59,7 @@ public class ReviewsService : IReviewsService
         return (true, "Отзыв одобрен");
     }
 
-    public async Task<(bool Success, string Message)> RejectReviewAsync(int psychologistUserId, int reviewId)
+    public async Task<(bool Success, string Message)> RejectReviewAsync(string psychologistUserId, int reviewId)
     {
         var psychologist = await _context.Psychologists
             .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);
@@ -79,7 +81,7 @@ public class ReviewsService : IReviewsService
         return (true, "Отзыв отклонён");
     }
 
-    public async Task<(bool Success, string Message)> DeleteReviewAsync(int psychologistUserId, int reviewId)
+    public async Task<(bool Success, string Message)> DeleteReviewAsync(string psychologistUserId, int reviewId)
     {
         var psychologist = await _context.Psychologists
             .FirstOrDefaultAsync(p => p.UserId == psychologistUserId);

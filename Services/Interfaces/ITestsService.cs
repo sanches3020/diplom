@@ -5,11 +5,11 @@ namespace Sofia.Web.Services.Interfaces;
 
 public interface ITestsService
 {
-    Task<int?> GetPsychologistIdAsync(int userId);
+    Task<int?> GetPsychologistIdAsync(string userId);
 
-    Task<PsychologistTestsListViewModel?> GetTestsAsync(int psychologistUserId);
+    Task<PsychologistTestsListViewModel?> GetTestsAsync(string psychologistUserId);
 
-    Task<(bool Success, string Message)> CreateTestAsync(int psychologistUserId, CreateTestRequest request);
+    Task<(bool Success, string Message)> CreateTestAsync(string psychologistUserId, CreateTestRequest request);
 
-    Task<(bool Success, string Message)> DeleteTestAsync(int psychologistUserId, int testId);
+    Task<(bool Success, string Message)> DeleteTestAsync(string psychologistUserId, int testId);
 }
