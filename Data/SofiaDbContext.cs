@@ -68,9 +68,19 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
         base.OnModelCreating(builder);
 
         // -----------------------------
+<<<<<<< HEAD
         // ВАЖНО: УБРАНО HasConversion (pgcrypto нельзя так использовать)
         // Шифрование выполняется на уровне сервиса через DbFunction
         // -----------------------------
+=======
+        // ApplicationUser → Psychologist (1:1)
+        // -----------------------------
+        builder.Entity<ApplicationUser>()
+            .HasOne(u => u.Psychologist)
+            .WithOne(p => p.User)
+            .HasForeignKey<ApplicationUser>(u => u.PsychologistId)
+            .OnDelete(DeleteBehavior.SetNull);
+>>>>>>> f16d9d638339ecefc9454ffc3fa28f05066aabab
 
         // -----------------------------
         // Note → User

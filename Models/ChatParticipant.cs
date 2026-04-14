@@ -1,14 +1,31 @@
-﻿using Sofia.Web.Models;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public class ChatParticipant
+namespace Sofia.Web.Models
 {
-    public int Id { get; set; }
+    public class ChatParticipant
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
-    public int RoomId { get; set; }
-    public ChatRoom Room { get; set; } = null!;
+        // Комната
+        [Required]
+        public int RoomId { get; set; }
 
-    public string UserId { get; set; } = null!;
-    public ApplicationUser User { get; set; } = null!;
+        [ForeignKey(nameof(RoomId))]
+        public virtual ChatRoom Room { get; set; } = null!;
 
-    public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
+        // Пользователь
+        [Required]
+        [StringLength(100)]
+        public string UserId { get; set; } = null!;
+
+        [ForeignKey(nameof(UserId))]
+        public virtual ApplicationUser User { get; set; } = null!;
+
+        // Когда пользователь присоединился к комнате
+        public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
+    }
 }

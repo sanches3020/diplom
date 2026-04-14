@@ -1,17 +1,43 @@
-﻿namespace Sofia.Web.Models;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-public class ChatMessage
+namespace Sofia.Web.Models
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public class ChatMessage
+    {
+        // Уникальный идентификатор сообщения
+        [Key]
+        [StringLength(36)]
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
-    public string Room { get; set; } = "general";
+        // Комната (general, support, psychology, random)
+        [Required]
+        [StringLength(50)]
+        public string Room { get; set; } = "general";
 
-    public string UserId { get; set; } = null!;
-    public string UserName { get; set; } = null!;
-    public string AvatarCode { get; set; } = null!; // анонимный аватар
+        // Пользователь
+        [Required]
+        [StringLength(100)]
+        public string UserId { get; set; } = null!;
 
-    public string Text { get; set; } = null!;
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        [Required]
+        [StringLength(100)]
+        public string UserName { get; set; } = null!;
 
-    public bool IsSystem { get; set; } // для сообщений о входе/выходе
+        // Аватар-код (цвет + инициалы)
+        [Required]
+        [StringLength(20)]
+        public string AvatarCode { get; set; } = null!;
+
+        // Текст сообщения
+        [Required]
+        [StringLength(2000)]
+        public string Text { get; set; } = null!;
+
+        // Время отправки
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+
+        // Системное сообщение (вход/выход)
+        public bool IsSystem { get; set; } = false;
+    }
 }

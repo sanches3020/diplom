@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sofia.Web.Models
@@ -9,24 +10,33 @@ namespace Sofia.Web.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        // Пользователь
-        public string UserId { get; set; } = null!;
-        public ApplicationUser User { get; set; } = null!;
-
-        // Психолог
+        // Психолог (обязательный)
+        [Required]
         public int PsychologistId { get; set; }
-        public Psychologist Psychologist { get; set; } = null!;
+
+        [ForeignKey(nameof(PsychologistId))]
+        public virtual Psychologist Psychologist { get; set; } = null!;
+
+        // Пользователь (обязательный)
+        [Required]
+        public string UserId { get; set; } = null!;
+
+        [ForeignKey(nameof(UserId))]
+        public virtual ApplicationUser User { get; set; } = null!;
 
         // Дата и время записи
+        [Required]
         public DateTime AppointmentDate { get; set; }
 
-        // Когда создана запись
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        // Заметки пользователя
+        [StringLength(1000)]
+        public string? Notes { get; set; }
 
-        // Статус записи (ENUM!)
+        // Статус записи (ENUM)
+        [Required]
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Scheduled;
 
-        // Заметки пользователя
-        public string? Notes { get; set; }
+        // Когда создана запись
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

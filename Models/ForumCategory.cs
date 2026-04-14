@@ -1,4 +1,6 @@
-﻿public class ForumCategory
+﻿using Sofia.Web.Models;
+
+public class ForumCategory
 {
     public int Id { get; set; }
     public string Title { get; set; } = null!;

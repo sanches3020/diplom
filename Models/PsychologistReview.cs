@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sofia.Web.Models
@@ -16,22 +17,24 @@ namespace Sofia.Web.Models
         public virtual ApplicationUser? User { get; set; }
 
         // К какому психологу относится отзыв
+        [Required]
         public int PsychologistId { get; set; }
 
         [ForeignKey(nameof(PsychologistId))]
         public virtual Psychologist Psychologist { get; set; } = null!;
 
-        // Заголовок отзыва (добавлено)
+        // Заголовок отзыва (опционально)
         [StringLength(200)]
         public string? Title { get; set; }
 
-        // Основной текст отзыва (переименовано под Razor)
+        // Основной текст отзыва
         [Required]
         [StringLength(1000)]
         public string Comment { get; set; } = string.Empty;
 
         // Оценка (1–5)
-        public int Rating { get; set; }
+        [Range(1, 5)]
+        public int Rating { get; set; } = 5;
 
         // Модерация
         public bool IsApproved { get; set; } = false;
@@ -39,6 +42,6 @@ namespace Sofia.Web.Models
 
         // Даты
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
     }
 }
