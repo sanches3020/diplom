@@ -1,0 +1,52 @@
+.profile-menu {
+  position: relative;
+}
+
+.profile-button {
+  min-width: 52px;
+  min-height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(108, 99, 255, 0.16);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-button:hover {
+  background: var(--color-surface-soft);
+}
+
+.avatar-icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.dropdown-menu {
+  border-radius: 18px;
+  border: 1px solid rgba(108, 99, 255, 0.14);
+  box-shadow: var(--shadow-md);
+}
+
+.dropdown-item {
+  border-radius: 14px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background: var(--color-surface-soft);
+}
+
+.dropdown-divider {
+  border-color: rgba(108, 99, 255, 0.12);
+}

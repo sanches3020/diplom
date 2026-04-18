@@ -1,0 +1,27 @@
+.modal-content {
+  border-radius: 28px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-header,
+.modal-footer {
+  border: none;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.35rem;
+  color: var(--color-text);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}

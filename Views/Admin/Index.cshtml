@@ -1,42 +1,153 @@
-﻿@model List<ApplicationUser>
+﻿@page
+@model List<ApplicationUser>
+@{
+    Layout = "_Layout";
+}
 
-<h1>Админ‑панель</h1>
+<link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Email</th>
-            <th>Имя</th>
-            <th>Статус</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var u in Model)
-        {
-            <tr>
-                <td>@u.Email</td>
-                <td>@u.FullName</td>
-                <td>@(u.IsBlocked ? "Заблокирован" : "Активен")</td>
-                <td>
-                    @if (!u.IsBlocked)
-                    {
-                        <form method="post" asp-action="Block" asp-route-id="@u.Id">
-                            <button class="btn btn-warning">Блокировать</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <form method="post" asp-action="Unblock" asp-route-id="@u.Id">
-                            <button class="btn btn-success">Разблокировать</button>
-                        </form>
-                    }
+<div class="admin-page">
+    <aside class="admin-sidebar">
+        <div class="admin-brand">Sofia Admin</div>
+        <nav class="admin-nav" aria-label="Навигация админки">
+            <a class="nav-item active"><span class="nav-icon">👥</span><span>Пользователи</span></a>
+            <a class="nav-item"><span class="nav-icon">🧘</span><span>Практики</span></a>
+            <a class="nav-item"><span class="nav-icon">🧪</span><span>Тесты</span></a>
+            <a class="nav-item"><span class="nav-icon">🧑‍⚕️</span><span>Психологи</span></a>
+            <a class="nav-item"><span class="nav-icon">💬</span><span>Форум</span></a>
+            <a class="nav-item"><span class="nav-icon">💬</span><span>Чат</span></a>
+            <a class="nav-item"><span class="nav-icon">📊</span><span>Статистика</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="footer-title">Поддержка решения</div>
+            <p>Используйте фильтры для быстрого поиска пользователей и управления данными без шума.</p>
+        </div>
+    </aside>
 
-                    <form method="post" asp-action="Delete" asp-route-id="@u.Id">
-                        <button class="btn btn-danger">Удалить</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <main class="admin-main">
+        <section class="admin-header">
+            <div class="header-info">
+                <p class="eyebrow">Панель управления</p>
+                <h1>Админ‑панель для управления платформой</h1>
+                <p>Строгая структурность сочетается с мягкой визуальной эстетикой. Здесь вы можете управлять пользователями, практиками, тестами и разговорами.</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" type="button">Создать запись</button>
+                <button class="btn btn-outline-primary" type="button">Фильтр</button>
+            </div>
+        </section>
+
+        <section class="admin-stats" aria-label="Статистика админки">
+            <article class="stat-card">
+                <small>Пользователей</small>
+                <strong>1 842</strong>
+                <span class="text-muted">Новых за неделю: 54</span>
+            </article>
+            <article class="stat-card">
+                <small>Активность</small>
+                <strong>78%</strong>
+                <span class="text-muted">Средняя вовлечённость</span>
+            </article>
+            <article class="stat-card">
+                <small>Новые темы</small>
+                <strong>224</strong>
+                <span class="text-muted">Форум и чат</span>
+            </article>
+            <article class="stat-card">
+                <small>Сообщения</small>
+                <strong>3 104</strong>
+                <span class="text-muted">Новых за 24 часа</span>
+            </article>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Управление пользователями</h2>
+                <div class="panel-controls">
+                    <div class="filter-group">
+                        <input type="search" placeholder="Поиск по email или имени" aria-label="Поиск пользователей" />
+                        <select aria-label="Фильтр по статусу">
+                            <option>Все статусы</option>
+                            <option>Активные</option>
+                            <option>Заблокированные</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" type="button">Обновить</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-cell"><input type="checkbox" aria-label="Выбрать все" /></th>
+                            <th>Email</th>
+                            <th>Имя</th>
+                            <th>Роль</th>
+                            <th>Статус</th>
+                            <th>Последний вход</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in Model)
+                        {
+                            <tr>
+                                <td class="checkbox-cell"><input type="checkbox" aria-label="Выбрать пользователя" /></td>
+                                <td>@u.Email</td>
+                                <td>@u.FullName</td>
+                                <td>@(u.UserName ?? "Пользователь")</td>
+                                <td><span class="badge-status">@(u.IsBlocked ? "Заблокирован" : "Активен")</span></td>
+                                <td>@u.CreatedAt.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    <div class="action-group">
+                                        <button type="button" class="action-btn" data-modal-open="edit-user">✏️</button>
+                                        <button type="button" class="action-btn" data-modal-open="confirm-delete">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <h3 id="modalTitle">Подтвердите действие</h3>
+        <p>Вы уверены, что хотите удалить выбранного пользователя? Это действие необратимо.</p>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" type="button" data-modal-close>Отмена</button>
+            <button class="btn btn-danger" type="button">Удалить</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.body.classList.add('admin-page');
+        const backdrop = document.getElementById('modalBackdrop');
+        const openButtons = document.querySelectorAll('[data-modal-open]');
+        const closeButtons = document.querySelectorAll('[data-modal-close]');
+
+        openButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                backdrop.classList.add('open');
+            });
+        });
+
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                backdrop.classList.remove('open');
+            });
+        });
+
+        backdrop.addEventListener('click', (event) => {
+            if (event.target === backdrop) {
+                backdrop.classList.remove('open');
+            }
+        });
+    });
+</script>

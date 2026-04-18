@@ -1,0 +1,15 @@
+.dropdown-menu {
+  border-radius: 18px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+
+.dropdown-item {
+  border-radius: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background: var(--color-surface-soft);
+}

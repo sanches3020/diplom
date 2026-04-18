@@ -3,80 +3,69 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Sofia.Web</title>
+    <title>@ViewData["Title"] - Нить сознания</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="~/manifest.json" />
+    <link rel="icon" href="~/favicon/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="~/favicon/favicon.ico" type="image/x-icon" />
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Sofia.Web.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/system.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm mb-3">
+    <header class="app-bar">
+        <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    Sofia
+                    <img src="~/img/logo/logo-light.svg" alt="Нить сознания" height="32" class="d-inline-block align-top">
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar"
+                        aria-expanded="false" aria-label="Открыть меню">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-            <ul class="navbar-nav flex-grow-1">
-                @if (Context.Session.GetString("UserRole") == "psychologist")
-                {
-                    var psychologistId = Context.Session.GetString("PsychologistId");
-                    if (!string.IsNullOrEmpty(psychologistId))
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/psychologist/dashboard/@psychologistId">Дашборд</a></li>
-                    }
-                    else
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/psychologist">Дашборд</a></li>
-                    }                    <li class="nav-item"><a class="nav-link" href="/psychologist/tests">Мои тесты</a></li>                    <li class="nav-item"><a class="nav-link" href="/settings">Настройки</a></li>
-                }
-                    else
-                    {
-                        <li class="nav-item d-none d-md-block"><a class="nav-link" href="/home">Главная</a></li>
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-center">
+                        <li class="nav-item"><a class="nav-link" href="/home">Главная</a></li>
                         <li class="nav-item"><a class="nav-link" href="/notes">Заметки</a></li>
-                        <li class="nav-item d-none d-lg-block"><a class="nav-link" href="/calendar">Календарь</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/calendar">Календарь</a></li>
                         <li class="nav-item"><a class="nav-link" href="/goals">Цели</a></li>
-                        <li class="nav-item d-none d-lg-block"><a class="nav-link" href="/stats">Статистика</a></li>
-                        <li class="nav-item d-none d-md-block"><a class="nav-link" href="/practices">Практики</a></li>
-                        <li class="nav-item d-none d-lg-block"><a class="nav-link" href="/psychologist">Психолог</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/stats">Статистика</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/practices">Практики</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/psychologist">Психолог</a></li>
                         <li class="nav-item"><a class="nav-link" href="/tests">Тесты</a></li>
-                        <li class="nav-item d-none d-md-block"><a class="nav-link" href="/settings">Настройки</a></li>
-                    }
-            </ul>
-                    <!-- Mobile Bottom Navigation -->
-                    <nav class="mobile-nav d-md-none">
-                        <a href="/notes" class="mobile-nav-item" title="Заметки">
-                            <span class="mobile-nav-icon">📝</span>
-                        </a>
-                        <a href="/goals" class="mobile-nav-item" title="Цели">
-                            <span class="mobile-nav-icon">🎯</span>
-                        </a>
-                        <a href="/stats" class="mobile-nav-item" title="Статистика">
-                            <span class="mobile-nav-icon">📊</span>
-                        </a>
-                        <a href="/settings" class="mobile-nav-item" title="Настройки">
-                            <span class="mobile-nav-icon">⚙️</span>
-                        </a>
-                    </nav>
-                    <div class="ms-auto d-flex align-items-center gap-2">
+                        <li class="nav-item"><a class="nav-link" href="/chat">Чат</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/forum">Форум</a></li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-2">
                         @if (Context.Session.GetString("UserId") != null)
                         {
-                            <span class="text-muted me-2">Привет, @Context.Session.GetString("Username")!</span>
-                            <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-outline-secondary btn-sm">Выйти</button>
-                            </form>
+                            var userRole = Context.Session.GetString("UserRole")?.ToLowerInvariant();
+                            <div class="dropdown profile-menu">
+                                <button class="btn profile-button dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="avatar-icon">@((Context.Session.GetString("Username") ?? "S")[0])</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                    <li><a class="dropdown-item" href="/settings/profile">Профиль</a></li>
+                                    <li><a class="dropdown-item" href="/settings">Настройки</a></li>
+                                    @if (userRole == "admin" || userRole == "administrator")
+                                    {
+                                        <li><a class="dropdown-item" href="/admin">Админ‑панель</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Auth" asp-action="Logout" method="post" class="m-0">
+                                            <button type="submit" class="dropdown-item">Выйти</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
                         }
                         else
                         {
-                            <a href="/auth/login" class="btn btn-outline-primary btn-sm me-2">Войти</a>
+                            <a href="/auth/login" class="btn btn-outline-primary btn-sm">Войти</a>
                             <a href="/auth/register" class="btn btn-primary btn-sm">Регистрация</a>
                         }
                     </div>
@@ -84,15 +73,15 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <main class="page-shell">
+        <div class="container">
             @RenderBody()
-        </main>
-    </div>
+        </div>
+    </main>
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - Sofia.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - Нить сознания - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -101,140 +90,7 @@
         // Expose current user role to client scripts
         window.currentUserRole = '@(Context.Session.GetString("UserRole") ?? "")';
     </script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    
-    <style>
-        body {
-            font-family: 'Comfortaa', var(--font-sans);
-            background-color: #f8f9fa;
-            line-height: 1.6;
-        }
-
-        .navbar {
-            background: linear-gradient(135deg, #6b7cff 0%, #9c88ff 100%);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-
-        .nav-link {
-            color: rgba(255,255,255,0.9) !important;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .nav-link:hover {
-            color: white !important;
-            transform: translateY(-1px);
-        }
-
-        .main-content {
-            min-height: calc(100vh - 200px);
-            padding: 2rem 0;
-        }
-
-        .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-
-        .btn {
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .form-control, .form-select {
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-            padding: 0.75rem 1rem;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: #6b7cff;
-            box-shadow: 0 0 0 0.2rem rgba(107, 124, 255, 0.25);
-        }
-
-        .container-fluid {
-            max-width: 1400px;
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-
-        .row {
-            margin-left: -0.5rem;
-            margin-right: -0.5rem;
-        }
-
-        .row > * {
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-        }
-
-        /* Мобильная навигация */
-        .mobile-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-top: 1px solid #dee2e6;
-            display: flex;
-            justify-content: space-around;
-            padding: 0.5rem 0;
-            z-index: 1000;
-        }
-
-        .mobile-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #6c757d;
-            padding: 0.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .mobile-nav-item:hover {
-            color: #6b7cff;
-            transform: translateY(-2px);
-        }
-
-        .mobile-nav-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Адаптивность */
-        @@media (max-width: 768px) {
-            .main-content {
-                padding: 1rem 0;
-                margin-bottom: 80px; /* Отступ для мобильной навигации */
-            }
-
-            .container-fluid {
-                padding-left: 0.5rem;
-                padding-right: 0.5rem;
-            }
-
-            .card {
-                margin-bottom: 1rem;
-            }
+    <script src="~/js/app.js" asp-append-version="true"></script>
 
             .btn {
                 width: 100%;

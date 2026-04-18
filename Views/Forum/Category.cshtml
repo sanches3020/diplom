@@ -1,4 +1,70 @@
 ﻿@page
 @model Sofia.Web.Views.Forum.CategoryModel
 @{
+    Layout = "_Layout";
 }
+
+<link rel="stylesheet" href="~/css/forum.css" asp-append-version="true" />
+
+<div class="forum-page">
+    <div class="forum-hero">
+        <div>
+            <p class="eyebrow">Категория</p>
+            <h1>Эмоции</h1>
+            <p>Уютная категория для тем о чувствах, переживаниях и мягких способах принятия себя.</p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="/forum/createthread">Новая тема</a>
+            </div>
+        </div>
+    </div>
+
+    <main class="forum-main">
+        <section class="thread-list" aria-label="Темы категории эмоции">
+            <article class="thread-card">
+                <div class="meta-row">
+                    <span class="tag">Эмоции</span>
+                    <span>Автор: Ольга</span>
+                </div>
+                <h2><a href="/forum/thread">Как отличить усталость от эмоционального выгорания?</a></h2>
+                <p>Интересует описание чувств и мягкое взаимодействие с собственным состоянием.</p>
+                <div class="thread-footer">
+                    <small>18 ответов · 1 час назад</small>
+                    <div class="thread-meta">
+                        <span class="tag">Анонимно</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="thread-card">
+                <div class="meta-row">
+                    <span class="tag">Эмоции</span>
+                    <span>Автор: Сергей</span>
+                </div>
+                <h2><a href="/forum/thread">Как принять тревогу без борьбы?</a></h2>
+                <p>Ищу практические советы для ежедневной проработки тревоги.</p>
+                <div class="thread-footer">
+                    <small>12 ответов · сегодня</small>
+                    <div class="thread-meta">
+                        <span class="tag">Практика</span>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <aside class="forum-sidebar">
+            <section class="category-panel">
+                <h3>Фильтры</h3>
+                <ul>
+                    <li class="active">Все</li>
+                    <li>Только анонимные</li>
+                    <li>С новыми ответами</li>
+                    <li>С лайками</li>
+                </ul>
+            </section>
+            <section class="stats-panel">
+                <h3>О категории</h3>
+                <p>Тематика этого раздела помогает находить естественные, мягкие способы выражения эмоций.</p>
+            </section>
+        </aside>
+    </main>
+</div>

@@ -1,4 +1,49 @@
 ﻿@page
 @model Sofia.Web.Views.Forum.CreateThreadModel
 @{
+    Layout = "_Layout";
 }
+
+<link rel="stylesheet" href="~/css/forum.css" asp-append-version="true" />
+
+<div class="forum-page">
+    <section class="create-panel">
+        <p class="eyebrow">Создать тему</p>
+        <h2>Новая тема форума</h2>
+        <p>Поделитесь мыслями, спросите совета или начните обсуждение в спокойной, поддерживающей атмосфере.</p>
+
+        <label>
+            Заголовок темы
+            <input type="text" placeholder="Например, Как справляться с тревогой перед сном?" aria-label="Заголовок темы" />
+        </label>
+
+        <label>
+            Описание
+            <textarea placeholder="Опишите проблему, опыт или вопрос. Чем понятнее, тем больше шансов получить полезный отклик." aria-label="Описание темы"></textarea>
+        </label>
+
+        <div class="form-row">
+            <label>
+                Категория
+                <select aria-label="Выбор категории">
+                    <option>Эмоции</option>
+                    <option>Сон</option>
+                    <option>Тревога</option>
+                    <option>Самопомощь</option>
+                </select>
+            </label>
+            <label>
+                Теги
+                <div class="tag-input">
+                    <span class="tag">поддержка</span>
+                    <span class="tag">анонимно</span>
+                    <span class="tag">сон</span>
+                </div>
+            </label>
+        </div>
+
+        <div class="submit-row">
+            <button class="btn btn-primary" type="button">Опубликовать тему</button>
+        </div>
+    </section>
+</div>

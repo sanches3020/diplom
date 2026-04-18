@@ -1,4 +1,94 @@
 ﻿@page
 @model Sofia.Web.Views.Forum.ThreadModel
 @{
+    Layout = "_Layout";
 }
+
+<link rel="stylesheet" href="~/css/forum.css" asp-append-version="true" />
+
+<div class="forum-page">
+    <section class="forum-topic">
+        <div class="forum-topic-header">
+            <div>
+                <p class="eyebrow">Тема</p>
+                <h2>Как справляться с тревогой перед сном?</h2>
+                <div class="topic-tags">
+                    <span class="tag">Сон</span>
+                    <span class="tag">Тревога</span>
+                    <span class="tag">Расслабление</span>
+                </div>
+            </div>
+            <div class="topic-meta">
+                <span>Автор: Анна</span>
+                <span>3 часа назад</span>
+                <span>24 ответа</span>
+            </div>
+        </div>
+
+        <div class="comment-tree">
+            <article class="comment-item">
+                <div class="comment-body">
+                    <span class="avatar">А</span>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <strong>Аноним</strong>
+                            <small>09:12</small>
+                        </div>
+                        <p>Привет. Я только что пришёл и немного тревожусь. Как вы обычно расслабляетесь перед сном?</p>
+                        <div class="comment-actions">
+                            <button type="button">👍 12</button>
+                            <button type="button">Ответить</button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <div class="comment-replies">
+                <article class="comment-item">
+                    <div class="comment-body">
+                        <span class="avatar">Т</span>
+                        <div class="comment-content">
+                            <div class="comment-header">
+                                <strong>Ты</strong>
+                                <small>09:14</small>
+                            </div>
+                            <p>Часто помогает глубокое дыхание и лёгкая растяжка. Главное — не форсировать, просто дышать мягко.</p>
+                            <div class="comment-actions">
+                                <button type="button">👍 18</button>
+                                <button type="button">Ответить</button>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <article class="comment-item">
+                <div class="comment-body">
+                    <span class="avatar">П</span>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <strong>Аноним</strong>
+                            <small>09:15</small>
+                        </div>
+                        <p>Спасибо, это звучит очень успокаивающе. Я попробую прямо сейчас.</p>
+                        <div class="comment-actions">
+                            <button type="button">👍 6</button>
+                            <button type="button">Ответить</button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <section class="reply-panel">
+            <h3>Добавить ответ</h3>
+            <label>
+                Сообщение
+                <textarea placeholder="Напиши поддерживающий ответ или вопрос..." aria-label="Текст ответа"></textarea>
+            </label>
+            <div class="submit-row">
+                <button class="btn btn-primary" type="button">Отправить ответ</button>
+            </div>
+        </section>
+    </section>
+</div>
