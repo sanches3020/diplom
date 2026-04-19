@@ -1,4 +1,142 @@
 ﻿@page
 @model Sofia.Web.Views.Chat.IndexModel
 @{
+    ViewData["Title"] = "Чат";
+}
+
+<div class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="section-note">Модуль общения</p>
+            <h1 class="page-title">Чат</h1>
+        </div>
+        <a href="#" class="btn btn-brand">Новый чат</a>
+    </div>
+
+    <div class="chat-layout">
+        <aside class="chat-sidebar">
+            <div class="chat-sidebar-header">
+                <div>
+                    <p class="section-note">Комнаты</p>
+                    <h2 class="section-title">Список бесед</h2>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-ghost chat-sidebar-close d-lg-none" type="button">Закрыть</button>
+                    <button class="btn btn-ghost" type="button">+</button>
+                </div>
+            </div>
+
+            <div class="chat-search">
+                <input type="text" class="input-field" placeholder="Поиск комнаты">
+            </div>
+
+            <div class="chat-rooms">
+                <a href="#" class="chat-room-item active">
+                    <div class="room-avatar">S</div>
+                    <div class="room-meta">
+                        <p class="room-name">Психолог</p>
+                        <span class="room-preview">Ещё 3 непрочитанных сообщения</span>
+                    </div>
+                </a>
+                <a href="#" class="chat-room-item">
+                    <div class="room-avatar">G</div>
+                    <div class="room-meta">
+                        <p class="room-name">Группа поддержки</p>
+                        <span class="room-preview">Собрание начнётся через 30 минут</span>
+                    </div>
+                </a>
+                <a href="#" class="chat-room-item">
+                    <div class="room-avatar">R</div>
+                    <div class="room-meta">
+                        <p class="room-name">Рекомендации</p>
+                        <span class="room-preview">Последнее обновление 2 часа назад</span>
+                    </div>
+                </a>
+            </div>
+        </aside>
+
+        <section class="chat-main">
+            <div class="chat-main-header">
+                <div>
+                    <p class="section-note">Живой обмен</p>
+                    <h2 class="thread-title">Диалог с психологом</h2>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-ghost chat-sidebar-open d-lg-none" type="button">Чаты</button>
+                    <div class="thread-meta">
+                        <span>Онлайн</span>
+                        <span>Последнее сообщение 2 минуты назад</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-feed">
+                <div class="system-note">Сегодня</div>
+
+                <div class="chat-message-row">
+                    <div class="message-avatar">S</div>
+                    <div class="chat-bubble chat-bubble--incoming">
+                        <div class="message-meta">
+                            <span class="message-name">София</span>
+                            <span class="message-time">09:12</span>
+                        </div>
+                        <p class="message-text">Доброе утро! Расскажите, как у вас прошёл день.</p>
+                    </div>
+                </div>
+
+                <div class="chat-message-row outgoing">
+                    <div class="chat-bubble chat-bubble--outgoing">
+                        <div class="message-meta">
+                            <span class="message-name">Вы</span>
+                            <span class="message-time">09:13</span>
+                        </div>
+                        <p class="message-text">Всё прошло спокойно, я хочу обсудить планы на неделю.</p>
+                        <div class="message-status">✓ Прочитано</div>
+                    </div>
+                </div>
+
+                <div class="chat-message-row">
+                    <div class="message-avatar">S</div>
+                    <div class="chat-bubble chat-bubble--incoming">
+                        <div class="message-meta">
+                            <span class="message-name">София</span>
+                            <span class="message-time">09:14</span>
+                        </div>
+                        <p class="message-text">Отлично. Давайте сформируем список задач и распределим их по дням.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-bar">
+                <div class="chat-input-compose">
+                    <textarea placeholder="Напишите сообщение..." aria-label="Сообщение"></textarea>
+                    <button class="btn btn-brand" type="button">Отправить</button>
+                </div>
+                <div class="chat-actions">
+                    <button class="btn btn-ghost" type="button">📎 Прикрепить</button>
+                    <button class="btn btn-ghost" type="button">😊 Эмодзи</button>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.querySelector('.chat-sidebar');
+            const openButton = document.querySelector('.chat-sidebar-open');
+            const closeButton = document.querySelector('.chat-sidebar-close');
+
+            if (!sidebar || !openButton || !closeButton) return;
+
+            openButton.addEventListener('click', function () {
+                sidebar.classList.add('open');
+            });
+
+            closeButton.addEventListener('click', function () {
+                sidebar.classList.remove('open');
+            });
+        });
+    </script>
 }

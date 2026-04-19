@@ -1,42 +1,79 @@
-﻿@model List<ApplicationUser>
+@model List<ApplicationUser>
 
-<h1>Админ‑панель</h1>
+<div class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="section-note">Администрирование</p>
+            <h1 class="page-title">Админ‑панель</h1>
+        </div>
+    </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Email</th>
-            <th>Имя</th>
-            <th>Статус</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var u in Model)
-        {
-            <tr>
-                <td>@u.Email</td>
-                <td>@u.FullName</td>
-                <td>@(u.IsBlocked ? "Заблокирован" : "Активен")</td>
-                <td>
-                    @if (!u.IsBlocked)
-                    {
-                        <form method="post" asp-action="Block" asp-route-id="@u.Id">
-                            <button class="btn btn-warning">Блокировать</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <form method="post" asp-action="Unblock" asp-route-id="@u.Id">
-                            <button class="btn btn-success">Разблокировать</button>
-                        </form>
-                    }
+    <div class="admin-panel">
+        <div class="admin-stats">
+            <div class="admin-card">
+                <h3>Пользователей</h3>
+                <div class="stat-value">@Model.Count</div>
+                <p class="section-note">Активных аккаунтов сейчас</p>
+            </div>
+            <div class="admin-card">
+                <h3>Новые заявки</h3>
+                <div class="stat-value">18</div>
+                <p class="section-note">Ожидают проверки</p>
+            </div>
+            <div class="admin-card">
+                <h3>Ошибки</h3>
+                <div class="stat-value">4</div>
+                <p class="section-note">Последние 24 часа</p>
+            </div>
+        </div>
 
-                    <form method="post" asp-action="Delete" asp-route-id="@u.Id">
-                        <button class="btn btn-danger">Удалить</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <div class="admin-card">
+            <div class="admin-tools">
+                <input type="search" class="input-field" placeholder="Поиск пользователей" />
+                <select class="select-field">
+                    <option>Все роли</option>
+                    <option>Администратор</option>
+                    <option>Пользователь</option>
+                    <option>Психолог</option>
+                </select>
+                <button class="btn btn-brand" type="button">Новый пользователь</button>
+            </div>
+
+            <div class="user-table-wrapper">
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Пользователь</th>
+                            <th>Email</th>
+                            <th>Роль</th>
+                            <th>Статус</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="user-avatar">@((u.FullName ?? u.UserName ?? "U").FirstOrDefault().ToString().ToUpper())</span>
+                                        <div>
+                                            <div>@(u.FullName ?? u.UserName)</div>
+                                            <div class="text-muted" style="font-size:0.9rem;">@u.UserName</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@u.Email</td>
+                                <td>@u.Role</td>
+                                <td>@(u.IsBlocked ? "Заблокирован" : "Активен")</td>
+                                <td>
+                                    <div class="action-chip">Действия</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

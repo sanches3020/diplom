@@ -1,4 +1,67 @@
 ﻿@page
 @model Sofia.Web.Views.Forum.ThreadModel
 @{
+    ViewData["Title"] = "Тема форума";
 }
+
+<div class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="section-note">Тема</p>
+            <h1 class="page-title">Как делиться эмоциями с близкими без напряжения?</h1>
+        </div>
+        <a href="/Forum/CreatePost" class="btn btn-brand">Ответить</a>
+    </div>
+
+    <section class="forum-thread-panel">
+        <div class="thread-header">
+            <div>
+                <p class="section-note">Открытая тема</p>
+                <h2 class="thread-title">Как делиться эмоциями с близкими без напряжения?</h2>
+            </div>
+            <div class="thread-tags">
+                <span class="tag-pill">Отношения</span>
+                <span class="tag-pill">Коммуникация</span>
+            </div>
+        </div>
+
+        <div class="comments-feed">
+            <div class="comment-thread">
+                <div class="comment-item">
+                    <div class="comment-avatar">М</div>
+                    <div class="comment-body">
+                        <div class="comment-meta">Мария · участник · 2 часа назад</div>
+                        <p class="comment-text">Мне помогла техника высказывания через «я-сообщения». Это снижает накал и делает разговор мягче.</p>
+                        <div class="comment-actions">
+                            <button class="comment-action" type="button">Ответить</button>
+                            <button class="comment-action" type="button">Лайк</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment-item nested">
+                    <div class="comment-avatar">К</div>
+                    <div class="comment-body">
+                        <div class="comment-meta">Катя · ответ · 1 час назад</div>
+                        <p class="comment-text">Да, согласна. Ещё важно слушать и подтверждать, что вы поняли чувства собеседника.</p>
+                        <div class="comment-actions">
+                            <button class="comment-action" type="button">Ответить</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment-item">
+                    <div class="comment-avatar">А</div>
+                    <div class="comment-body">
+                        <div class="comment-meta">Антон · участник · 40 минут назад</div>
+                        <p class="comment-text">Иногда полезно начать с нейтрального вопроса: «Как у тебя прошёл день?» Перед тем, как перейти к чувствам.</p>
+                        <div class="comment-actions">
+                            <button class="comment-action" type="button">Ответить</button>
+                            <button class="comment-action" type="button">Лайк</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
