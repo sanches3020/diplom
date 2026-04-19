@@ -31,7 +31,7 @@ namespace Sofia.Web.Models
 
         [ForeignKey(nameof(PsychologistId))]
         public virtual Psychologist? Psychologist { get; set; }
-
+-
         public virtual ICollection<Note> Notes { get; set; } = new List<Note>();
         public virtual ICollection<Goal> Goals { get; set; } = new List<Goal>();
         public virtual ICollection<PsychologistAppointment> Appointments { get; set; } = new List<PsychologistAppointment>();

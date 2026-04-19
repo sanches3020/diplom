@@ -2,8 +2,6 @@
 using Sofia.Web.Data;
 using Sofia.Web.Models;
 
-namespace Sofia.Web.Services;
-
 public class ForumService : IForumService
 {
     private readonly SofiaDbContext _db;

@@ -22,6 +22,38 @@ namespace Sofia.Web.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("AdminLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TargetUserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdminId");
+
+                    b.ToTable("AdminLogs");
+                });
+
             modelBuilder.Entity("ForumCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -73,6 +105,38 @@ namespace Sofia.Web.Migrations
                         .IsUnique();
 
                     b.ToTable("PostLikes", "forum");
+                });
+
+            modelBuilder.Entity("ForumThread", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Threads", "forum");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -179,50 +243,6 @@ namespace Sofia.Web.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("Sofia.Web.Models.AdminLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("AdminId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Details")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("IpAddress")
-                        .HasMaxLength(45)
-                        .HasColumnType("character varying(45)");
-
-                    b.Property<string>("TargetUserId")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("UserAgent")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdminId");
-
-                    b.ToTable("AdminLogs");
                 });
 
             modelBuilder.Entity("Sofia.Web.Models.Answer", b =>
@@ -348,7 +368,7 @@ namespace Sofia.Web.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("PsychologistId")
+                    b.Property<int?>("PsychologistProfileId")
                         .HasColumnType("integer");
 
                     b.Property<string>("SecurityStamp")
@@ -375,7 +395,7 @@ namespace Sofia.Web.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("PsychologistId")
+                    b.HasIndex("PsychologistProfileId")
                         .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
@@ -427,16 +447,14 @@ namespace Sofia.Web.Migrations
 
                     b.Property<string>("AuthorId")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.Property<string>("AuthorId1")
                         .HasColumnType("text");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(5000)
-                        .HasColumnType("character varying(5000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -458,44 +476,6 @@ namespace Sofia.Web.Migrations
                     b.HasIndex("ThreadId");
 
                     b.ToTable("Posts", "forum");
-                });
-
-            modelBuilder.Entity("Sofia.Web.Models.ForumThread", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AuthorId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("AuthorId1")
-                        .HasColumnType("text");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("AuthorId1");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("Threads", "forum");
                 });
 
             modelBuilder.Entity("Sofia.Web.Models.Goal", b =>
@@ -847,6 +827,8 @@ namespace Sofia.Web.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Psychologists");
                 });
 
@@ -865,8 +847,7 @@ namespace Sofia.Web.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("PsychologistId")
                         .HasColumnType("integer");
@@ -885,6 +866,61 @@ namespace Sofia.Web.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("PsychologistAppointments");
+                });
+
+            modelBuilder.Entity("Sofia.Web.Models.PsychologistProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Education")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Experience")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Languages")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Methods")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Specialization")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PsychologistProfile");
                 });
 
             modelBuilder.Entity("Sofia.Web.Models.PsychologistReview", b =>
@@ -919,7 +955,7 @@ namespace Sofia.Web.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserId")
@@ -1192,6 +1228,17 @@ namespace Sofia.Web.Migrations
                     b.ToTable("UserAnswers");
                 });
 
+            modelBuilder.Entity("AdminLog", b =>
+                {
+                    b.HasOne("Sofia.Web.Models.ApplicationUser", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+                });
+
             modelBuilder.Entity("ForumPostLike", b =>
                 {
                     b.HasOne("Sofia.Web.Models.ForumPost", "Post")
@@ -1215,6 +1262,23 @@ namespace Sofia.Web.Migrations
                     b.Navigation("Post");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ForumThread", b =>
+                {
+                    b.HasOne("Sofia.Web.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ForumCategory", "Category")
+                        .WithMany("Threads")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1268,17 +1332,6 @@ namespace Sofia.Web.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Sofia.Web.Models.AdminLog", b =>
-                {
-                    b.HasOne("Sofia.Web.Models.ApplicationUser", "Admin")
-                        .WithMany()
-                        .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Admin");
-                });
-
             modelBuilder.Entity("Sofia.Web.Models.Answer", b =>
                 {
                     b.HasOne("Sofia.Web.Models.Question", "Question")
@@ -1292,12 +1345,11 @@ namespace Sofia.Web.Migrations
 
             modelBuilder.Entity("Sofia.Web.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("Sofia.Web.Models.Psychologist", "Psychologist")
+                    b.HasOne("Sofia.Web.Models.PsychologistProfile", "PsychologistProfile")
                         .WithOne("User")
-                        .HasForeignKey("Sofia.Web.Models.ApplicationUser", "PsychologistId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("Sofia.Web.Models.ApplicationUser", "PsychologistProfileId");
 
-                    b.Navigation("Psychologist");
+                    b.Navigation("PsychologistProfile");
                 });
 
             modelBuilder.Entity("Sofia.Web.Models.EmotionEntry", b =>
@@ -1328,7 +1380,7 @@ namespace Sofia.Web.Migrations
                         .HasForeignKey("MediaFileId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Sofia.Web.Models.ForumThread", "Thread")
+                    b.HasOne("ForumThread", "Thread")
                         .WithMany("Posts")
                         .HasForeignKey("ThreadId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1339,29 +1391,6 @@ namespace Sofia.Web.Migrations
                     b.Navigation("MediaFile");
 
                     b.Navigation("Thread");
-                });
-
-            modelBuilder.Entity("Sofia.Web.Models.ForumThread", b =>
-                {
-                    b.HasOne("Sofia.Web.Models.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Sofia.Web.Models.ApplicationUser", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId1");
-
-                    b.HasOne("ForumCategory", "Category")
-                        .WithMany("Threads")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Sofia.Web.Models.Goal", b =>
@@ -1405,6 +1434,15 @@ namespace Sofia.Web.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Sofia.Web.Models.Psychologist", b =>
+                {
+                    b.HasOne("Sofia.Web.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -1565,6 +1603,11 @@ namespace Sofia.Web.Migrations
                     b.Navigation("Threads");
                 });
 
+            modelBuilder.Entity("ForumThread", b =>
+                {
+                    b.Navigation("Posts");
+                });
+
             modelBuilder.Entity("Sofia.Web.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Appointments");
@@ -1579,11 +1622,6 @@ namespace Sofia.Web.Migrations
                     b.Navigation("Likes");
                 });
 
-            modelBuilder.Entity("Sofia.Web.Models.ForumThread", b =>
-                {
-                    b.Navigation("Posts");
-                });
-
             modelBuilder.Entity("Sofia.Web.Models.Psychologist", b =>
                 {
                     b.Navigation("Appointments");
@@ -1593,8 +1631,12 @@ namespace Sofia.Web.Migrations
                     b.Navigation("Schedules");
 
                     b.Navigation("TimeSlots");
+                });
 
-                    b.Navigation("User");
+            modelBuilder.Entity("Sofia.Web.Models.PsychologistProfile", b =>
+                {
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Sofia.Web.Models.Question", b =>

@@ -1,6 +1,4 @@
-﻿using Sofia.Web.Models;
-
-public interface IForumService
+﻿public interface IForumService
 {
     Task<List<ForumCategory>> GetCategoriesAsync();
     Task<List<ForumThread>> GetThreadsByCategoryAsync(int categoryId);

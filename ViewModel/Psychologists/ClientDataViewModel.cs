@@ -1,6 +1,6 @@
 ﻿using Sofia.Web.Models;
 
-namespace Sofia.Web.ViewModels.Psychologists;
+namespace Sofia.Web.ViewModels.PsychologistArea;
 
 public class ClientDataViewModel
 {
