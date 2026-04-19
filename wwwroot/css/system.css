@@ -10,6 +10,105 @@
 /* Make sizing predictable */
 *, *::before, *::after { box-sizing: border-box; }
 
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+}
+
+main.page-shell {
+    flex: 1;
+    padding: 2rem 0;
+}
+
+footer.footer {
+    margin-top: auto;
+    padding: 1.25rem 0;
+    background: transparent;
+    color: var(--color-text-secondary);
+}
+
+.navbar {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(108, 99, 255, 0.10);
+    padding: 0.75rem 0;
+}
+
+.navbar-brand, .nav-link, .dropdown-item, .footer, .footer a {
+    color: var(--color-text) !important;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    color: var(--color-text-secondary) !important;
+    transition: color 0.2s ease;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus {
+    color: var(--color-primary) !important;
+}
+
+.dropdown-menu {
+    border-radius: 18px;
+    border: 1px solid rgba(108, 99, 255, 0.12);
+    box-shadow: 0 22px 62px rgba(108, 99, 255, 0.12);
+    background: var(--color-surface);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: rgba(108, 99, 255, 0.08) !important;
+    color: var(--color-primary) !important;
+}
+
+.btn-primary {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: #fff !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active {
+    background-color: #584ddb !important;
+    border-color: #584ddb !important;
+}
+
+.btn-outline-primary {
+    background: transparent !important;
+    color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: rgba(108, 99, 255, 0.08) !important;
+    color: var(--color-primary) !important;
+}
+
+.form-control,
+.form-select,
+textarea {
+    border-radius: 16px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    box-shadow: none;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 6px rgba(108, 99, 255, 0.12);
+}
+
 /* Constrain main container to a stable width and center content */
 .container {
     max-width: var(--system-max-width) !important;
