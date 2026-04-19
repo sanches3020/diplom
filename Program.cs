@@ -81,11 +81,6 @@ builder.Services.AddSession();
 // ----------------------------
 // DI: сервисы приложения
 // ----------------------------
-<<<<<<< HEAD
-=======
-// (здесь ты регистрируешь свои сервисы)
-builder.Services.AddScoped<IAuthService, AuthService>();
->>>>>>> f16d9d638339ecefc9454ffc3fa28f05066aabab
 builder.Services.AddScoped<IUserTestService, UserTestService>();
 builder.Services.AddScoped<IPsychologistService, PsychologistService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();

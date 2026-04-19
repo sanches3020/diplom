@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Sofia.Web.Models;
 using Sofia.Web.Services.Interfaces;
+using Sofia.Web.ViewModels.Admin;
 
 [Authorize(Roles = "admin")]
 [Route("admin")]
@@ -21,7 +22,15 @@ public class AdminController : Controller
     public async Task<IActionResult> Index()
     {
         var users = await _adminService.GetAllUsersAsync();
-        return View(users);
+        var userViewModels = new List<AdminUserViewModel>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            userViewModels.Add(new AdminUserViewModel { User = user, Roles = roles });
+        }
+
+        return View(userViewModels);
     }
 
     [HttpPost("block/{id}")]

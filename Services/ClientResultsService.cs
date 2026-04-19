@@ -55,16 +55,12 @@ public class ClientResultsService : IClientResultsService
         };
     }
 
-    public Task<ClientResultsViewModel?> GetClientResultsAsync(string psychologistUserId, int clientId)
-    {
-        throw new NotImplementedException();
-    }
 
-    public async Task<(bool Success, string Message, byte[]? FileBytes, string? FileName)> GetClientResultsCsvAsync(string psychologistUserId, string clientUserId)
+    public async Task<ClientResultsCsvResponse> GetClientResultsCsvAsync(string psychologistUserId, string clientUserId)
     {
         var vm = await GetClientResultsAsync(psychologistUserId, clientUserId);
         if (vm == null)
-            return (false, "Доступ запрещён или данные не найдены", null, null);
+            return new ClientResultsCsvResponse { Success = false, Message = "Доступ запрещён или данные не найдены" };
 
         var sb = new StringBuilder();
         sb.AppendLine("Дата,Тест,Баллы,Уровень,Интерпретация");
@@ -84,7 +80,7 @@ public class ClientResultsService : IClientResultsService
         var bytes = Encoding.UTF8.GetBytes(sb.ToString());
         var fileName = $"client_{clientUserId}_results_{DateTime.Now:yyyyMMdd}.csv";
 
-        return (true, "CSV сформирован", bytes, fileName);
+        return new ClientResultsCsvResponse { Success = true, Message = "CSV сформирован", FileBytes = bytes, FileName = fileName };
     }
 
     public Task<ClientResultsCsvResponse> GetClientResultsCsvAsync(string psychologistUserId, int clientId)

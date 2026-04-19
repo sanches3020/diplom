@@ -4,7 +4,7 @@ namespace Sofia.Web.ViewModels.PsychologistArea;
 
 public class ScheduleViewModel
 {
-    public Sofia.Web.Models.Psychologist Psychologist { get; set; } = null!;
+    public Psychologist Psychologist { get; set; } = null!;
     public List<PsychologistSchedule> Schedules { get; set; } = new();
     public List<PsychologistTimeSlot> ExistingSlots { get; set; } = new();
     public DateTime StartDate { get; set; }

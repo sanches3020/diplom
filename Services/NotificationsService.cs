@@ -89,7 +89,7 @@ public class NotificationsService : INotificationsService
         settings.MoodCheckReminder = request.MoodCheckReminder;
         settings.MoodCheckTime = TimeSpan.Parse(request.MoodCheckTime);
         settings.WeeklyReport = request.WeeklyReport;
-        settings.WeeklyReportDay = Enum.Parse<DayOfWeek>(request.WeeklyReportDay);
+        settings.WeeklyReportDay = (int)Enum.Parse<DayOfWeek>(request.WeeklyReportDay);
         settings.PracticeReminder = request.PracticeReminder;
         settings.PsychologistReminder = request.PsychologistReminder;
         settings.EmailNotifications = request.EmailNotifications;

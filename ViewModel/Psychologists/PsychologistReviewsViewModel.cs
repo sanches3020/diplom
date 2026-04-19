@@ -4,6 +4,6 @@ namespace Sofia.Web.ViewModels.PsychologistArea;
 
 public class PsychologistReviewsViewModel
 {
-    public Sofia.Web.Models.Psychologist Psychologist { get; set; } = null!;
+    public Psychologist Psychologist { get; set; } = null!;
     public List<PsychologistReview> Reviews { get; set; } = new();
 }

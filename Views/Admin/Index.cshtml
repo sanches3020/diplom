@@ -1,4 +1,4 @@
-@model List<ApplicationUser>
+@model List<Sofia.Web.ViewModels.Admin.AdminUserViewModel>
 
 <div class="page-section">
     <div class="page-header">
@@ -56,16 +56,16 @@
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
-                                        <span class="user-avatar">@((u.FullName ?? u.UserName ?? "U").FirstOrDefault().ToString().ToUpper())</span>
+                                        <span class="user-avatar">@((u.User.FullName ?? u.User.UserName ?? "U").FirstOrDefault().ToString().ToUpper())</span>
                                         <div>
-                                            <div>@(u.FullName ?? u.UserName)</div>
-                                            <div class="text-muted" style="font-size:0.9rem;">@u.UserName</div>
+                                            <div>@(u.User.FullName ?? u.User.UserName)</div>
+                                            <div class="text-muted" style="font-size:0.9rem;">@u.User.UserName</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td>@u.Email</td>
-                                <td>@u.Role</td>
-                                <td>@(u.IsBlocked ? "Заблокирован" : "Активен")</td>
+                                <td>@u.User.Email</td>
+                                <td>@string.Join(", ", u.Roles)</td>
+                                <td>@(u.User.IsBlocked ? "Заблокирован" : "Активен")</td>
                                 <td>
                                     <div class="action-chip">Действия</div>
                                 </td>

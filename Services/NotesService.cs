@@ -2,7 +2,7 @@
 using Sofia.Web.Data;
 using Sofia.Web.DTO.Notes;
 using Sofia.Web.Services.Interfaces;
-using NoteModel = Sofia.Web.Models.Note;
+using Sofia.Web.Models;
 
 namespace Sofia.Web.Services;
 
@@ -15,11 +15,7 @@ public class NotesService : INotesService
         _context = context;
     }
 
-<<<<<<< HEAD
     public async Task<List<Note>> GetUserNotesAsync(string userId)
-=======
-    public async Task<List<NoteModel>> GetUserNotesAsync(string userId)
->>>>>>> f16d9d638339ecefc9454ffc3fa28f05066aabab
     {
         return await _context.Notes
             .Where(n => n.UserId == userId)
@@ -28,30 +24,14 @@ public class NotesService : INotesService
             .ToListAsync();
     }
 
-<<<<<<< HEAD
     public async Task<(bool Success, string Message)> CreateNoteAsync(
         string userId,
         DTO.Notes.CreateNoteRequest request)
-=======
-    public async Task<(bool Success, string Message)> CreateNoteAsync(string userId, DTO.Notes.CreateNoteRequest request)
->>>>>>> f16d9d638339ecefc9454ffc3fa28f05066aabab
     {
         if (string.IsNullOrWhiteSpace(request.Content))
             return (false, "Содержание заметки обязательно");
 
-<<<<<<< HEAD
         var note = new Note
-=======
-        if (!Enum.TryParse<EmotionType>(request.Emotion, true, out var emotionType))
-            return (false, "Неверный тип эмоции");
-
-        var targetDate = !string.IsNullOrEmpty(request.Date) &&
-                         DateTime.TryParse(request.Date, out var parsedDate)
-            ? parsedDate
-            : DateTime.Today;
-
-        var note = new NoteModel
->>>>>>> f16d9d638339ecefc9454ffc3fa28f05066aabab
         {
             UserId = userId,
             Content = request.Content,
@@ -144,11 +124,9 @@ public class NotesService : INotesService
         return (true, todayNotes, pinnedNotes, sharedNotes);
     }
 
-<<<<<<< HEAD
-    public Task<Note> GetNoteAsync(string userId, int id)
+    public async Task<Note> GetNoteAsync(string userId, int id)
     {
-        throw new NotImplementedException();
+        return await _context.Notes
+            .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
     }
-=======
->>>>>>> f16d9d638339ecefc9454ffc3fa28f05066aabab
 }

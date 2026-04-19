@@ -138,25 +138,25 @@ public class PsychologistController : Controller
         return Json(result);
     }
 
-    [HttpGet("client/{clientId}/results")]
-    public async Task<IActionResult> ClientResults(int clientId)
+    [HttpGet("client/{clientUserId}/results")]
+    public async Task<IActionResult> ClientResults(string clientUserId)
     {
         var userId = GetUserId();
         if (userId == null || !IsPsychologist())
             return RedirectToAction("Login", "Auth");
 
-        var vm = await _clientResultsService.GetClientResultsAsync(userId, clientId);
+        var vm = await _clientResultsService.GetClientResultsAsync(userId, clientUserId);
         return vm == null ? Forbid() : View(vm);
     }
 
-    [HttpGet("client/{clientId}/results/csv")]
-    public async Task<IActionResult> ClientResultsCsv(int clientId)
+    [HttpGet("client/{clientUserId}/results/csv")]
+    public async Task<IActionResult> ClientResultsCsv(string clientUserId)
     {
         var userId = GetUserId();
         if (userId == null || !IsPsychologist())
             return Json(new { success = false, message = "Неавторизован" });
 
-        var result = await _clientResultsService.GetClientResultsCsvAsync(userId, clientId);
+        var result = await _clientResultsService.GetClientResultsCsvAsync(userId, clientUserId);
 
         if (!result.Success)
             return Json(new { success = false, message = result.Message });
