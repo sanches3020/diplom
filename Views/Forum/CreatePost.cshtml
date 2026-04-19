@@ -1,29 +1,4 @@
 ﻿@page
 @model Sofia.Web.Views.Forum.CreatePostModel
 @{
-    Layout = "_Layout";
 }
-
-<link rel="stylesheet" href="~/css/forum.css" asp-append-version="true" />
-
-<div class="forum-page">
-    <section class="create-panel">
-        <p class="eyebrow">Новый ответ</p>
-        <h2>Добавьте поддержку в тему</h2>
-        <p>Ваше сообщение может стать тем самым спокойным ответом, который нужен другому участнику.</p>
-
-        <label>
-            Текст ответа
-            <textarea placeholder="Напишите ответ здесь..." aria-label="Текст ответа"></textarea>
-        </label>
-
-        <label>
-            Теги (необязательно)
-            <input type="text" placeholder="Например, поддержка, советы" aria-label="Теги" />
-        </label>
-
-        <div class="submit-row">
-            <button class="btn btn-primary" type="button">Отправить ответ</button>
-        </div>
-    </section>
-</div>
