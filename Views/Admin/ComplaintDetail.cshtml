@@ -1,0 +1,694 @@
+@model ComplaintDto
+
+@using Sofia.Web.DTO.Complaints
+@using Sofia.Web.Models
+
+@{
+    ViewData["Title"] = $"Жалоба #{Model.Id}";
+}
+
+<div class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="section-note">Модерация контента</p>
+            <h1 class="page-title">Жалоба #@Model.Id</h1>
+        </div>
+        <a href="@Url.Action("Complaints")" class="btn-ghost">← Вернуться</a>
+    </div>
+
+    <div class="complaint-detail-layout">
+        <!-- Основная информация -->
+        <div class="surface-panel complaint-card">
+            <div class="complaint-header">
+                <div class="complaint-status">
+                    @if (Model.Status == 0)
+                    {
+                        <span class="status-badge new">• Новая</span>
+                    }
+                    else if (Model.Status == 1)
+                    {
+                        <span class="status-badge reviewed">• На рассмотрении</span>
+                    }
+                    else if (Model.Status == 2)
+                    {
+                        <span class="status-badge resolved">• Разрешена</span>
+                    }
+                    else
+                    {
+                        <span class="status-badge dismissed">• Отклонена</span>
+                    }
+                </div>
+                <div class="complaint-dates">
+                    <div class="date-info">
+                        <span class="date-label">Создана:</span>
+                        <time class="date-value">@Model.CreatedAt.ToString("dd.MM.yyyy в HH:mm")</time>
+                    </div>
+                    @if (Model.ReviewedAt.HasValue)
+                    {
+                        <div class="date-info">
+                            <span class="date-label">Рассмотрена:</span>
+                            <time class="date-value">@Model.ReviewedAt.Value.ToString("dd.MM.yyyy в HH:mm")</time>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <hr class="divider" />
+
+            <!-- На кого жалоба -->
+            <div class="complaint-section">
+                <h3 class="section-title">На пользователя</h3>
+                <div class="user-card">
+                    <div class="user-avatar">@Model.TargetUserName.FirstOrDefault().ToString().ToUpper()</div>
+                    <div class="user-details">
+                        <p class="user-name">@Model.TargetUserName</p>
+                        <p class="user-id">ID: @Model.TargetUserId</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Причина жалобы -->
+            <div class="complaint-section">
+                <h3 class="section-title">Причина жалобы</h3>
+                <div class="reason-box">
+                    <p class="reason-category">
+                        <span class="category-badge">@GetReasonText(Model.Reason)</span>
+                    </p>
+                    @if (!string.IsNullOrEmpty(Model.ReasonText))
+                    {
+                        <p class="reason-text">@Model.ReasonText</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Контент жалобы -->
+            @if (!string.IsNullOrEmpty(Model.MessageId))
+            {
+                <div class="complaint-section">
+                    <h3 class="section-title">Сообщение в чате</h3>
+                    <div class="content-box content-box-message">
+                        <p class="content-meta">ID: <code>@Model.MessageId</code></p>
+                        <p class="content-text">@Model.MessageContent</p>
+                    </div>
+                </div>
+            }
+            else if (Model.PostId.HasValue)
+            {
+                <div class="complaint-section">
+                    <h3 class="section-title">Пост на форуме</h3>
+                    <div class="content-box content-box-post">
+                        <p class="content-meta">Пост #@Model.PostId</p>
+                        <p class="content-text">@Model.PostContent</p>
+                    </div>
+                </div>
+            }
+
+            <!-- Комментарий администратора -->
+            @if (!string.IsNullOrEmpty(Model.AdminComment))
+            {
+                <div class="complaint-section">
+                    <h3 class="section-title">Комментарий администратора</h3>
+                    <div class="admin-comment">
+                        <p>@Model.AdminComment</p>
+                    </div>
+                </div>
+            }
+
+            <!-- Санкции -->
+            @if (Model.IsBanned || Model.IsWarned)
+            {
+                <div class="complaint-section">
+                    <h3 class="section-title">Применённые санкции</h3>
+                    <div class="sanctions-list">
+                        @if (Model.IsBanned)
+                        {
+                            <div class="sanction-item ban">
+                                <span class="sanction-icon">🚫</span>
+                                <div>
+                                    <p class="sanction-title">Бан</p>
+                                    <p class="sanction-desc">Пользователь заблокирован</p>
+                                </div>
+                            </div>
+                        }
+                        @if (Model.IsWarned)
+                        {
+                            <div class="sanction-item warning">
+                                <span class="sanction-icon">⚠️</span>
+                                <div>
+                                    <p class="sanction-title">Предупреждение</p>
+                                    <p class="sanction-desc">Пользователю выдано предупреждение</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Боковая панель с действиями -->
+        <aside class="complaint-sidebar">
+            <div class="surface-panel actions-panel">
+                <h3 class="section-title">Действия</h3>
+
+                @if (Model.Status != 1)
+                {
+                    <form method="post" asp-action="UpdateComplaintStatus" class="action-form">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <input type="hidden" name="Status" value="1" />
+                        <button type="submit" class="btn-action btn-action-review">
+                            ↓ Отметить как рассмотрённую
+                        </button>
+                    </form>
+                }
+
+                @if (Model.Status != 2)
+                {
+                    <div class="action-form resolve-form">
+                        <form method="post" asp-action="UpdateComplaintStatus" id="resolveForm">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <input type="hidden" name="Status" value="2" />
+                            
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="ApplyBan" id="applyBan" />
+                                    <span>Заблокировать пользователя</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="ApplyWarning" id="applyWarning" />
+                                    <span>Выдать предупреждение</span>
+                                </label>
+                            </div>
+
+                            <textarea name="AdminComment" class="input-field" placeholder="Комментарий для истории..." rows="3"></textarea>
+                            
+                            <button type="submit" class="btn-action btn-action-resolve">
+                                ✓ Разрешить жалобу
+                            </button>
+                        </form>
+                    </div>
+                }
+
+                @if (Model.Status != 3)
+                {
+                    <form method="post" asp-action="UpdateComplaintStatus" class="action-form">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <input type="hidden" name="Status" value="3" />
+                        
+                        <textarea name="AdminComment" class="input-field" placeholder="Причина отклонения..." rows="2"></textarea>
+                        
+                        <button type="submit" class="btn-action btn-action-dismiss">
+                            ✗ Отклонить жалобу
+                        </button>
+                    </form>
+                }
+            </div>
+
+            <!-- Информация о жалобе -->
+            <div class="surface-panel info-panel">
+                <h3 class="section-title">Информация</h3>
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-label">Статус:</span>
+                        <span class="info-value">
+                            @if (Model.Status == 0)
+                            {
+                                <span class="status-dot new"></span>
+                                <text>Новая</text>
+                            }
+                            else if (Model.Status == 1)
+                            {
+                                <span class="status-dot reviewed"></span>
+                                <text>На рассмотрении</text>
+                            }
+                            else if (Model.Status == 2)
+                            {
+                                <span class="status-dot resolved"></span>
+                                <text>Разрешена</text>
+                            }
+                            else
+                            {
+                                <span class="status-dot dismissed"></span>
+                                <text>Отклонена</text>
+                            }
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">От пользователя:</span>
+                        <span class="info-value info-code">@Model.SenderUserId.Substring(0, 12)...</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Тип:</span>
+                        <span class="info-value">
+                            @if (!string.IsNullOrEmpty(Model.MessageId))
+                            {
+                                <span>💬 Сообщение</span>
+                            }
+                            else if (Model.PostId.HasValue)
+                            {
+                                <span>📝 Пост</span>
+                            }
+                            else
+                            {
+                                <span>👤 Профиль</span>
+                            }
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<style>
+.complaint-detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+}
+
+.complaint-card,
+.actions-panel,
+.info-panel {
+    border-radius: var(--radius);
+}
+
+.complaint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.complaint-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.complaint-dates {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.date-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.date-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.date-value {
+    color: var(--text);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+}
+
+.complaint-section {
+    margin-bottom: 28px;
+}
+
+.complaint-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(108, 99, 255, 0.05);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--brand-500);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.user-id {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: 'Courier New', monospace;
+}
+
+.reason-box {
+    padding: 16px;
+    background: rgba(108, 99, 255, 0.08);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.reason-category {
+    margin: 0 0 12px;
+}
+
+.category-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--brand-500);
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.92rem;
+}
+
+.reason-text {
+    margin: 0;
+    color: var(--text);
+    line-height: 1.6;
+    font-style: italic;
+}
+
+.content-box {
+    padding: 16px;
+    background: var(--surface-soft);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    overflow: auto;
+}
+
+.content-box-message {
+    border-left: 4px solid #3b82f6;
+}
+
+.content-box-post {
+    border-left: 4px solid #a855f7;
+}
+
+.content-meta {
+    margin: 0 0 12px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.content-meta code {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.content-text {
+    margin: 0;
+    color: var(--text);
+    line-height: 1.7;
+    word-break: break-word;
+}
+
+.admin-comment {
+    padding: 16px;
+    background: rgba(245, 158, 11, 0.08);
+    border-left: 4px solid #f59e0b;
+    border-radius: var(--radius);
+}
+
+.admin-comment p {
+    margin: 0;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.sanctions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sanction-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    border-left: 4px solid;
+}
+
+.sanction-item.ban {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: #ef4444;
+}
+
+.sanction-item.warning {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: #f59e0b;
+}
+
+.sanction-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.sanction-item > div {
+    flex: 1;
+}
+
+.sanction-title {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.sanction-desc {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Боковая панель */
+.complaint-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.actions-panel,
+.info-panel {
+    padding: 24px;
+}
+
+.action-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.action-form:last-of-type {
+    margin-bottom: 0;
+}
+
+.btn-action {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-action-review {
+    background: rgba(245, 158, 11, 0.15);
+    color: #d97706;
+    border: 1px solid #fbbf24;
+}
+
+.btn-action-review:hover {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-action-resolve {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+    border: 1px solid transparent;
+}
+
+.btn-action-resolve:hover {
+    background: #10b981;
+    color: white;
+}
+
+.btn-action-dismiss {
+    background: rgba(107, 114, 128, 0.15);
+    color: #4b5563;
+    border: 1px solid transparent;
+}
+
+.btn-action-dismiss:hover {
+    background: #6b7280;
+    color: white;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.92rem;
+    color: var(--text);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--brand-500);
+}
+
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.info-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.info-value {
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.info-code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+/* Статусные точки */
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-dot.new {
+    background: #ef4444;
+}
+
+.status-dot.reviewed {
+    background: #f59e0b;
+}
+
+.status-dot.resolved {
+    background: #10b981;
+}
+
+.status-dot.dismissed {
+    background: #6b7280;
+}
+
+@@media (max-width: 1024px) {
+    .complaint-detail-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .complaint-sidebar {
+        flex-direction: row;
+    }
+    
+    .actions-panel {
+        flex: 1;
+    }
+}
+
+@@media (max-width: 768px) {
+    .complaint-header {
+        flex-direction: column;
+    }
+    
+    .complaint-dates {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .user-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .complaint-sidebar {
+        flex-direction: column;
+    }
+    
+    .action-form {
+        width: 100%;
+    }
+}
+</style>
+
+@functions {
+    private string GetReasonText(int reason) {
+        var reasons = new Dictionary<int, string>
+        {
+            { 0, "Преследование / Оскорбление" },
+            { 1, "Спам" },
+            { 2, "Взрослый контент" },
+            { 3, "Вредоносный контент" },
+            { 4, "Медицинская дезинформация" },
+            { 5, "Выдача себя за другого" },
+            { 6, "Нарушение приватности" },
+            { 7, "Нарушение авторских прав" },
+            { 8, "Другое" }
+        };
+        return reasons.ContainsKey(reason) ? reasons[reason] : "Неизвестная причина";
+    }
+}

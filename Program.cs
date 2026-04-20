@@ -107,6 +107,9 @@ builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<INotesService, NotesService>();
 builder.Services.AddScoped<IGoalsService, GoalsService>();
 builder.Services.AddScoped<ICompanionService, CompanionService>();
+builder.Services.AddScoped<IComplaintService, ComplaintService>();
+builder.Services.AddScoped<INotificationsService, NotificationsService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 builder.Services.AddSignalR();
 

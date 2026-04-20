@@ -1,0 +1,517 @@
+@model AdminComplaintsViewModel
+
+@using Sofia.Web.ViewModels.Admin
+
+@{
+    ViewData["Title"] = "Управление жалобами";
+}
+
+<div class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="section-note">Модерация контента</p>
+            <h1 class="page-title">Жалобы</h1>
+        </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="complaints-stats">
+        <div class="stat-card">
+            <div class="stat-content">
+                <p class="stat-label">Всего жалоб</p>
+                <div class="stat-number">@Model.Stats.TotalComplaints</div>
+            </div>
+        </div>
+        <div class="stat-card stat-critical">
+            <div class="stat-content">
+                <p class="stat-label">Новые</p>
+                <div class="stat-number">@Model.Stats.NewComplaints</div>
+            </div>
+        </div>
+        <div class="stat-card stat-warning">
+            <div class="stat-content">
+                <p class="stat-label">На рассмотрении</p>
+                <div class="stat-number">@Model.Stats.ReviewedComplaints</div>
+            </div>
+        </div>
+        <div class="stat-card stat-success">
+            <div class="stat-content">
+                <p class="stat-label">Разрешены</p>
+                <div class="stat-number">@Model.Stats.ResolvedComplaints</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-content">
+                <p class="stat-label">Отклонены</p>
+                <div class="stat-number">@Model.Stats.DismissedComplaints</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-content">
+                <p class="stat-label">Нарушители</p>
+                <div class="stat-number">@Model.Stats.UsersWithComplaints</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="surface-panel complaints-filters">
+        <p class="filter-label">Фильтр по статусу:</p>
+        <div class="filter-buttons">
+            <a href="@Url.Action("Complaints")" class="filter-btn @(Model.StatusFilter == null ? "active" : "")">
+                Все
+            </a>
+            <a href="@Url.Action("Complaints", new { status = 0 })" class="filter-btn @(Model.StatusFilter == 0 ? "active" : "")">
+                <span class="status-dot new"></span>
+                Новые
+            </a>
+            <a href="@Url.Action("Complaints", new { status = 1 })" class="filter-btn @(Model.StatusFilter == 1 ? "active" : "")">
+                <span class="status-dot reviewed"></span>
+                На рассмотрении
+            </a>
+            <a href="@Url.Action("Complaints", new { status = 2 })" class="filter-btn @(Model.StatusFilter == 2 ? "active" : "")">
+                <span class="status-dot resolved"></span>
+                Разрешены
+            </a>
+            <a href="@Url.Action("Complaints", new { status = 3 })" class="filter-btn @(Model.StatusFilter == 3 ? "active" : "")">
+                <span class="status-dot dismissed"></span>
+                Отклонены
+            </a>
+        </div>
+    </div>
+
+    <!-- Таблица жалоб -->
+    <div class="surface-panel complaints-table-wrapper">
+        @if (Model.Complaints.Count == 0)
+        {
+            <div class="empty-state">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                </svg>
+                <h3>Жалоб не найдено</h3>
+                <p>Нет новых жалоб для модерации</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="complaints-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>На пользователя</th>
+                            <th>Причина</th>
+                            <th>Тип</th>
+                            <th>Дата</th>
+                            <th>Статус</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var complaint in Model.Complaints)
+                        {
+                            <tr class="complaint-row">
+                                <td class="complaint-id">#@complaint.Id</td>
+                                <td class="complaint-user">
+                                    <div class="user-info">
+                                        <span class="user-name">@complaint.TargetUserName</span>
+                                        <span class="user-id">@complaint.TargetUserId.Substring(0, Math.Min(16, complaint.TargetUserId.Length))...</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="reason-tag">@GetReasonText(complaint.Reason)</span>
+                                </td>
+                                <td>
+                                    @if (complaint.MessageId != null)
+                                    {
+                                        <span class="type-badge message">💬 Сообщение</span>
+                                    }
+                                    else if (complaint.PostId != null)
+                                    {
+                                        <span class="type-badge post">📝 Пост</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="type-badge user">👤 Профиль</span>
+                                    }
+                                </td>
+                                <td class="complaint-date">@complaint.CreatedAt.ToString("dd.MM HH:mm")</td>
+                                <td>
+                                    @if (complaint.Status == 0)
+                                    {
+                                        <span class="status-badge new">Новая</span>
+                                    }
+                                    else if (complaint.Status == 1)
+                                    {
+                                        <span class="status-badge reviewed">На рассмотрении</span>
+                                    }
+                                    else if (complaint.Status == 2)
+                                    {
+                                        <span class="status-badge resolved">Разрешена</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge dismissed">Отклонена</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("ComplaintDetail", new { id = complaint.Id })" class="btn-view">
+                                        Просмотр →
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+.complaints-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(108, 99, 255, 0.12);
+}
+
+.stat-card.stat-critical {
+    border-left: 4px solid #ef4444;
+}
+
+.stat-card.stat-warning {
+    border-left: 4px solid #f59e0b;
+}
+
+.stat-card.stat-success {
+    border-left: 4px solid #10b981;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.89rem;
+    font-weight: 500;
+    margin: 0 0 8px;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--brand-500);
+    margin: 0;
+}
+
+.complaints-filters {
+    margin-bottom: 24px;
+    padding: 24px;
+}
+
+.filter-label {
+    font-weight: 600;
+    margin: 0 0 16px;
+    font-size: 0.95rem;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+}
+
+.filter-btn:hover {
+    border-color: var(--brand-500);
+    color: var(--brand-500);
+}
+
+.filter-btn.active {
+    background: var(--brand-500);
+    border-color: var(--brand-500);
+    color: white;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-dot.new {
+    background: #ef4444;
+}
+
+.status-dot.reviewed {
+    background: #f59e0b;
+}
+
+.status-dot.resolved {
+    background: #10b981;
+}
+
+.status-dot.dismissed {
+    background: #6b7280;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.empty-state svg {
+    color: var(--border-strong);
+    margin-bottom: 16px;
+}
+
+.empty-state h3 {
+    margin: 12px 0 8px;
+    color: var(--text);
+    font-size: 1.1rem;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* Table styles */
+.complaints-table-wrapper {
+    overflow: hidden;
+}
+
+.complaints-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+.complaints-table thead tr {
+    border-bottom: 2px solid var(--border);
+}
+
+.complaints-table th {
+    padding: 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.complaints-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background-color var(--transition);
+}
+
+.complaints-table tbody tr:hover {
+    background: rgba(108, 99, 255, 0.04);
+}
+
+.complaints-table td {
+    padding: 16px;
+    font-size: 0.95rem;
+}
+
+.complaint-row.status-new {
+    background: rgba(239, 68, 68, 0.04);
+}
+
+.complaint-id {
+    font-weight: 600;
+    color: var(--brand-500);
+    font-family: 'Courier New', monospace;
+}
+
+.complaint-user {
+    min-width: 200px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 500;
+    color: var(--text);
+}
+
+.user-id {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: 'Courier New', monospace;
+}
+
+.reason-tag {
+    display: inline-block;
+    padding: 6px 12px;
+    background: rgba(108, 99, 255, 0.1);
+    color: var(--brand-500);
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.type-badge.message {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.type-badge.post {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+}
+
+.type-badge.user {
+    background: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+}
+
+.complaint-date {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.status-badge.new {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+}
+
+.status-badge.reviewed {
+    background: rgba(245, 158, 11, 0.15);
+    color: #d97706;
+}
+
+.status-badge.resolved {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+}
+
+.status-badge.dismissed {
+    background: rgba(107, 114, 128, 0.15);
+    color: #4b5563;
+}
+
+.btn-view {
+    color: var(--brand-500);
+    font-weight: 600;
+    font-size: 0.92rem;
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
+.btn-view:hover {
+    color: var(--brand-600);
+}
+
+@@media (max-width: 768px) {
+    .complaints-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .filter-buttons {
+        flex-direction: column;
+    }
+    
+    .filter-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .complaints-table thead {
+        display: none;
+    }
+    
+    .complaints-table tbody tr {
+        display: block;
+        margin-bottom: 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+    }
+    
+    .complaints-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .complaints-table td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-muted);
+        flex: 0 0 100px;
+    }
+}
+</style>
+
+@functions {
+    private string GetReasonText(int reason) {
+        var reasons = new Dictionary<int, string>
+        {
+            { 0, "Преследование" },
+            { 1, "Спам" },
+            { 2, "Взрослый контент" },
+            { 3, "Вредоносный контент" },
+            { 4, "Медицинская дезинформация" },
+            { 5, "Выдача себя за другого" },
+            { 6, "Нарушение приватности" },
+            { 7, "Нарушение авторских прав" },
+            { 8, "Другое" }
+        };
+        return reasons.ContainsKey(reason) ? reasons[reason] : "Неизвестная причина";
+    }
+}

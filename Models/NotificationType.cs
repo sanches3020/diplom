@@ -15,6 +15,10 @@
         MoodCheck = 13,
         PracticeReminder = 14,
         WeeklyReport = 15,
-        PsychologistReminder = 16
+        PsychologistReminder = 16,
+
+        // --- ТИПЫ ДЛЯ ЖАЛОБ И МОДЕРАЦИИ ---
+        ComplaintCreated = 20,
+        ComplaintUpdated = 21
     }
 }

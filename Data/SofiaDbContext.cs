@@ -64,6 +64,11 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
     // -----------------------------
     public DbSet<MediaFile> MediaFiles { get; set; }
 
+    // -----------------------------
+    // Жалобы и модерация
+    // -----------------------------
+    public DbSet<Complaint> Complaints { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -237,6 +242,62 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
             entity.Property(m => m.ContentType)
                 .IsRequired()
                 .HasMaxLength(100);
+        });
+
+        // -----------------------------
+        // Жалобы и модерация
+        // -----------------------------
+        builder.Entity<Complaint>(entity =>
+        {
+            entity.ToTable("Complaints");
+
+            entity.HasKey(c => c.Id);
+
+            entity.Property(c => c.Id)
+                .ValueGeneratedOnAdd();
+
+            // Foreign key: SenderUser
+            entity.HasOne(c => c.SenderUser)
+                .WithMany()
+                .HasForeignKey(c => c.SenderUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Foreign key: TargetUser
+            entity.HasOne(c => c.TargetUser)
+                .WithMany()
+                .HasForeignKey(c => c.TargetUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Foreign key: Message (optional)
+            entity.HasOne(c => c.Message)
+                .WithMany()
+                .HasForeignKey(c => c.MessageId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Foreign key: Post (optional)
+            entity.HasOne(c => c.Post)
+                .WithMany()
+                .HasForeignKey(c => c.PostId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Foreign key: ReviewedByAdmin (optional)
+            entity.HasOne(c => c.ReviewedByAdmin)
+                .WithMany()
+                .HasForeignKey(c => c.ReviewedByAdminId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Indexes для быстрого поиска
+            entity.HasIndex(c => c.Status)
+                .HasDatabaseName("IX_Complaints_Status");
+
+            entity.HasIndex(c => c.TargetUserId)
+                .HasDatabaseName("IX_Complaints_TargetUserId");
+
+            entity.HasIndex(c => c.CreatedAt)
+                .HasDatabaseName("IX_Complaints_CreatedAt");
+
+            entity.HasIndex(c => new { c.TargetUserId, c.Status })
+                .HasDatabaseName("IX_Complaints_TargetUserId_Status");
         });
     }
 }
