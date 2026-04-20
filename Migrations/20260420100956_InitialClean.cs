@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Sofia.Web.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCleanArchitecture : Migration
+    public partial class InitialClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -69,9 +69,9 @@ namespace Sofia.Web.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     DailyReminder = table.Column<bool>(type: "boolean", nullable: false),
                     DailyReminderTime = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    GoalReminder = table.Column<bool>(type: "boolean", nullable: false),
                     MoodCheckReminder = table.Column<bool>(type: "boolean", nullable: false),
                     MoodCheckTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    GoalReminder = table.Column<bool>(type: "boolean", nullable: false),
                     WeeklyReport = table.Column<bool>(type: "boolean", nullable: false),
                     WeeklyReportDay = table.Column<int>(type: "integer", nullable: false),
                     PracticeReminder = table.Column<bool>(type: "boolean", nullable: false),
@@ -106,26 +106,29 @@ namespace Sofia.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PsychologistProfile",
+                name: "Psychologists",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: true),
                     Specialization = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     Education = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     Experience = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Languages = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     Methods = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Languages = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     PhotoUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    IsVerified = table.Column<bool>(type: "boolean", nullable: false),
+                    PricePerHour = table.Column<decimal>(type: "numeric(10,2)", nullable: true),
+                    ContactPhone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    ContactEmail = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PsychologistProfile", x => x.Id);
+                    table.PrimaryKey("PK_Psychologists", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -160,7 +163,7 @@ namespace Sofia.Web.Migrations
                     IsBlocked = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    PsychologistProfileId = table.Column<int>(type: "integer", nullable: true),
+                    PsychologistId = table.Column<int>(type: "integer", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -180,9 +183,57 @@ namespace Sofia.Web.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_PsychologistProfile_PsychologistProfileId",
-                        column: x => x.PsychologistProfileId,
-                        principalTable: "PsychologistProfile",
+                        name: "FK_AspNetUsers_Psychologists_PsychologistId",
+                        column: x => x.PsychologistId,
+                        principalTable: "Psychologists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PsychologistSchedules",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PsychologistId = table.Column<int>(type: "integer", nullable: false),
+                    DayOfWeek = table.Column<int>(type: "integer", nullable: false),
+                    StartTime = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    EndTime = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PsychologistSchedules", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PsychologistSchedules_Psychologists_PsychologistId",
+                        column: x => x.PsychologistId,
+                        principalTable: "Psychologists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    CreatedByPsychologistId = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tests_Psychologists_CreatedByPsychologistId",
+                        column: x => x.CreatedByPsychologistId,
+                        principalTable: "Psychologists",
                         principalColumn: "Id");
                 });
 
@@ -192,10 +243,12 @@ namespace Sofia.Web.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AdminId = table.Column<string>(type: "text", nullable: false),
-                    Action = table.Column<string>(type: "text", nullable: false),
-                    TargetUserId = table.Column<string>(type: "text", nullable: true),
-                    Details = table.Column<string>(type: "text", nullable: true),
+                    AdminId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Action = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    TargetUserId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Details = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    IpAddress = table.Column<string>(type: "character varying(45)", maxLength: 45, nullable: true),
+                    UserAgent = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -419,78 +472,17 @@ namespace Sofia.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Psychologists",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true),
-                    Specialization = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Education = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Experience = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Languages = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Methods = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    PhotoUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    PricePerHour = table.Column<decimal>(type: "numeric(10,2)", nullable: true),
-                    ContactPhone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    ContactEmail = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Psychologists", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Psychologists_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Threads",
-                schema: "forum",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    AuthorId = table.Column<string>(type: "text", nullable: false),
-                    CategoryId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Threads", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Threads_AspNetUsers_AuthorId",
-                        column: x => x.AuthorId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Threads_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalSchema: "forum",
-                        principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PsychologistAppointments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
                     PsychologistId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     AppointmentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Notes = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
-                    Notes = table.Column<string>(type: "text", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -523,7 +515,7 @@ namespace Sofia.Web.Migrations
                     IsApproved = table.Column<bool>(type: "boolean", nullable: false),
                     IsVisible = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -535,30 +527,6 @@ namespace Sofia.Web.Migrations
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PsychologistReviews_Psychologists_PsychologistId",
-                        column: x => x.PsychologistId,
-                        principalTable: "Psychologists",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PsychologistSchedules",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PsychologistId = table.Column<int>(type: "integer", nullable: false),
-                    DayOfWeek = table.Column<int>(type: "integer", nullable: false),
-                    StartTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    EndTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PsychologistSchedules", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PsychologistSchedules_Psychologists_PsychologistId",
                         column: x => x.PsychologistId,
                         principalTable: "Psychologists",
                         principalColumn: "Id",
@@ -597,67 +565,37 @@ namespace Sofia.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tests",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    CreatedByPsychologistId = table.Column<int>(type: "integer", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tests", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tests_Psychologists_CreatedByPsychologistId",
-                        column: x => x.CreatedByPsychologistId,
-                        principalTable: "Psychologists",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Posts",
+                name: "Threads",
                 schema: "forum",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Content = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    AuthorId = table.Column<string>(type: "text", nullable: false),
+                    AuthorId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     AuthorId1 = table.Column<string>(type: "text", nullable: true),
-                    ThreadId = table.Column<int>(type: "integer", nullable: false),
-                    MediaFileId = table.Column<Guid>(type: "uuid", nullable: true)
+                    CategoryId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.PrimaryKey("PK_Threads", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Posts_AspNetUsers_AuthorId",
+                        name: "FK_Threads_AspNetUsers_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Posts_AspNetUsers_AuthorId1",
+                        name: "FK_Threads_AspNetUsers_AuthorId1",
                         column: x => x.AuthorId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Posts_MediaFiles_MediaFileId",
-                        column: x => x.MediaFileId,
-                        principalTable: "MediaFiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_Posts_Threads_ThreadId",
-                        column: x => x.ThreadId,
+                        name: "FK_Threads_Categories_CategoryId",
+                        column: x => x.CategoryId,
                         principalSchema: "forum",
-                        principalTable: "Threads",
+                        principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -745,6 +683,71 @@ namespace Sofia.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Posts",
+                schema: "forum",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Content = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    AuthorId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    AuthorId1 = table.Column<string>(type: "text", nullable: true),
+                    ThreadId = table.Column<int>(type: "integer", nullable: false),
+                    MediaFileId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Posts_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Posts_AspNetUsers_AuthorId1",
+                        column: x => x.AuthorId1,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Posts_MediaFiles_MediaFileId",
+                        column: x => x.MediaFileId,
+                        principalTable: "MediaFiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Posts_Threads_ThreadId",
+                        column: x => x.ThreadId,
+                        principalSchema: "forum",
+                        principalTable: "Threads",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Answers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    QuestionId = table.Column<int>(type: "integer", nullable: false),
+                    Text = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    Value = table.Column<int>(type: "integer", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Answers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Answers_Questions_QuestionId",
+                        column: x => x.QuestionId,
+                        principalTable: "Questions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PostLikes",
                 schema: "forum",
                 columns: table => new
@@ -775,28 +778,6 @@ namespace Sofia.Web.Migrations
                         column: x => x.PostId,
                         principalSchema: "forum",
                         principalTable: "Posts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Answers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    QuestionId = table.Column<int>(type: "integer", nullable: false),
-                    Text = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    Value = table.Column<int>(type: "integer", nullable: false),
-                    Order = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Answers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Answers_Questions_QuestionId",
-                        column: x => x.QuestionId,
-                        principalTable: "Questions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -884,9 +865,9 @@ namespace Sofia.Web.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_PsychologistProfileId",
+                name: "IX_AspNetUsers_PsychologistId",
                 table: "AspNetUsers",
-                column: "PsychologistProfileId",
+                column: "PsychologistId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -989,11 +970,6 @@ namespace Sofia.Web.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Psychologists_UserId",
-                table: "Psychologists",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PsychologistSchedules_PsychologistId",
                 table: "PsychologistSchedules",
                 column: "PsychologistId");
@@ -1043,6 +1019,12 @@ namespace Sofia.Web.Migrations
                 schema: "forum",
                 table: "Threads",
                 column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Threads_AuthorId1",
+                schema: "forum",
+                table: "Threads",
+                column: "AuthorId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Threads_CategoryId",
@@ -1156,6 +1138,9 @@ namespace Sofia.Web.Migrations
                 name: "Questions");
 
             migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
                 name: "Categories",
                 schema: "forum");
 
@@ -1164,12 +1149,6 @@ namespace Sofia.Web.Migrations
 
             migrationBuilder.DropTable(
                 name: "Psychologists");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "PsychologistProfile");
         }
     }
 }
