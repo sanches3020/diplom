@@ -1,0 +1,31 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7C6FEC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A78BFF;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  
+  <!-- Фоновый круг -->
+  <circle cx="100" cy="100" r="95" fill="url(#logoGradient)" filter="url(#shadow)"/>
+  
+  <!-- Буква "Н" -->
+  <g font-family="Arial, sans-serif" font-weight="bold" font-size="80" fill="white" text-anchor="middle">
+    <!-- Левая вертикаль "Н" -->
+    <line x1="70" y1="60" x2="70" y2="140" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <!-- Правая вертикаль "Н" -->
+    <line x1="110" y1="60" x2="110" y2="140" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <!-- Горизонтальная перемычка "Н" -->
+    <line x1="70" y1="100" x2="110" y2="100" stroke="white" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Буква "С" (совмещена справа) -->
+  <g transform="translate(140, 100)">
+    <!-- Дуга "С" -->
+    <path d="M 20,10 A 20,20 0 0,0 20,90" 
+          stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

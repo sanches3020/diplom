@@ -16,6 +16,7 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
     // -----------------------------
     public DbSet<Note> Notes { get; set; }
     public DbSet<Goal> Goals { get; set; }
+    public DbSet<GoalAction> GoalActions { get; set; }
     public DbSet<Practice> Practices { get; set; }
     public DbSet<EmotionEntry> EmotionEntries { get; set; }
 
@@ -93,6 +94,20 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
             .HasOne<ApplicationUser>()
             .WithMany(u => u.Goals)
             .HasForeignKey(g => g.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // GoalAction → Goal
+        builder.Entity<GoalAction>()
+            .HasOne(ga => ga.Goal)
+            .WithMany()
+            .HasForeignKey(ga => ga.GoalId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // GoalAction → User
+        builder.Entity<GoalAction>()
+            .HasOne(ga => ga.User)
+            .WithMany(u => u.GoalActions)
+            .HasForeignKey(ga => ga.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Appointment → User

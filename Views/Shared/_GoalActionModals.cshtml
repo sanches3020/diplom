@@ -1,0 +1,80 @@
+<!-- Goal Action Modal -->
+<div id="actionModalOverlay" class="modal-overlay">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3>📝 Новое действие по цели</h3>
+            <button type="button" class="modal-close-btn" id="actionCloseBtn">&times;</button>
+        </div>
+        <form id="actionForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="actionText">Что сделано<span style="color: #dc2626;">*</span></label>
+                    <textarea id="actionText" placeholder="Опишите, что вы сделали для достижения цели..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="resultText">Какой результат получен<span style="color: #dc2626;">*</span></label>
+                    <textarea id="resultText" placeholder="Опишите полученный результат..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="actionCloseBtn2">Отмена</button>
+                <button type="button" class="btn btn-primary" id="actionSaveBtn">💾 Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Goal History Modal -->
+<div id="historyModalOverlay" class="modal-overlay">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3>📊 История действий</h3>
+            <button type="button" class="modal-close-btn" id="historyCloseBtn">&times;</button>
+        </div>
+        <div id="historyForm" class="modal-body">
+            <!-- История действий будет загружена здесь -->
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="historyCloseBtn2">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Закрытие модали истории
+    document.addEventListener('DOMContentLoaded', () => {
+        const historyCloseBtn = document.getElementById('historyCloseBtn');
+        const historyCloseBtn2 = document.getElementById('historyCloseBtn2');
+        const historyModalOverlay = document.getElementById('historyModalOverlay');
+
+        const closeHistoryModal = () => {
+            if (historyModalOverlay) {
+                historyModalOverlay.classList.remove('active');
+            }
+        };
+
+        if (historyCloseBtn) {
+            historyCloseBtn.addEventListener('click', closeHistoryModal);
+        }
+        if (historyCloseBtn2) {
+            historyCloseBtn2.addEventListener('click', closeHistoryModal);
+        }
+
+        if (historyModalOverlay) {
+            historyModalOverlay.addEventListener('click', (e) => {
+                if (e.target === historyModalOverlay) {
+                    closeHistoryModal();
+                }
+            });
+        }
+
+        // Также закрывать вторую кнопку закрытия для action modal
+        const actionCloseBtn2 = document.getElementById('actionCloseBtn2');
+        if (actionCloseBtn2) {
+            actionCloseBtn2.addEventListener('click', () => {
+                document.getElementById('actionModalOverlay')?.classList.remove('active');
+            });
+        }
+    });
+</script>

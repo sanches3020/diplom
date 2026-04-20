@@ -1,0 +1,226 @@
+/* ========================================
+   SPACING SYSTEM (8px Grid)
+   ======================================== */
+
+:root {
+  /* Базовая сетка: 8px */
+  --spacing-unit: 8px;
+  
+  /* Размеры отступов */
+  --spacing-xs: 8px;     /* Малый */
+  --spacing-sm: 16px;    /* Средний */
+  --spacing-md: 24px;    /* Большой */
+  --spacing-lg: 32px;    /* Очень большой */
+  --spacing-xl: 48px;    /* Огромный (для секций) */
+  
+  /* Максимальная ширина контента */
+  --container-max-width: 1200px;
+  
+  /* Горизонтальные отступы контейнера */
+  --container-px-mobile: 24px;
+  --container-px-desktop: 48px;
+  
+  /* Вертикальный ритм */
+  --page-padding-vertical: 48px;
+}
+
+/* ========== CONTAINERS ========== */
+
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-px-mobile);
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 var(--container-px-desktop);
+  }
+}
+
+/* ========== PAGE PADDING ========== */
+
+.page-container {
+  padding-top: var(--page-padding-vertical);
+  padding-bottom: var(--page-padding-vertical);
+}
+
+/* ========== SPACING UTILITIES ========== */
+
+/* Padding */
+.p-xs { padding: var(--spacing-xs); }
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }
+.p-xl { padding: var(--spacing-xl); }
+
+.pt-xs { padding-top: var(--spacing-xs); }
+.pt-sm { padding-top: var(--spacing-sm); }
+.pt-md { padding-top: var(--spacing-md); }
+.pt-lg { padding-top: var(--spacing-lg); }
+.pt-xl { padding-top: var(--spacing-xl); }
+
+.pb-xs { padding-bottom: var(--spacing-xs); }
+.pb-sm { padding-bottom: var(--spacing-sm); }
+.pb-md { padding-bottom: var(--spacing-md); }
+.pb-lg { padding-bottom: var(--spacing-lg); }
+.pb-xl { padding-bottom: var(--spacing-xl); }
+
+.px-xs { padding-left: var(--spacing-xs); padding-right: var(--spacing-xs); }
+.px-sm { padding-left: var(--spacing-sm); padding-right: var(--spacing-sm); }
+.px-md { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
+.px-lg { padding-left: var(--spacing-lg); padding-right: var(--spacing-lg); }
+.px-xl { padding-left: var(--spacing-xl); padding-right: var(--spacing-xl); }
+
+.py-xs { padding-top: var(--spacing-xs); padding-bottom: var(--spacing-xs); }
+.py-sm { padding-top: var(--spacing-sm); padding-bottom: var(--spacing-sm); }
+.py-md { padding-top: var(--spacing-md); padding-bottom: var(--spacing-md); }
+.py-lg { padding-top: var(--spacing-lg); padding-bottom: var(--spacing-lg); }
+.py-xl { padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl); }
+
+/* Margin */
+.m-xs { margin: var(--spacing-xs); }
+.m-sm { margin: var(--spacing-sm); }
+.m-md { margin: var(--spacing-md); }
+.m-lg { margin: var(--spacing-lg); }
+.m-xl { margin: var(--spacing-xl); }
+
+.mt-xs { margin-top: var(--spacing-xs); }
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mt-xl { margin-top: var(--spacing-xl); }
+
+.mb-xs { margin-bottom: var(--spacing-xs); }
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.mb-xl { margin-bottom: var(--spacing-xl); }
+
+.mx-xs { margin-left: var(--spacing-xs); margin-right: var(--spacing-xs); }
+.mx-sm { margin-left: var(--spacing-sm); margin-right: var(--spacing-sm); }
+.mx-md { margin-left: var(--spacing-md); margin-right: var(--spacing-md); }
+.mx-lg { margin-left: var(--spacing-lg); margin-right: var(--spacing-lg); }
+.mx-xl { margin-left: var(--spacing-xl); margin-right: var(--spacing-xl); }
+
+.my-xs { margin-top: var(--spacing-xs); margin-bottom: var(--spacing-xs); }
+.my-sm { margin-top: var(--spacing-sm); margin-bottom: var(--spacing-sm); }
+.my-md { margin-top: var(--spacing-md); margin-bottom: var(--spacing-md); }
+.my-lg { margin-top: var(--spacing-lg); margin-bottom: var(--spacing-lg); }
+.my-xl { margin-top: var(--spacing-xl); margin-bottom: var(--spacing-xl); }
+
+/* Gap for Flexbox/Grid */
+.gap-xs { gap: var(--spacing-xs); }
+.gap-sm { gap: var(--spacing-sm); }
+.gap-md { gap: var(--spacing-md); }
+.gap-lg { gap: var(--spacing-lg); }
+.gap-xl { gap: var(--spacing-xl); }
+
+/* ========== CARD STYLING ========== */
+
+.card {
+  padding: var(--spacing-md);
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(124, 111, 236, 0.1);
+}
+
+.card + .card {
+  margin-top: var(--spacing-lg);
+}
+
+/* ========== HEADING SPACING ========== */
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: var(--spacing-sm);
+}
+
+h1 {
+  margin-top: var(--spacing-lg);
+}
+
+h2, h3 {
+  margin-top: var(--spacing-lg);
+}
+
+/* ========== FORM SPACING ========== */
+
+.form-group {
+  margin-bottom: var(--spacing-sm);
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-control {
+  margin-bottom: var(--spacing-sm);
+}
+
+.btn {
+  margin-top: var(--spacing-md);
+}
+
+/* ========== SECTION SPACING ========== */
+
+section {
+  padding: var(--spacing-xl) 0;
+}
+
+section + section {
+  border-top: 1px solid rgba(124, 111, 236, 0.1);
+}
+
+/* ========== NAVIGATION SPACING ========== */
+
+nav {
+  padding: var(--spacing-sm) 0;
+}
+
+nav ul {
+  gap: var(--spacing-lg);
+}
+
+nav li {
+  margin-right: var(--spacing-lg);
+}
+
+/* ========== MODAL SPACING ========== */
+
+.modal-content {
+  padding: var(--spacing-md);
+}
+
+.modal-header {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid rgba(124, 111, 236, 0.1);
+  margin-bottom: var(--spacing-md);
+}
+
+.modal-body {
+  padding: var(--spacing-md) 0;
+  margin-bottom: var(--spacing-md);
+}
+
+.modal-footer {
+  padding: var(--spacing-md) 0;
+  border-top: 1px solid rgba(124, 111, 236, 0.1);
+  margin-top: var(--spacing-md);
+}
+
+/* ========== RESPONSIVE ADJUSTMENTS ========== */
+
+@media (max-width: 768px) {
+  :root {
+    --container-px-mobile: 16px;
+  }
+  
+  section {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  nav ul {
+    gap: var(--spacing-md);
+  }
+}

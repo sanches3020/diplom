@@ -32,8 +32,22 @@ namespace Sofia.Web.Models
         [ForeignKey(nameof(PsychologistId))]
         public virtual Psychologist? Psychologist { get; set; }
 
+        // --------- Companion System ---------
+        /// <summary>
+        /// Дата регистрации пользователя для расчёта уровня компаньена
+        /// </summary>
+        public DateTime? CompanionJoinDate { get; set; }
+
+        /// <summary>
+        /// Текущий уровень компаньена (1-5)
+        /// </summary>
+        [Range(1, 5)]
+        public int CompanionLevel { get; set; } = 1;
+
+        // --------- Collections ---------
         public virtual ICollection<Note> Notes { get; set; } = new List<Note>();
         public virtual ICollection<Goal> Goals { get; set; } = new List<Goal>();
+        public virtual ICollection<GoalAction> GoalActions { get; set; } = new List<GoalAction>();
         public virtual ICollection<PsychologistAppointment> Appointments { get; set; } = new List<PsychologistAppointment>();
     }
 }

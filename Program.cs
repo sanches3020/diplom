@@ -102,6 +102,12 @@ builder.Services.AddScoped<IFileService, FileService>();
 // Чат
 builder.Services.AddSingleton<ChatStorage>();
 builder.Services.AddScoped<IChatService, ChatService>();
+
+// Прочие сервисы приложения
+builder.Services.AddScoped<INotesService, NotesService>();
+builder.Services.AddScoped<IGoalsService, GoalsService>();
+builder.Services.AddScoped<ICompanionService, CompanionService>();
+
 builder.Services.AddSignalR();
 
 var app = builder.Build();

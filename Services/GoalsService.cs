@@ -153,4 +153,56 @@ public class GoalsService : IGoalsService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    // ===== GoalAction Methods =====
+
+    /// <summary>
+    /// Получить историю действий для цели
+    /// </summary>
+    public async Task<List<GoalAction>> GetGoalActionsAsync(string userId, int goalId)
+    {
+        return await _context.GoalActions
+            .Where(ga => ga.GoalId == goalId && ga.UserId == userId)
+            .OrderByDescending(ga => ga.CreatedAt)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Добавить новое действие к цели
+    /// </summary>
+    public async Task<bool> AddGoalActionAsync(string userId, int goalId, string actionText, string resultText)
+    {
+        // Проверяем, что цель принадлежит пользователю
+        var goal = await GetGoalAsync(userId, goalId);
+        if (goal == null) return false;
+
+        var goalAction = new GoalAction
+        {
+            GoalId = goalId,
+            UserId = userId,
+            ActionText = actionText,
+            ResultText = resultText,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.GoalActions.Add(goalAction);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    /// <summary>
+    /// Удалить действие
+    /// </summary>
+    public async Task<bool> DeleteGoalActionAsync(string userId, int actionId)
+    {
+        var action = await _context.GoalActions
+            .Where(ga => ga.Id == actionId && ga.UserId == userId)
+            .FirstOrDefaultAsync();
+
+        if (action == null) return false;
+
+        _context.GoalActions.Remove(action);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

@@ -9,6 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/spacing.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/navigation.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/modals.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/ui-theme.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Sofia.Web.styles.css" asp-append-version="true" />
@@ -18,34 +21,83 @@
     @{ var currentPath = Context.Request.Path.ToString().ToLowerInvariant(); }
     <header class="topbar">
         <div class="container-fluid topbar-inner">
-            <a class="brand" asp-area="" asp-controller="Home" asp-action="Index">
-                Sofia
+            <!-- Логотип "НС" / Главная -->
+            <a class="brand" asp-area="" asp-controller="Home" asp-action="Index" title="НС - Наша София">
+                <img src="~/img/logo/logo-ns.svg" alt="НС логотип" class="logo-icon" />
+                <span class="logo-text">НС</span>
             </a>
+            
+            <!-- Основное меню навигации -->
             <nav class="main-nav">
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="@(currentPath.StartsWith("/home") || currentPath == "/" ? "active" : "")">Главная</a>
-                <a asp-area="" asp-controller="Chat" asp-action="Index" class="@(currentPath.StartsWith("/chat") ? "active" : "")">Чат</a>
-                <a asp-area="" asp-controller="Forum" asp-action="Index" class="@(currentPath.StartsWith("/forum") ? "active" : "")">Форум</a>
-            </nav>
-            <div class="profile-block">
-                <button type="button" class="profile-trigger" id="profileTrigger">
-                    <span class="profile-avatar">@((Context.Session.GetString("Username") ?? "П").FirstOrDefault().ToString().ToUpper())</span>
-                    <span>@(Context.Session.GetString("Username") ?? "Гость")</span>
-                </button>
-                <div class="profile-menu" id="profileMenu">
-                    <a asp-area="" asp-controller="Settings" asp-action="Profile" class="profile-item">Профиль</a>
-                    <a asp-area="" asp-controller="Settings" asp-action="Index" class="profile-item">Настройки</a>
-                    @if (Context.Session.GetString("UserRole") == "Admin")
+                @{
+                    var isAuthenticated = Context.User?.Identity?.IsAuthenticated ?? false;
+                    var userRole = Context.Session.GetString("UserRole") ?? "";
+                }
+
+                @if (isAuthenticated)
+                {
+                    <!-- Для авторизованных пользователей -->
+                    <a asp-area="" asp-controller="Notes" asp-action="Index" class="@(currentPath.StartsWith("/notes") ? "active" : "")">Заметки</a>
+                    <a asp-area="" asp-controller="Calendar" asp-action="Index" class="@(currentPath.StartsWith("/calendar") ? "active" : "")">Календарь</a>
+                    <a asp-area="" asp-controller="Goals" asp-action="Index" class="@(currentPath.StartsWith("/goals") ? "active" : "")">Цели</a>
+                    <a asp-area="" asp-controller="Stats" asp-action="Index" class="@(currentPath.StartsWith("/stats") ? "active" : "")">Статистика</a>
+                    <a asp-area="" asp-controller="Practices" asp-action="Index" class="@(currentPath.StartsWith("/practices") ? "active" : "")">Практики</a>
+                    <a asp-area="" asp-controller="Psychologist" asp-action="Index" class="@(currentPath.StartsWith("/psychologist") ? "active" : "")">Психолог</a>
+                    <a asp-area="" asp-controller="Tests" asp-action="Index" class="@(currentPath.StartsWith("/tests") ? "active" : "")">Тесты</a>
+                    <a asp-area="" asp-controller="Chat" asp-action="Index" class="@(currentPath.StartsWith("/chat") ? "active" : "")">Чат</a>
+                    <a asp-area="" asp-controller="Forum" asp-action="Index" class="@(currentPath.StartsWith("/forum") ? "active" : "")">Форум</a>
+                    
+                    @if (userRole == "Admin")
                     {
-                        <a asp-area="" asp-controller="Admin" asp-action="Index" class="profile-item">Админ‑панель</a>
+                        <a asp-area="" asp-controller="Admin" asp-action="Index" class="@(currentPath.StartsWith("/admin") ? "active" : "") admin-link">Админ‑панель</a>
                     }
-                    <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post">
-                        <button type="submit" class="profile-item">Выход</button>
-                    </form>
-                </div>
+                }
+                else
+                {
+                    <!-- Для гостей (приватные разделы с редиректом на логин) -->
+                    <a href="@Url.Action("Login", "Auth", new { returnUrl = "/Notes/Index" })">Заметки</a>
+                    <a href="@Url.Action("Login", "Auth", new { returnUrl = "/Calendar/Index" })">Календарь</a>
+                    <a href="@Url.Action("Login", "Auth", new { returnUrl = "/Goals/Index" })">Цели</a>
+                    <a href="@Url.Action("Login", "Auth", new { returnUrl = "/Stats/Index" })">Статистика</a>
+                    <a href="@Url.Action("Login", "Auth", new { returnUrl = "/Practices/Index" })">Практики</a>
+                    <a href="@Url.Action("Login", "Auth", new { returnUrl = "/Psychologist/Index" })">Психолог</a>
+                    <a href="@Url.Action("Login", "Auth", new { returnUrl = "/Tests/Index" })">Тесты</a>
+                    <a href="@Url.Action("Login", "Auth", new { returnUrl = "/Chat/Index" })">Чат</a>
+                    <a href="@Url.Action("Login", "Auth", new { returnUrl = "/Forum/Index" })">Форум</a>
+                }
+            </nav>
+            
+            <!-- Правая часть: вход/регистрация или профиль -->
+            <div class="profile-block">
+                @if (isAuthenticated)
+                {
+                    <!-- Для авторизованных пользователей -->
+                    <button type="button" class="profile-trigger" id="profileTrigger">
+                        <span class="profile-avatar">@((Context.Session.GetString("Username") ?? "П").FirstOrDefault().ToString().ToUpper())</span>
+                        <span class="profile-name">@(Context.Session.GetString("Username") ?? "Пользователь")</span>
+                    </button>
+                    <div class="profile-menu" id="profileMenu">
+                        <a asp-area="" asp-controller="Settings" asp-action="Profile" class="profile-item">Профиль</a>
+                        <a asp-area="" asp-controller="Settings" asp-action="Index" class="profile-item">Настройки</a>
+                        @if (userRole == "Admin")
+                        {
+                            <a asp-area="" asp-controller="Admin" asp-action="Index" class="profile-item">Админ‑панель</a>
+                        }
+                        <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" class="profile-logout">
+                            <button type="submit" class="profile-item">Выход</button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <!-- Для гостей -->
+                    <a asp-area="" asp-controller="Auth" asp-action="Login" class="nav-link btn-login">Войти</a>
+                    <a asp-area="" asp-controller="Auth" asp-action="Register" class="nav-link btn-register">Регистрация</a>
+                }
             </div>
         </div>
     </header>
-    <div class="container">
+    <div class="container main-content">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -57,8 +109,15 @@
         </div>
     </footer>
 
+    <!-- Goal Action Modals -->
+    @await Html.PartialAsync("_GoalActionModals")
+
+    <!-- Companion Modal -->
+    @await Html.PartialAsync("_CompanionModal")
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/goal-action-modal.js" asp-append-version="true"></script>
     <script>
         window.currentUserRole = '@(Context.Session.GetString("UserRole") ?? "")';
     </script>

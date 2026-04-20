@@ -12,4 +12,9 @@ public interface IGoalsService
     Task<bool> UpdateGoalAsync(string userId, UpdateGoalRequest request);
     Task<bool> DeleteGoalAsync(string userId, int id);
     Task<bool> UpdateProgressAsync(string userId, int id, int progress);
+
+    // GoalAction methods
+    Task<List<GoalAction>> GetGoalActionsAsync(string userId, int goalId);
+    Task<bool> AddGoalActionAsync(string userId, int goalId, string actionText, string resultText);
+    Task<bool> DeleteGoalActionAsync(string userId, int actionId);
 }

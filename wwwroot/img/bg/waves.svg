@@ -1,0 +1,41 @@
+<svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ECECFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Фоновый прямоугольник с градиентом -->
+  <rect width="1920" height="1080" fill="url(#bgGradient)"/>
+  
+  <!-- Волнистые линии -->
+  <!-- Линия 1 -->
+  <path d="M 0,200 Q 240,150 480,200 T 960,200 T 1440,200 T 1920,200" 
+        stroke="#D8D0FF" stroke-width="1.5" fill="none" opacity="0.6"/>
+  
+  <!-- Линия 2 -->
+  <path d="M 0,350 Q 240,300 480,350 T 960,350 T 1440,350 T 1920,350" 
+        stroke="#E8E0FF" stroke-width="1.5" fill="none" opacity="0.5"/>
+  
+  <!-- Линия 3 -->
+  <path d="M 0,500 Q 240,450 480,500 T 960,500 T 1440,500 T 1920,500" 
+        stroke="#D5C8FF" stroke-width="1.5" fill="none" opacity="0.6"/>
+  
+  <!-- Линия 4 -->
+  <path d="M 0,650 Q 240,600 480,650 T 960,650 T 1440,650 T 1920,650" 
+        stroke="#E0D8FF" stroke-width="1.5" fill="none" opacity="0.5"/>
+  
+  <!-- Линия 5 -->
+  <path d="M 0,800 Q 240,750 480,800 T 960,800 T 1440,800 T 1920,800" 
+        stroke="#D2CCFF" stroke-width="1.5" fill="none" opacity="0.6"/>
+  
+  <!-- Дополнительные тонкие волнистые линии для эффекта -->
+  <!-- Линия 6 -->
+  <path d="M 0,100 Q 320,80 640,100 T 1280,100 T 1920,100" 
+        stroke="#E8E0FF" stroke-width="1" fill="none" opacity="0.4"/>
+  
+  <!-- Линия 7 -->
+  <path d="M 0,900 Q 320,880 640,900 T 1280,900 T 1920,900" 
+        stroke="#E8E0FF" stroke-width="1" fill="none" opacity="0.4"/>
+</svg>

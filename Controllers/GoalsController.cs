@@ -97,4 +97,51 @@ public class GoalsController : Controller
         await _service.UpdateProgressAsync(userId, id, request.Progress);
         return RedirectToAction(nameof(Index));
     }
+
+    // ===== API Endpoints for GoalAction =====
+
+    [HttpPost("api/add-action")]
+    [Route("/api/goals/add-action")]
+    public async Task<IActionResult> AddAction([FromBody] SaveGoalActionRequest request)
+    {
+        var userId = GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        if (string.IsNullOrWhiteSpace(request.ActionText) || string.IsNullOrWhiteSpace(request.ResultText))
+            return BadRequest(new { message = "Поля не заполнены" });
+
+        var success = await _service.AddGoalActionAsync(userId, request.GoalId, request.ActionText, request.ResultText);
+        if (!success)
+            return NotFound(new { message = "Цель не найдена" });
+
+        return Ok(new { message = "Действие сохранено" });
+    }
+
+    [HttpGet("api/goals/{goalId}/actions")]
+    [Route("/api/goals/{goalId}/actions")]
+    public async Task<IActionResult> GetActions(int goalId)
+    {
+        var userId = GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var actions = await _service.GetGoalActionsAsync(userId, goalId);
+        return Ok(actions);
+    }
+
+    [HttpDelete("api/delete-action/{actionId}")]
+    [Route("/api/goals/delete-action/{actionId}")]
+    public async Task<IActionResult> DeleteAction(int actionId)
+    {
+        var userId = GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var success = await _service.DeleteGoalActionAsync(userId, actionId);
+        if (!success)
+            return NotFound(new { message = "Действие не найдено" });
+
+        return Ok(new { message = "Действие удалено" });
+    }
 }

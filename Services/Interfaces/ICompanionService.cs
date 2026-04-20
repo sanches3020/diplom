@@ -11,4 +11,8 @@ public interface ICompanionService
     Task<(int Value, string Message, string Mood)> FeedAsync(string userId);
     Task<(int Value, string Message, string Mood)> PlayAsync(string userId);
     Task<(int Value, string Message, string Mood)> ComfortAsync(string userId);
+
+    // Companion Level System
+    Task<CompanionLevelInfoResponse> GetCompanionLevelInfoAsync(string userId);
+    Task<bool> InitializeCompanionJoinDateAsync(string userId);
 }

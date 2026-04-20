@@ -16,7 +16,7 @@ public class PsychologistController : Controller
     private readonly IClientResultsService _clientResultsService;
     private readonly IScheduleService _scheduleService;
 
-    public PsychologistController(string userId,
+    public PsychologistController(
         IPsychologistService psychologistService,
         IClientAnalyticsService clientAnalyticsService,
         IPsychologistProfileService psychologistProfileService,

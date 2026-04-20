@@ -73,4 +73,30 @@ public class CompanionController : Controller
         var status = await _service.GetStatusAsync(userId);
         return Json(status);
     }
+
+    // ===== API Endpoints for Companion Levels =====
+
+    [HttpGet("api/level-info")]
+    [Route("/api/companion/level-info")]
+    public async Task<IActionResult> GetLevelInfo()
+    {
+        var userId = GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var levelInfo = await _service.GetCompanionLevelInfoAsync(userId);
+        return Ok(levelInfo);
+    }
+
+    [HttpPost("api/init-companion")]
+    [Route("/api/companion/init")]
+    public async Task<IActionResult> InitializeCompanion()
+    {
+        var userId = GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var success = await _service.InitializeCompanionJoinDateAsync(userId);
+        return Ok(new { success, message = success ? "Компаньон инициализирован" : "Компаньон уже был инициализирован" });
+    }
 }
