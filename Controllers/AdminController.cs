@@ -6,7 +6,7 @@ using Sofia.Web.Services.Interfaces;
 using Sofia.Web.ViewModels.Admin;
 using Sofia.Web.DTO.Complaints;
 
-[Authorize(Roles = "admin")]
+[Authorize(Roles = "Admin")]
 [Route("admin")]
 public class AdminController : Controller
 {

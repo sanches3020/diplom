@@ -4,7 +4,9 @@
 
 <div class="auth-wrapper">
     <div class="auth-split">
-        <div class="auth-art"></div>
+        <div class="auth-art">
+            <img src="~/img/logo/logo-ns.svg" alt="Логотип НС" class="auth-art-logo" />
+        </div>
         <div class="auth-pane">
             @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
             {
@@ -22,31 +24,31 @@
             <form asp-action="Register" method="post">
                 <div class="mb-3">
                     <label for="username" class="form-label">Имя пользователя *</label>
-                    <input type="text" class="form-control" id="username" name="username" required minlength="3" maxlength="30" placeholder="Придумайте уникальное имя">
+                    <input type="text" class="form-control" id="username" name="Username" required minlength="3" maxlength="30" placeholder="Придумайте уникальное имя">
                     <div class="form-text">3–30 символов</div>
                 </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email *</label>
-                        <input type="email" class="form-control" id="email" name="email" required placeholder="your.email@example.com">
+                        <input type="email" class="form-control" id="email" name="Email" required placeholder="your.email@example.com">
                         <div class="form-text">Используется для восстановления доступа</div>
                     </div>
                     <div class="mb-3">
                         <label for="fullName" class="form-label">Полное имя</label>
-                        <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Иван Иванов">
+                        <input type="text" class="form-control" id="fullName" name="FullName" placeholder="Иван Иванов">
                         <div class="form-text">Необязательно, но помогает персонализировать опыт</div>
                     </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Пароль *</label>
-                    <input type="password" class="form-control" id="password" name="password" required minlength="8" autocomplete="new-password" placeholder="Минимум 8 символов">
+                    <input type="password" class="form-control" id="password" name="Password" required minlength="8" autocomplete="new-password" placeholder="Минимум 8 символов">
                     <div class="form-text">Рекомендуется 1 заглавная, 1 цифра и 1 символ</div>
                 </div>
                     <div class="mb-3">
                         <label for="confirmPassword" class="form-label">Подтвердите пароль *</label>
-                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required autocomplete="new-password" placeholder="Повторите пароль">
+                    <input type="password" class="form-control" id="confirmPassword" name="ConfirmPassword" required autocomplete="new-password" placeholder="Повторите пароль">
                     </div>
                     <div class="mb-3">
                         <label for="role" class="form-label">Тип аккаунта *</label>
-                        <select class="form-select" id="role" name="role" onchange="togglePsychologistFields()">
+                        <select class="form-select" id="role" name="Role" onchange="togglePsychologistFields()">
                             <option value="user" selected>👤 Пользователь - веду дневник и работаю над собой</option>
                             <option value="psychologist">👨‍⚕️ Психолог - помогаю другим в их пути</option>
                         </select>

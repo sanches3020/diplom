@@ -24,7 +24,6 @@
             <!-- Логотип "НС" / Главная -->
             <a class="brand" asp-area="" asp-controller="Home" asp-action="Index" title="НС - Наша София">
                 <img src="~/img/logo/logo-ns.svg" alt="НС логотип" class="logo-icon" />
-                <span class="logo-text">НС</span>
             </a>
             
             <!-- Основное меню навигации -->
@@ -44,10 +43,10 @@
                     <a asp-area="" asp-controller="Practices" asp-action="Index" class="@(currentPath.StartsWith("/practices") ? "active" : "")">Практики</a>
                     <a asp-area="" asp-controller="Psychologist" asp-action="Index" class="@(currentPath.StartsWith("/psychologist") ? "active" : "")">Психолог</a>
                     <a asp-area="" asp-controller="Tests" asp-action="Index" class="@(currentPath.StartsWith("/tests") ? "active" : "")">Тесты</a>
-                    <a asp-area="" asp-controller="Chat" asp-action="Index" class="@(currentPath.StartsWith("/chat") ? "active" : "")">Чат</a>
-                    <a asp-area="" asp-controller="Forum" asp-action="Index" class="@(currentPath.StartsWith("/forum") ? "active" : "")">Форум</a>
+                    <a asp-area="" asp-controller="ChatPage" asp-action="Index" class="@(currentPath.StartsWith("/chat") ? "active" : "")">Чат</a>
+                    <a asp-area="" asp-controller="ForumPage" asp-action="Index" class="@(currentPath.StartsWith("/forum") ? "active" : "")">Форум</a>
                     
-                    @if (userRole == "Admin")
+                    @if (string.Equals(userRole, "Admin", StringComparison.OrdinalIgnoreCase))
                     {
                         <a asp-area="" asp-controller="Admin" asp-action="Index" class="@(currentPath.StartsWith("/admin") ? "active" : "") admin-link">Админ‑панель</a>
                     }
@@ -79,7 +78,7 @@
                     <div class="profile-menu" id="profileMenu">
                         <a asp-area="" asp-controller="Settings" asp-action="Profile" class="profile-item">Профиль</a>
                         <a asp-area="" asp-controller="Settings" asp-action="Index" class="profile-item">Настройки</a>
-                        @if (userRole == "Admin")
+                        @if (string.Equals(userRole, "Admin", StringComparison.OrdinalIgnoreCase))
                         {
                             <a asp-area="" asp-controller="Admin" asp-action="Index" class="profile-item">Админ‑панель</a>
                         }

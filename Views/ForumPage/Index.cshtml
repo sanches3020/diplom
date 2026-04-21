@@ -1,0 +1,68 @@
+﻿@model List<ForumCategory>
+@{
+    ViewData["Title"] = "Форум";
+}
+
+<div class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="section-note">Обсуждения сообщества</p>
+            <h1 class="page-title">Форум</h1>
+        </div>
+        <a href="/Forum/CreateThread" class="btn btn-brand">Создать тему</a>
+    </div>
+
+    <div class="forum-layout">
+        <section class="forum-list">
+            <div class="forum-header">
+                <div>
+                    <p class="section-note">Топ темы</p>
+                    <h2 class="section-title">Новые обсуждения</h2>
+                </div>
+                <div class="thread-tags">
+                    <span class="tag-pill">Психология</span>
+                    <span class="tag-pill">Эмоции</span>
+                </div>
+            </div>
+
+            <div class="forum-cards">
+                @if (!Model.Any())
+                {
+                    <div class="forum-card">
+                        <h3 class="forum-card-title">Категории пока не созданы</h3>
+                        <div class="forum-card-meta">Добавьте категории в БД, чтобы начать обсуждения.</div>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var category in Model)
+                    {
+                        <a href="/Forum/Category/@category.Id" class="forum-card">
+                            <h3 class="forum-card-title">@category.Title</h3>
+                            <div class="forum-card-meta">Тем: @category.Threads.Count · @category.Description</div>
+                        </a>
+                    }
+                }
+            </div>
+        </section>
+
+        <aside class="forum-thread-panel">
+            <div class="thread-header">
+                <p class="section-note">Навигация</p>
+                <h2 class="section-title">Категории и теги</h2>
+            </div>
+            <div class="comments-feed">
+                @foreach (var category in Model.Take(6))
+                {
+                    <a class="comment-item" href="/Forum/Category/@category.Id">
+                        <div class="comment-avatar">@category.Title[0]</div>
+                        <div class="comment-body">
+                            <p class="comment-text">@category.Title</p>
+                            <div class="comment-meta">@category.Threads.Count тем</div>
+                        </div>
+                    </a>
+                }
+            </div>
+        </aside>
+    </div>
+</div>

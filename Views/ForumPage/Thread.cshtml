@@ -1,0 +1,55 @@
+﻿@model Sofia.Web.Models.ForumThread
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="section-note">Тема</p>
+            <h1 class="page-title">@Model.Title</h1>
+        </div>
+        <a href="/Forum/CreatePost/@Model.Id" class="btn btn-brand">Ответить</a>
+    </div>
+
+    <section class="forum-thread-panel">
+        <div class="thread-header">
+            <div>
+                <p class="section-note">Открытая тема</p>
+                <h2 class="thread-title">@Model.Title</h2>
+            </div>
+            <div class="thread-tags">
+                <span class="tag-pill">Отношения</span>
+                <span class="tag-pill">Коммуникация</span>
+            </div>
+        </div>
+
+        <div class="comments-feed">
+            <div class="comment-thread">
+                @if (!Model.Posts.Any())
+                {
+                    <div class="comment-item">
+                        <div class="comment-avatar">i</div>
+                        <div class="comment-body">
+                            <div class="comment-meta">Система</div>
+                            <p class="comment-text">Пока нет ответов в этой теме. Напишите первый комментарий.</p>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var post in Model.Posts.OrderBy(p => p.CreatedAt))
+                    {
+                        <div class="comment-item">
+                            <div class="comment-avatar">@((post.Author?.UserName ?? "U")[0])</div>
+                            <div class="comment-body">
+                                <div class="comment-meta">@(post.Author?.UserName ?? "Пользователь") · @post.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm") · ❤ @post.Likes.Count</div>
+                                <p class="comment-text">@post.Content</p>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </section>
+</div>

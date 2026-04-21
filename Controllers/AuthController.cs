@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Sofia.Web.Data;
 using Sofia.Web.Models;
 using Sofia.Web.ViewModels.Auth;
-using Sofia.Web.Data;
-using System.Security.Claims;
 
 namespace Sofia.Web.Controllers;
 
@@ -40,26 +38,45 @@ public class AuthController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var user = await _userManager.FindByEmailAsync(model.Email);
+        var loginValue = model.UsernameOrEmail?.Trim() ?? string.Empty;
+        ApplicationUser? user = null;
+
+        if (!string.IsNullOrWhiteSpace(loginValue))
+        {
+            user = loginValue.Contains("@")
+                ? await _userManager.FindByEmailAsync(loginValue)
+                : await _userManager.FindByNameAsync(loginValue);
+
+            if (user == null && loginValue.Contains("@"))
+                user = await _userManager.FindByNameAsync(loginValue);
+        }
+
         if (user == null)
         {
-            model.Error = "������������ �� ������";
+            model.Error = "Пользователь не найден";
+            return View(model);
+        }
+
+        if (user.IsBlocked)
+        {
+            model.Error = "Ваш аккаунт заблокирован. Обратитесь к администратору.";
             return View(model);
         }
 
         var result = await _signInManager.PasswordSignInAsync(
             user,
             model.Password,
-            isPersistent: true,
+            isPersistent: model.RememberMe,
             lockoutOnFailure: false
         );
 
         if (!result.Succeeded)
         {
-            model.Error = "�������� ������";
+            model.Error = "Неверный логин или пароль";
             return View(model);
         }
 
+        await FillSessionAsync(user);
         return RedirectToAction("Index", "Home");
     }
 
@@ -74,15 +91,31 @@ public class AuthController : Controller
 
         if (model.Role != "user" && model.Role != "psychologist")
         {
-            model.Error = "������������ ����";
+            model.Error = "Некорректная роль";
+            return View(model);
+        }
+
+        var normalizedUserName = model.Username.Trim();
+        var normalizedEmail = model.Email.Trim().ToLowerInvariant();
+
+        if (await _userManager.FindByNameAsync(normalizedUserName) != null)
+        {
+            model.Error = "Пользователь с таким именем уже существует";
+            return View(model);
+        }
+
+        if (await _userManager.FindByEmailAsync(normalizedEmail) != null)
+        {
+            model.Error = "Пользователь с таким email уже существует";
             return View(model);
         }
 
         var user = new ApplicationUser
         {
-            UserName = model.Email,
-            Email = model.Email,
+            UserName = normalizedUserName,
+            Email = normalizedEmail,
             FullName = model.FullName,
+            UserType = model.Role,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -107,7 +140,7 @@ public class AuthController : Controller
             var profile = new Psychologist
             {
                 UserId = user.Id,
-                Name = model.FullName,
+                Name = model.FullName ?? user.UserName ?? "Психолог",
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
@@ -116,8 +149,9 @@ public class AuthController : Controller
             await _db.SaveChangesAsync();
         }
 
-        // ������� �������������
+        // вход после регистрации
         await _signInManager.SignInAsync(user, isPersistent: true);
+        await FillSessionAsync(user);
 
         return RedirectToAction("Index", "Home");
     }
@@ -126,6 +160,7 @@ public class AuthController : Controller
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
+        HttpContext.Session.Clear();
         return RedirectToAction("Index", "Home");
     }
 
@@ -138,22 +173,31 @@ public class AuthController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var user = await _userManager.FindByEmailAsync(model.Email);
+        var loginValue = model.EmailOrUsername.Trim();
+        var user = loginValue.Contains("@")
+            ? await _userManager.FindByEmailAsync(loginValue)
+            : await _userManager.FindByNameAsync(loginValue);
+
+        if (user == null && loginValue.Contains("@"))
+            user = await _userManager.FindByNameAsync(loginValue);
+
         if (user == null)
         {
-            model.Message = "���� ������������ ���������� � ������ ����������";
+            model.Message = "Если пользователь найден, инструкции появятся ниже.";
             return View(model);
         }
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-        model.Message = $"����� ��� ������: {token}";
+        model.Email = user.Email ?? string.Empty;
+        model.Message = $"Ссылка для сброса: /auth/reset-password?email={Uri.EscapeDataString(model.Email)}&token={Uri.EscapeDataString(token)}";
         return View(model);
     }
 
     [HttpGet("reset-password")]
     public IActionResult ResetPassword(string email, string token)
-        => View(new ResetPasswordViewModel { Email = email, Token = token });
+    {
+        return View(new ResetPasswordViewModel { Email = email, Token = token });
+    }
 
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
@@ -164,7 +208,7 @@ public class AuthController : Controller
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null)
         {
-            model.Error = "������������ �� ������";
+            model.Error = "Пользователь не найден";
             return View(model);
         }
 
@@ -178,5 +222,16 @@ public class AuthController : Controller
 
         model.Success = true;
         return View(model);
+    }
+
+    private async Task FillSessionAsync(ApplicationUser user)
+    {
+        HttpContext.Session.SetString("UserId", user.Id);
+        HttpContext.Session.SetString("Username", user.UserName ?? user.Email ?? "Пользователь");
+        HttpContext.Session.SetString("Email", user.Email ?? string.Empty);
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var primaryRole = roles.FirstOrDefault() ?? user.UserType ?? "user";
+        HttpContext.Session.SetString("UserRole", primaryRole);
     }
 }

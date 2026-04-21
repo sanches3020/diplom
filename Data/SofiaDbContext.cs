@@ -27,46 +27,19 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
     public DbSet<UserAnswer> UserAnswers { get; set; }
     public DbSet<TestInterpretation> TestInterpretations { get; set; }
 
-    // -----------------------------
-    // Психологи
-    // -----------------------------
     public DbSet<Psychologist> Psychologists { get; set; }
     public DbSet<PsychologistSchedule> PsychologistSchedules { get; set; }
     public DbSet<PsychologistTimeSlot> PsychologistTimeSlots { get; set; }
     public DbSet<PsychologistAppointment> PsychologistAppointments { get; set; }
-
-    // -----------------------------
-    // Отзывы
-    // -----------------------------
     public DbSet<PsychologistReview> PsychologistReviews { get; set; }
-
-    // -----------------------------
-    // Уведомления
-    // -----------------------------
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationSettings> NotificationSettings { get; set; }
-
-    // -----------------------------
-    // Логи
-    // -----------------------------
     public DbSet<AdminLog> AdminLogs { get; set; }
-
-    // -----------------------------
-    // Форум
-    // -----------------------------
     public DbSet<ForumCategory> ForumCategories { get; set; }
     public DbSet<ForumThread> ForumThreads { get; set; }
     public DbSet<ForumPost> ForumPosts { get; set; }
     public DbSet<ForumPostLike> ForumPostLikes { get; set; }
-
-    // -----------------------------
-    // Медиа
-    // -----------------------------
     public DbSet<MediaFile> MediaFiles { get; set; }
-
-    // -----------------------------
-    // Жалобы и модерация
-    // -----------------------------
     public DbSet<Complaint> Complaints { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)

@@ -88,6 +88,6 @@ public class ForumService : IForumService
 
     public Task CreatePostAsync(int threadId, string content, string authorId)
     {
-        throw new NotImplementedException();
+        return CreatePostAsync(threadId, content, authorId, null);
     }
 }

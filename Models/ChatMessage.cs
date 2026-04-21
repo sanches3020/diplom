@@ -35,7 +35,7 @@ namespace Sofia.Web.Models
         public string Text { get; set; } = null!;
 
         // Время отправки
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Системное сообщение (вход/выход)
         public bool IsSystem { get; set; } = false;

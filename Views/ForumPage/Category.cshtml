@@ -1,0 +1,37 @@
+﻿@model List<Sofia.Web.Models.ForumThread>
+@{
+    var category = ViewBag.Category as ForumCategory;
+    ViewData["Title"] = category?.Title ?? "Категория";
+}
+
+<div class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="section-note">Категория форума</p>
+            <h1 class="page-title">@(category?.Title ?? "Категория")</h1>
+        </div>
+        <a href="/Forum/CreateThread" class="btn btn-brand">Новая тема</a>
+    </div>
+
+    <section class="forum-list">
+        <div class="forum-cards">
+            @if (!Model.Any())
+            {
+                <div class="forum-card">
+                    <h3 class="forum-card-title">Тем пока нет</h3>
+                    <div class="forum-card-meta">Создайте первую тему в этой категории.</div>
+                </div>
+            }
+            else
+            {
+                @foreach (var thread in Model.OrderByDescending(t => t.CreatedAt))
+                {
+                    <a href="/Forum/Thread/@thread.Id" class="forum-card">
+                        <h3 class="forum-card-title">@thread.Title</h3>
+                        <div class="forum-card-meta">Ответов: @thread.Posts.Count · @thread.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                    </a>
+                }
+            }
+        </div>
+    </section>
+</div>

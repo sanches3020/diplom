@@ -1,6 +1,4 @@
-﻿@page
-@model Sofia.Web.Views.Chat.IndexModel
-@{
+﻿@{
     ViewData["Title"] = "Чат";
 }
 
@@ -70,47 +68,15 @@
                 </div>
             </div>
 
-            <div class="chat-feed">
+            <div class="chat-feed" id="chatFeed">
                 <div class="system-note">Сегодня</div>
 
-                <div class="chat-message-row">
-                    <div class="message-avatar">S</div>
-                    <div class="chat-bubble chat-bubble--incoming">
-                        <div class="message-meta">
-                            <span class="message-name">София</span>
-                            <span class="message-time">09:12</span>
-                        </div>
-                        <p class="message-text">Доброе утро! Расскажите, как у вас прошёл день.</p>
-                    </div>
-                </div>
-
-                <div class="chat-message-row outgoing">
-                    <div class="chat-bubble chat-bubble--outgoing">
-                        <div class="message-meta">
-                            <span class="message-name">Вы</span>
-                            <span class="message-time">09:13</span>
-                        </div>
-                        <p class="message-text">Всё прошло спокойно, я хочу обсудить планы на неделю.</p>
-                        <div class="message-status">✓ Прочитано</div>
-                    </div>
-                </div>
-
-                <div class="chat-message-row">
-                    <div class="message-avatar">S</div>
-                    <div class="chat-bubble chat-bubble--incoming">
-                        <div class="message-meta">
-                            <span class="message-name">София</span>
-                            <span class="message-time">09:14</span>
-                        </div>
-                        <p class="message-text">Отлично. Давайте сформируем список задач и распределим их по дням.</p>
-                    </div>
-                </div>
             </div>
 
             <div class="chat-input-bar">
                 <div class="chat-input-compose">
-                    <textarea placeholder="Напишите сообщение..." aria-label="Сообщение"></textarea>
-                    <button class="btn btn-brand" type="button">Отправить</button>
+                    <textarea id="chatInput" placeholder="Напишите сообщение..." aria-label="Сообщение"></textarea>
+                    <button id="chatSend" class="btn btn-brand" type="button">Отправить</button>
                 </div>
                 <div class="chat-actions">
                     <button class="btn btn-ghost" type="button">📎 Прикрепить</button>
@@ -122,11 +88,16 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const sidebar = document.querySelector('.chat-sidebar');
             const openButton = document.querySelector('.chat-sidebar-open');
             const closeButton = document.querySelector('.chat-sidebar-close');
+            const chatFeed = document.getElementById('chatFeed');
+            const sendButton = document.getElementById('chatSend');
+            const input = document.getElementById('chatInput');
+            const room = 'general';
 
             if (!sidebar || !openButton || !closeButton) return;
 
@@ -136,6 +107,52 @@
 
             closeButton.addEventListener('click', function () {
                 sidebar.classList.remove('open');
+            });
+
+            function renderMessage(message) {
+                if (!chatFeed || !message) return;
+                const isOutgoing = message.userName === 'Вы';
+                const avatar = (message.userName || 'U').charAt(0).toUpperCase();
+                const row = document.createElement('div');
+                row.className = `chat-message-row ${isOutgoing ? 'outgoing' : ''}`;
+                row.innerHTML = `
+                    ${isOutgoing ? '' : `<div class="message-avatar">${avatar}</div>`}
+                    <div class="chat-bubble ${isOutgoing ? 'chat-bubble--outgoing' : 'chat-bubble--incoming'}">
+                        <div class="message-meta">
+                            <span class="message-name">${message.userName || 'Пользователь'}</span>
+                            <span class="message-time">${new Date(message.sentAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                        <p class="message-text"></p>
+                    </div>`;
+                row.querySelector('.message-text').textContent = message.text || '';
+                chatFeed.appendChild(row);
+                chatFeed.scrollTop = chatFeed.scrollHeight;
+            }
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl('/chatHub')
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on('ReceiveHistory', function (receivedRoom, history) {
+                if (receivedRoom !== room || !chatFeed) return;
+                chatFeed.querySelectorAll('.chat-message-row').forEach(x => x.remove());
+                history.forEach(renderMessage);
+            });
+
+            connection.on('ReceiveMessage', function (receivedRoom, message) {
+                if (receivedRoom === room) renderMessage(message);
+            });
+
+            connection.start().then(function () {
+                connection.invoke('JoinRoom', room);
+            });
+
+            sendButton?.addEventListener('click', function () {
+                const text = (input?.value || '').trim();
+                if (!text) return;
+                connection.invoke('SendMessage', room, text);
+                input.value = '';
             });
         });
     </script>

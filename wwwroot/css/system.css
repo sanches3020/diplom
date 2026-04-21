@@ -82,3 +82,226 @@
 /* Ensure dropdown menus are not clipped inside overflow hidden parents */
 .dropdown, .btn-group { overflow: visible; }
 .dropdown-menu { z-index: 2000; }
+
+/* ===== Unified compact visual rhythm ===== */
+:root {
+    --nav-height: 58px;
+    --nav-active: #7B61FF;
+}
+
+body {
+    background-color: #f7f8fc;
+    background-image: url('/img/bg/waves.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center top;
+}
+
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1200;
+    height: var(--nav-height);
+    background: #FFFFFF;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+    padding: 0;
+}
+
+.topbar .topbar-inner {
+    min-height: var(--nav-height);
+    height: var(--nav-height);
+    padding: 0 24px;
+    gap: 16px;
+    flex-wrap: nowrap;
+}
+
+.brand {
+    flex: 0 0 auto;
+    min-width: fit-content;
+}
+
+.logo-icon {
+    width: 34px;
+    height: 34px;
+}
+
+.main-nav {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0 12px;
+}
+
+.main-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.main-nav a {
+    padding: 0;
+    color: #475569;
+    font-size: 0.92rem;
+    font-weight: 500;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+    color: var(--nav-active) !important;
+}
+
+.main-nav a.active::after {
+    display: none;
+}
+
+.profile-block {
+    flex: 0 0 auto;
+    gap: 10px;
+}
+
+.btn-login,
+.btn-register {
+    margin-left: 4px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    font-size: 0.88rem;
+}
+
+.btn-register {
+    background: #7B61FF;
+}
+
+.btn-register:hover,
+.btn-login:hover {
+    transform: none;
+}
+
+.main-content {
+    padding-top: calc(var(--nav-height) + 18px);
+    padding-bottom: 48px;
+}
+
+main.pb-3 {
+    padding-bottom: 0 !important;
+}
+
+footer.footer {
+    margin-top: 24px;
+    padding: 12px 0;
+    line-height: 1.4;
+}
+
+/* Unified typography */
+h1, h2, h3, h4, h5, h6 {
+    line-height: 1.25;
+    margin-top: 0;
+}
+
+h1 { font-size: 1.8rem; margin-bottom: 0.9rem; }
+h2 { font-size: 1.45rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.2rem; margin-bottom: 0.7rem; }
+
+p, .form-text, small {
+    line-height: 1.45;
+}
+
+/* Unified cards, forms, buttons, tables, lists */
+.card {
+    border-radius: 12px;
+    border: 1px solid rgba(124, 111, 236, 0.14);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.card .card-header {
+    padding: 0.75rem 1rem;
+}
+
+.card .card-body {
+    padding: 0.95rem 1rem !important;
+}
+
+.form-control,
+.form-select,
+textarea.form-control {
+    min-height: 40px;
+    border-radius: 10px;
+    padding: 0.5rem 0.8rem;
+}
+
+textarea.form-control {
+    min-height: 96px;
+}
+
+.btn {
+    min-height: 38px;
+    border-radius: 10px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    margin-top: 0;
+}
+
+.table th,
+.table td {
+    padding: 0.6rem 0.7rem;
+    vertical-align: middle;
+}
+
+ul, ol {
+    margin-bottom: 0.75rem;
+    padding-left: 1.05rem;
+}
+
+/* Auth pages with logo */
+.auth-wrapper {
+    min-height: calc(100vh - var(--nav-height) - 80px);
+    padding: 1.25rem 0;
+    background: transparent;
+}
+
+.auth-split {
+    gap: 16px;
+    max-width: 1060px;
+}
+
+.auth-art {
+    min-height: 320px;
+    border-radius: 16px;
+    border: 1px solid rgba(124, 111, 236, 0.15);
+    box-shadow: 0 8px 26px rgba(124, 111, 236, 0.08);
+}
+
+.auth-art::before,
+.auth-art::after {
+    content: none;
+}
+
+.auth-art-logo {
+    width: min(220px, 62%);
+    height: auto;
+    filter: drop-shadow(0 10px 26px rgba(124, 111, 236, 0.2));
+}
+
+.auth-pane {
+    border-radius: 14px;
+    padding: 18px;
+    max-height: none;
+}
+
+@media (max-width: 992px) {
+    .main-nav {
+        justify-content: flex-start;
+        gap: 20px;
+    }
+}
