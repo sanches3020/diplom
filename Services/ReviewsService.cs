@@ -53,7 +53,7 @@ public class ReviewsService : IReviewsService
 
         review.IsApproved = true;
         review.IsVisible = true;
-        review.UpdatedAt = DateTime.Now;
+        review.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
         return (true, "Отзыв одобрен");
@@ -75,7 +75,7 @@ public class ReviewsService : IReviewsService
 
         review.IsApproved = false;
         review.IsVisible = false;
-        review.UpdatedAt = DateTime.Now;
+        review.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
         return (true, "Отзыв отклонён");

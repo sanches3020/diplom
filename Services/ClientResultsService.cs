@@ -78,7 +78,7 @@ public class ClientResultsService : IClientResultsService
         }
 
         var bytes = Encoding.UTF8.GetBytes(sb.ToString());
-        var fileName = $"client_{clientUserId}_results_{DateTime.Now:yyyyMMdd}.csv";
+        var fileName = $"client_{clientUserId}_results_{DateTime.UtcNow:yyyyMMdd}.csv";
 
         return new ClientResultsCsvResponse { Success = true, Message = "CSV сформирован", FileBytes = bytes, FileName = fileName };
     }

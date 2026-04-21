@@ -94,7 +94,7 @@ public class NotificationsService : INotificationsService
         settings.PsychologistReminder = request.PsychologistReminder;
         settings.EmailNotifications = request.EmailNotifications;
         settings.PushNotifications = request.PushNotifications;
-        settings.UpdatedAt = DateTime.Now;
+        settings.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
         return true;
@@ -109,7 +109,7 @@ public class NotificationsService : INotificationsService
             Type = request.Type,
             Priority = request.Priority,
             ScheduledAt = request.ScheduledAt,
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
             IsActive = true,
             IsRead = false
         };
@@ -122,7 +122,7 @@ public class NotificationsService : INotificationsService
 
     public async Task<List<NotificationResponse>> CheckNotificationsAsync(string userId)
     {
-        var now = DateTime.Now;
+        var now = DateTime.UtcNow;
         var settings = await GetSettingsAsync();
 
         var result = new List<NotificationResponse>();

@@ -72,7 +72,7 @@ public class NotesService : INotesService
 
         note.IsPinned = request.IsPinned;
         note.ShareWithPsychologist = request.ShareWithPsychologist;
-        note.UpdatedAt = DateTime.Now;
+        note.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
 
@@ -110,7 +110,7 @@ public class NotesService : INotesService
 
     public async Task<(bool Success, int TodayNotes, int PinnedNotes, int SharedNotes)> GetStatsAsync(string userId)
     {
-        var today = DateTime.Today;
+        var today = DateTime.UtcNow.Date;
 
         var todayNotes = await _context.Notes
             .CountAsync(n => n.UserId == userId && n.Date.Date == today);

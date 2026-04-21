@@ -88,7 +88,7 @@ public class AppointmentsService : IAppointmentsService
             AppointmentDate = appointmentDateTime,
             Notes = request.Notes ?? "",
             Status = AppointmentStatus.Scheduled,
-            CreatedAt = DateTime.Now
+            CreatedAt = DateTime.UtcNow
         };
 
         _context.PsychologistAppointments.Add(appointment);

@@ -110,7 +110,7 @@ public class SettingsService : ISettingsService
             .OrderByDescending(g => g.CreatedAt)
             .ToListAsync();
 
-        var fileName = $"sofia_export_{DateTime.Now:yyyy-MM-dd}";
+        var fileName = $"sofia_export_{DateTime.UtcNow:yyyy-MM-dd}";
 
         if (format == "json")
         {
@@ -118,7 +118,7 @@ public class SettingsService : ISettingsService
             {
                 Notes = notes,
                 Goals = goals,
-                ExportDate = DateTime.Now,
+                ExportDate = DateTime.UtcNow,
                 Version = "1.0"
             };
 

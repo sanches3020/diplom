@@ -123,7 +123,7 @@ public class UserTestService : IUserTestService
                     UserId = userId,
                     QuestionId = q.Id,
                     TextAnswer = value,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 });
                 continue;
             }
@@ -137,7 +137,7 @@ public class UserTestService : IUserTestService
                         UserId = userId,
                         QuestionId = q.Id,
                         AnswerId = ansId,
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.UtcNow
                     });
                 }
             }
@@ -182,7 +182,7 @@ public class UserTestService : IUserTestService
         {
             UserId = userId,
             TestId = test.Id,
-            TakenAt = DateTime.Now,
+            TakenAt = DateTime.UtcNow,
             Score = score,
             Level = level,
             Interpretation = interpretation

@@ -22,6 +22,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<INotesService, NotesService>();
         services.AddScoped<IGoalsService, GoalsService>();
         services.AddScoped<IHomeService, HomeService>();
+        services.AddScoped<ICalendarService, CalendarService>();
+        services.AddScoped<ITestsService, TestsService>();
+        services.AddScoped<IChoosePsychologistService, ChoosePsychologistService>();
+        services.AddScoped<IPracticesService, PracticesService>();
 
         // Психологи и клиентская логика
         services.AddScoped<IPsychologistService, PsychologistService>();

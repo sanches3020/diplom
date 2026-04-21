@@ -18,7 +18,7 @@ public class CalendarService : ICalendarService
 
     public async Task<CalendarIndexViewModel> GetCalendarAsync(string userId, int? year, int? month)
     {
-        var targetDate = DateTime.Now;
+        var targetDate = DateTime.UtcNow;
 
         if (year.HasValue && month.HasValue)
             targetDate = new DateTime(year.Value, month.Value, 1);
@@ -91,7 +91,7 @@ public class CalendarService : ICalendarService
             Date = date,
             Emotion = emotionType,
             Note = request.Note,
-            CreatedAt = DateTime.Now
+            CreatedAt = DateTime.UtcNow
         };
 
         _context.EmotionEntries.Add(emotionEntry);
@@ -130,7 +130,7 @@ public class CalendarService : ICalendarService
 public async Task<(IEnumerable<object> EmotionStats, int DaysBack)> GetEmotionStatsAsync(string userId, int? days)
 {
     var daysBack = days ?? 30;
-    var startDate = DateTime.Now.AddDays(-daysBack);
+    var startDate = DateTime.UtcNow.AddDays(-daysBack);
 
     var emotionStats = await _context.EmotionEntries
         .Where(e => e.UserId == userId && e.CreatedAt >= startDate)

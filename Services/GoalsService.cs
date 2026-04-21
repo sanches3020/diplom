@@ -32,9 +32,9 @@ public class GoalsService : IGoalsService
                     Type = GoalType.Wellness,
                     Status = GoalStatus.Active,
                     Progress = 0,
-                    CreatedAt = DateTime.Now,
-                    Date = DateTime.Today,
-                    TargetDate = DateTime.Today.AddMonths(1),
+                    CreatedAt = DateTime.UtcNow,
+                    Date = DateTime.UtcNow.Date,
+                    TargetDate = DateTime.UtcNow.Date.AddMonths(1),
                     UserId = userId
                 },
                 new Goal {
@@ -43,9 +43,9 @@ public class GoalsService : IGoalsService
                     Type = GoalType.Professional,
                     Status = GoalStatus.Active,
                     Progress = 0,
-                    CreatedAt = DateTime.Now.AddDays(-7),
-                    Date = DateTime.Today.AddDays(-7),
-                    TargetDate = DateTime.Today.AddDays(14),
+                    CreatedAt = DateTime.UtcNow.AddDays(-7),
+                    Date = DateTime.UtcNow.Date.AddDays(-7),
+                    TargetDate = DateTime.UtcNow.Date.AddDays(14),
                     UserId = userId
                 },
                 new Goal {
@@ -54,9 +54,9 @@ public class GoalsService : IGoalsService
                     Type = GoalType.Professional,
                     Status = GoalStatus.Active,
                     Progress = 0,
-                    CreatedAt = DateTime.Now,
-                    Date = DateTime.Today,
-                    TargetDate = DateTime.Today.AddMonths(2),
+                    CreatedAt = DateTime.UtcNow,
+                    Date = DateTime.UtcNow.Date,
+                    TargetDate = DateTime.UtcNow.Date.AddMonths(2),
                     UserId = userId
                 }
             };
@@ -105,7 +105,7 @@ public class GoalsService : IGoalsService
             Progress = request.Progress,
             Date = request.Date,
             TargetDate = request.TargetDate,
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
             UserId = userId
         };
 

@@ -25,7 +25,7 @@ public class ScheduleService : IScheduleService
         if (psychologist == null)
             return null;
 
-        var startDate = DateTime.Today;
+        var startDate = DateTime.UtcNow.Date;
         var endDate = startDate.AddDays(14);
 
         var schedules = await _context.PsychologistSchedules
@@ -85,7 +85,7 @@ public class ScheduleService : IScheduleService
             StartTime = request.StartTime,
             EndTime = request.EndTime,
             IsAvailable = true,
-            CreatedAt = DateTime.Now
+            CreatedAt = DateTime.UtcNow
         };
 
         _context.PsychologistSchedules.Add(schedule);
@@ -150,7 +150,7 @@ public class ScheduleService : IScheduleService
                     EndTime = current.Add(TimeSpan.FromHours(1)),
                     IsAvailable = true,
                     IsBooked = false,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 });
             }
 

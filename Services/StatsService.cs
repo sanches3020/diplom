@@ -19,7 +19,7 @@ public class StatsService : IStatsService
 
     public async Task<StatsIndexViewModel> GetStatsAsync(string userId, int daysBack)
     {
-        var startDate = DateTime.Now.AddDays(-daysBack);
+        var startDate = DateTime.UtcNow.AddDays(-daysBack);
 
         var vm = new StatsIndexViewModel
         {
@@ -89,7 +89,7 @@ public class StatsService : IStatsService
 
             MoodTrends = await _context.EmotionEntries
                 .Where(e => e.UserId == userId &&
-                            e.Date >= DateTime.Now.AddDays(-7))
+                            e.Date >= DateTime.UtcNow.AddDays(-7))
                 .GroupBy(e => e.Date.Date)
                 .Select(g => new
                 {
@@ -106,7 +106,7 @@ public class StatsService : IStatsService
 
     public async Task<byte[]> ExportCsvAsync(string userId, int daysBack)
     {
-        var startDate = DateTime.Now.AddDays(-daysBack);
+        var startDate = DateTime.UtcNow.AddDays(-daysBack);
 
         var notes = await _context.Notes
             .AsNoTracking()
@@ -128,7 +128,7 @@ public class StatsService : IStatsService
     public async Task<InsightsViewModel> GetInsightsAsync(string userId)
     {
         var vm = new InsightsViewModel();
-        var last30 = DateTime.Now.AddDays(-30);
+        var last30 = DateTime.UtcNow.AddDays(-30);
 
         var notes = await _context.Notes
             .AsNoTracking()
@@ -151,8 +151,8 @@ public class StatsService : IStatsService
 
     public async Task<ReportViewModel> GenerateReportAsync(string userId, int daysBack, string format)
     {
-        var start = DateTime.Now.AddDays(-daysBack);
-        var end = DateTime.Now;
+        var start = DateTime.UtcNow.AddDays(-daysBack);
+        var end = DateTime.UtcNow;
 
         var notes = await _context.Notes
             .AsNoTracking()
@@ -169,7 +169,7 @@ public class StatsService : IStatsService
             Period = new { Start = start, End = end, Days = daysBack },
             Notes = notes,
             Goals = goals,
-            GeneratedAt = DateTime.Now
+            GeneratedAt = DateTime.UtcNow
         };
 
         return new ReportViewModel

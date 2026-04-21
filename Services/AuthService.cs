@@ -83,7 +83,7 @@ public class AuthService : IAuthService
                 ContactPhone = request.ContactPhone,
                 ContactEmail = request.Email,
                 IsActive = true,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.Psychologists.Add(psychologist);

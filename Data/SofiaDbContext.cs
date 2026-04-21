@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sofia.Web.Models;
 
 namespace Sofia.Web.Data;
@@ -44,6 +45,32 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        // Глобальный конвертер для всех DateTime полей → UTC
+        var converter = new ValueConverter<DateTime, DateTime>(
+            v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+        var nullableConverter = new ValueConverter<DateTime?, DateTime?>(
+            v => v.HasValue 
+                ? (v.Value.Kind == DateTimeKind.Utc ? v.Value : v.Value.ToUniversalTime())
+                : v,
+            v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+
+        foreach (var entityType in builder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime))
+                {
+                    property.SetValueConverter(converter);
+                }
+                else if (property.ClrType == typeof(DateTime?))
+                {
+                    property.SetValueConverter(nullableConverter);
+                }
+            }
+        }
+
         base.OnModelCreating(builder);
 
         // -----------------------------

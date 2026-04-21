@@ -43,7 +43,7 @@ public class NotesController : Controller
     {
         var targetDate = !string.IsNullOrEmpty(date) && DateTime.TryParse(date, out var parsedDate)
             ? parsedDate
-            : DateTime.Today;
+            : DateTime.UtcNow.Date;
 
         var vm = new NoteCreateViewModel
         {
