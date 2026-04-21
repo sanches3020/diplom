@@ -12,11 +12,34 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration config)
     {
+        // Singleton
+        services.AddSingleton<ChatStorage>();
+
+        // Основные сервисы
         services.AddScoped<IUserTestService, UserTestService>();
         services.AddScoped<IForumService, ForumService>();
         services.AddScoped<IChatService, ChatService>();
         services.AddScoped<INotesService, NotesService>();
         services.AddScoped<IGoalsService, GoalsService>();
+        services.AddScoped<IHomeService, HomeService>();
+
+        // Психологи и клиентская логика
+        services.AddScoped<IPsychologistService, PsychologistService>();
+        services.AddScoped<IScheduleService, ScheduleService>();
+        services.AddScoped<IReviewsService, ReviewsService>();
+        services.AddScoped<IAppointmentsService, AppointmentsService>();
+        services.AddScoped<IClientResultsService, ClientResultsService>();
+        services.AddScoped<ISettingsService, SettingsService>();
+        services.AddScoped<IStatsService, StatsService>();
+        services.AddScoped<IPsychologistProfileService, PsychologistProfileService>();
+        services.AddScoped<IClientAnalyticsService, ClientAnalyticsService>();
+
+        // Дополнительные сервисы
+        services.AddScoped<ICompanionService, CompanionService>();
+        services.AddScoped<IComplaintService, ComplaintService>();
+        services.AddScoped<INotificationsService, NotificationsService>();
+        services.AddScoped<IAdminService, AdminService>();
+        services.AddScoped<IFileService, FileService>();
 
         return services;
     }
@@ -45,6 +68,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddSignalR();
+
         services.AddSession(options =>
         {
             options.Cookie.HttpOnly = true;
@@ -56,10 +80,15 @@ public static class ServiceCollectionExtensions
         {
             options.AddPolicy("Default", policy =>
             {
-                policy.WithOrigins(config["Cors:Origins"]!.Split(","))
-                      .AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .AllowCredentials();
+                var origins = config.GetSection("Cors:AllowedOrigins").Get<string[]>();
+
+                if (origins is not null && origins.Length > 0)
+                {
+                    policy.WithOrigins(origins)
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                }
             });
         });
 
