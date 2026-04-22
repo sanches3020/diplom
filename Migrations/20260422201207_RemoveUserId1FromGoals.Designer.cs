@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Sofia.Web.Data;
@@ -11,9 +12,11 @@ using Sofia.Web.Data;
 namespace Sofia.Web.Migrations
 {
     [DbContext(typeof(SofiaDbContext))]
-    partial class SofiaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260422201207_RemoveUserId1FromGoals")]
+    partial class RemoveUserId1FromGoals
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -653,9 +656,6 @@ namespace Sofia.Web.Migrations
                     b.Property<int>("Progress")
                         .HasColumnType("integer");
 
-                    b.Property<string>("PsychologistId")
-                        .HasColumnType("text");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -679,8 +679,6 @@ namespace Sofia.Web.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PsychologistId");
 
                     b.HasIndex("UserId");
 
@@ -1578,11 +1576,6 @@ namespace Sofia.Web.Migrations
 
             modelBuilder.Entity("Sofia.Web.Models.Goal", b =>
                 {
-                    b.HasOne("Sofia.Web.Models.ApplicationUser", "Psychologist")
-                        .WithMany()
-                        .HasForeignKey("PsychologistId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Sofia.Web.Models.ApplicationUser", null)
                         .WithMany("Goals")
                         .HasForeignKey("UserId")
@@ -1594,8 +1587,6 @@ namespace Sofia.Web.Migrations
                         .HasForeignKey("UserId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Psychologist");
 
                     b.Navigation("User");
                 });

@@ -82,7 +82,7 @@
                         <div class="calendar-day @(isCurrentMonth ? "" : "other-month") @(isToday ? "today" : "")"
                              data-date="@date.ToString("yyyy-MM-dd")"
                              style="background-color: @EmotionHelper.GetEmotionColor(dominantEmotion)"
-                             onclick="openDayDetails('@date.ToString("yyyy-MM-dd")', @(dayNotes.Count + dayEmotions.Count))">
+                             onclick="@(dayNotes.Count + dayEmotions.Count == 0 ? "openEmotionModal" : "openDayDetails")('@date.ToString("yyyy-MM-dd")')">
 
                             <div class="calendar-day-number">@date.Day</div>
 

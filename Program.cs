@@ -15,4 +15,10 @@ app.UseApplicationMiddleware();
 
 app.MapApplicationEndpoints();
 
+// Initialize database
+using (var scope = app.Services.CreateScope())
+{
+    await Sofia.Web.Data.DbInitializer.InitializeAsync(scope.ServiceProvider);
+}
+
 app.Run();

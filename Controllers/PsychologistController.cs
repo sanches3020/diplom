@@ -83,15 +83,15 @@ public class PsychologistController : Controller
         return vm == null ? NotFound() : View(vm);
     }
 
-    [HttpPost("book")]
-    public async Task<IActionResult> BookAppointment([FromBody] BookAppointmentRequest request)
+    [HttpGet("appointments")]
+    public async Task<IActionResult> Appointments()
     {
         var userId = GetUserId();
         if (userId == null)
-            return Json(new { success = false, message = "Необходимо войти в систему" });
+            return RedirectToAction("Login", "Auth");
 
-        var result = await _appointmentsService.BookAppointmentAsync(userId, request);
-        return Json(result);
+        var vm = await _appointmentsService.GetUserAppointmentsAsync(userId);
+        return View(vm);
     }
 
     [HttpGet("reviews")]

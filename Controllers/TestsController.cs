@@ -5,8 +5,8 @@ using System.Security.Claims;
 
 namespace Sofia.Web.Controllers;
 
-[Route("user-tests")]
-public class UserTestController : Controller
+[Route("tests")]
+public class TestsController : Controller
 {
     private readonly IUserTestService _service;
 

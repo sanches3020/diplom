@@ -1,48 +1,81 @@
 @model Sofia.Web.ViewModels.Companion.CompanionViewModel
 @using Sofia.Web.Helpers
+
 @{
     ViewData["Title"] = "Мой компаньон";
-    var petMood = Model?.PetMood ?? "neutral";
-    var petMessage = Model?.PetMessage ?? "Я рядом, если тебе нужна поддержка.";
-    var recentNotes = Model?.RecentNotes ?? new List<Sofia.Web.Models.Note>();
+    var companionData = Model;
+    var petMood = companionData?.PetMood ?? "neutral";
+    var petMessage = companionData?.PetMessage ?? "Привет!";
+    var companionLevel = companionData?.CompanionLevel ?? 1;
+    var recentNotes = companionData?.RecentNotes ?? new List<Sofia.Web.Models.Note>();
 }
 
 <section class="companion-page">
-    <div class="companion-page__head">
-        <div>
-            <h1 class="companion-page__title">Компаньон</h1>
-            <p class="companion-page__subtitle">Минималистичный режим поддержки и прогресса</p>
-        </div>
-        <div class="companion-page__actions">
-            <a href="/notes/create" class="btn btn-outline-primary btn-sm">📝 Заметка</a>
-            <a href="/calendar" class="btn btn-outline-secondary btn-sm">📅 Календарь</a>
-            <button type="button" class="btn btn-primary btn-sm btn-companion-info">✨ Уровень</button>
+    <div class="companion-header">
+        <h1 class="companion-title">🐾 Мой компаньон</h1>
+        <div class="companion-actions">
+            <a href="/notes/create" class="btn btn-outline-primary">📝 Заметка</a>
+            <a href="/calendar" class="btn btn-outline-info">📅 Календарь</a>
         </div>
     </div>
 
-    <div class="row g-3">
+    <div class="row g-3 companion-content">
         <div class="col-lg-8">
-            <div class="card companion-stage">
-                <div class="card-body">
-                    <div class="companion-stage__avatar-wrap">
-                        <div class="companion-stage__avatar mood-@petMood" id="petAvatar">
-                            <span>🐾</span>
+            <div class="companion-display">
+                <div class="companion-avatar level-@companionLevel @petMood" id="companionAvatar">
+                    <div class="companion-face">
+                        <div class="companion-eyes">
+                            <div class="companion-eye left"></div>
+                            <div class="companion-eye right"></div>
                         </div>
+                        <div class="companion-mouth"></div>
                     </div>
-                    <div class="companion-stage__bubble" id="petMessage">@petMessage</div>
-
-                    <div class="companion-stage__stats">
-                        <div class="companion-metric"><span>❤️</span><strong id="happiness">82</strong><small>Счастье</small></div>
-                        <div class="companion-metric"><span>⚡</span><strong id="energy">74</strong><small>Энергия</small></div>
-                        <div class="companion-metric"><span>🧘</span><strong id="comfort">88</strong><small>Комфорт</small></div>
-                    </div>
-
-                    <div class="companion-stage__buttons">
-                        <button class="btn btn-success btn-sm" type="button" onclick="feedPet()">🍎 Корм</button>
-                        <button class="btn btn-primary btn-sm" type="button" onclick="playWithPet()">🎮 Игра</button>
-                        <button class="btn btn-outline-primary btn-sm" type="button" onclick="comfortPet()">🤝 Поддержка</button>
-                    </div>
+                    <div class="companion-aura"></div>
                 </div>
+                <div class="companion-level">Уровень @companionLevel</div>
+            </div>
+
+            <div class="companion-stats">
+                <div class="stat-item">
+                    <div class="stat-icon">❤️</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" style="width: @(companionData?.Happiness ?? 0)%"></div>
+                    </div>
+                    <div class="stat-value">@(companionData?.Happiness ?? 0)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" style="width: @(companionData?.Energy ?? 0)%"></div>
+                    </div>
+                    <div class="stat-value">@(companionData?.Energy ?? 0)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">😌</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" style="width: @(companionData?.Comfort ?? 0)%"></div>
+                    </div>
+                    <div class="stat-value">@(companionData?.Comfort ?? 0)</div>
+                </div>
+            </div>
+
+            <div class="companion-message" id="companionMessage">
+                <p>@petMessage</p>
+            </div>
+
+            <div class="companion-actions-grid">
+                <button class="action-btn feed-btn" onclick="feedPet()">
+                    <span class="action-icon">🍎</span>
+                    <span class="action-text">Покормить</span>
+                </button>
+                <button class="action-btn play-btn" onclick="playWithPet()">
+                    <span class="action-icon">🎾</span>
+                    <span class="action-text">Поиграть</span>
+                </button>
+                <button class="action-btn comfort-btn" onclick="comfortPet()">
+                    <span class="action-icon">🤗</span>
+                    <span class="action-text">Утешить</span>
+                </button>
             </div>
         </div>
 
@@ -54,7 +87,7 @@
                         <span class="badge bg-light text-dark">@EmotionHelper.GetMoodName(petMood)</span>
                         <span class="text-muted small">@EmotionHelper.GetMoodDescription(petMood)</span>
                     </div>
-                    <div class="small text-muted" id="notesCount">Всего заметок: @(Model?.NotesCount ?? 0)</div>
+                    <div class="small text-muted" id="notesCount">Всего заметок: @(recentNotes.Count)</div>
                 </div>
             </div>
 
@@ -80,6 +113,128 @@
                     }
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        const petStats = { happiness: 82, energy: 74, comfort: 88 };
+
+        function updatePetStats() {
+            document.getElementById('happiness').textContent = petStats.happiness;
+            document.getElementById('energy').textContent = petStats.energy;
+            document.getElementById('comfort').textContent = petStats.comfort;
+        }
+
+        function updatePetMessage(message) {
+            const messageElement = document.getElementById('petMessage');
+            if (!messageElement) return;
+            messageElement.textContent = message || 'Я рядом.';
+        }
+
+        function animatePet(mood) {
+            const petAvatar = document.getElementById('petAvatar');
+            if (!petAvatar) return;
+            petAvatar.className = `companion-stage__avatar mood-${mood || 'neutral'}`;
+        }
+
+        function feedPet() {
+            fetch('/companion/feed', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+                .then(r => r.json()).then(data => {
+                    if (!data?.success) return;
+                    petStats.happiness = Math.min(100, petStats.happiness + 8);
+                    updatePetStats();
+                    updatePetMessage(data.message);
+                    animatePet(data.petMood);
+                });
+        }
+
+        function playWithPet() {
+            fetch('/companion/play', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+                .then(r => r.json()).then(data => {
+                    if (!data?.success) return;
+                    petStats.energy = Math.min(100, petStats.energy + 10);
+                    updatePetStats();
+                    updatePetMessage(data.message);
+                    animatePet(data.petMood);
+                });
+        }
+
+        function comfortPet() {
+            fetch('/companion/comfort', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+                .then(r => r.json()).then(data => {
+                    if (!data?.success) return;
+                    petStats.comfort = Math.min(100, petStats.comfort + 6);
+                    updatePetStats();
+                    updatePetMessage(data.message);
+                    animatePet(data.petMood);
+                });
+        }
+
+        function refreshPetStatus() {
+            fetch('/companion/status')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data) return;
+                    updatePetMessage(data.petMessage);
+                    animatePet(data.petMood);
+                    const notesCountEl = document.getElementById('notesCount');
+                    if (notesCountEl) notesCountEl.textContent = `Всего заметок: ${data.notesCount ?? 0}`;
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePetStats();
+            refreshPetStatus();
+            setInterval(refreshPetStatus, 30000);
+        });
+    </script>
+}
+
+            <div class="card companion-side-card">
+                <div class="card-header"><h6 class="mb-0">Последние эмоции</h6></div>
+                <div class="card-body">
+                    @if (recentNotes.Any())
+                    {
+                        foreach (var note in recentNotes.Take(4))
+                        {
+                            <div class="companion-emotion-line">
+                                <span>@EmotionHelper.GetEmotionEmoji(note.Emotion)</span>
+                                <div>
+                                    <div>@EmotionHelper.GetEmotionName(note.Emotion)</div>
+                                    <small class="text-muted">@note.CreatedAt.ToString("dd.MM HH:mm")</small>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-muted small">Добавьте заметку, чтобы компаньон видел эмоции.</div>
+                    }
+                </div>
+            </div>
+=======
+        <!-- Companion Message -->
+        <div class="companion-message" id="companionMessage">
+            <p>@petMessage</p>
+        </div>
+
+        <!-- Companion Actions -->
+        <div class="companion-actions-grid">
+            <button class="action-btn feed-btn" onclick="feedPet()">
+                <span class="action-icon">🍎</span>
+                <span class="action-text">Покормить</span>
+            </button>
+            <button class="action-btn play-btn" onclick="playWithPet()">
+                <span class="action-icon">🎾</span>
+                <span class="action-text">Поиграть</span>
+            </button>
+            <button class="action-btn comfort-btn" onclick="comfortPet()">
+                <span class="action-icon">🤗</span>
+                <span class="action-text">Утешить</span>
+            </button>
+>>>>>>> 29a7a8a (feat(migrations): remove UserId1 from Goals and add PsychologistId; rename Timestamp to CreatedAt in ChatMessage)
         </div>
     </div>
 </section>

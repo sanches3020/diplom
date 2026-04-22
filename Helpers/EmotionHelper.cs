@@ -149,8 +149,8 @@ public static class EmotionHelper
     {
         return emotion.ToLower() switch
         {
-            "happy" => "#FFD700",
-            "joy" => "#FFD700",
+            "happy" => "#90EE90",
+            "joy" => "#90EE90",
 
             "sad" => "#1E90FF",
             "sorrow" => "#1E90FF",
@@ -173,7 +173,7 @@ public static class EmotionHelper
     {
         return emotion switch
         {
-            0 => "#FFD700",
+            0 => "#90EE90",
             1 => "#1E90FF",
             2 => "#8A2BE2",
             3 => "#FF4500",

@@ -59,6 +59,12 @@ namespace Sofia.Web.Models
 
         [ForeignKey(nameof(UserId))]
         public virtual ApplicationUser User { get; set; } = null!;
+
+        // Psychologist who assigned this goal (optional)
+        public string? PsychologistId { get; set; }
+
+        [ForeignKey(nameof(PsychologistId))]
+        public virtual ApplicationUser? Psychologist { get; set; }
     }
 
     public enum GoalType

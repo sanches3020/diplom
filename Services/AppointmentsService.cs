@@ -3,6 +3,7 @@ using Sofia.Web.Data;
 using Sofia.Web.DTO.Psychologist;
 using Sofia.Web.Models;
 using Sofia.Web.Services.Interfaces;
+using Sofia.Web.ViewModels.Psychologists;
 
 namespace Sofia.Web.Services;
 
@@ -100,6 +101,20 @@ public class AppointmentsService : IAppointmentsService
             Message = "Запись успешно создана!",
             AppointmentId = appointment.Id,
             AppointmentDate = appointment.AppointmentDate
+        };
+    }
+
+    public async Task<UserAppointmentsViewModel> GetUserAppointmentsAsync(string userId)
+    {
+        var appointments = await _context.PsychologistAppointments
+            .Where(a => a.UserId == userId)
+            .Include(a => a.Psychologist)
+            .OrderByDescending(a => a.AppointmentDate)
+            .ToListAsync();
+
+        return new UserAppointmentsViewModel
+        {
+            Appointments = appointments
         };
     }
 

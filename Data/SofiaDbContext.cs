@@ -101,6 +101,13 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
             .HasForeignKey(g => g.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Goal → Psychologist (optional)
+        builder.Entity<Goal>()
+            .HasOne(g => g.Psychologist)
+            .WithMany()
+            .HasForeignKey(g => g.PsychologistId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // GoalAction → Goal
         builder.Entity<GoalAction>()
             .HasOne(ga => ga.Goal)
