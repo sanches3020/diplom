@@ -454,7 +454,7 @@ html {
 .page-bottom-spacer { height: 40px; }
 
 /* Responsive improvements */
-@@media (max-width: 768px) {
+@media (max-width: 768px) {
   .navbar-brand {
     font-size: 1.1rem;
   }

@@ -305,3 +305,77 @@ ul, ol {
         gap: 20px;
     }
 }
+
+/* ===== Global layout stabilization ===== */
+html, body {
+    overflow-x: hidden;
+}
+
+main[role="main"] {
+    display: block;
+    min-height: calc(100vh - var(--nav-height) - 120px);
+    padding-bottom: 56px !important;
+}
+
+.page-bottom-spacer {
+    height: 64px !important;
+}
+
+.container,
+.container-fluid {
+    overflow-x: clip;
+}
+
+.row > [class*="col"] {
+    min-width: 0;
+}
+
+.card,
+.card-body,
+.table-responsive,
+.dropdown-menu,
+.modal-dialog,
+.modal-content {
+    max-width: 100%;
+}
+
+.card-body,
+.comment-text,
+.thread-title,
+.forum-card-title,
+.message-text,
+td, th, p, h1, h2, h3, h4 {
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.table-responsive {
+    padding-bottom: 2px;
+}
+
+.main-content {
+    padding-bottom: 64px !important;
+}
+
+footer.footer {
+    margin-top: 0 !important;
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding-top: calc(var(--nav-height) + 12px) !important;
+        padding-bottom: 76px !important;
+    }
+
+    main[role="main"] {
+        min-height: calc(100vh - var(--nav-height) - 96px);
+        padding-bottom: 64px !important;
+    }
+
+    .page-header,
+    .d-flex.justify-content-between.align-items-center.mb-4 {
+        row-gap: 10px;
+    }
+}
