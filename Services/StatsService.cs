@@ -49,39 +49,6 @@ public class StatsService : IStatsService
                 .Select(g => new { Emotion = g.Key, Count = g.Count() })
                 .ToListAsync<object>(),
 
-            WeeklyStats = await _context.Notes
-                .Where(n => n.UserId == userId && n.Date >= startDate)
-                .GroupBy(n => n.Date.DayOfWeek)
-                .Select(g => new { DayOfWeek = g.Key, Count = g.Count() })
-                .ToListAsync<object>(),
-
-            HourlyStats = await _context.Notes
-                .Where(n => n.UserId == userId && n.CreatedAt >= startDate)
-                .GroupBy(n => n.CreatedAt.Hour)
-                .Select(g => new { Hour = g.Key, Count = g.Count() })
-                .ToListAsync<object>(),
-
-            TagStats = await _context.Notes
-                .Where(n => n.UserId == userId &&
-                            n.Date >= startDate &&
-                            !string.IsNullOrEmpty(n.Tags))
-                .SelectMany(n => n.Tags!.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                .GroupBy(t => t.Trim())
-                .Select(g => new { Tag = g.Key, Count = g.Count() })
-                .OrderByDescending(g => g.Count)
-                .Take(10)
-                .ToListAsync<object>(),
-
-            ActivityStats = await _context.Notes
-                .Where(n => n.UserId == userId &&
-                            n.Date >= startDate &&
-                            !string.IsNullOrEmpty(n.Activity))
-                .GroupBy(n => n.Activity)
-                .Select(g => new { Activity = g.Key, Count = g.Count() })
-                .OrderByDescending(g => g.Count)
-                .Take(10)
-                .ToListAsync<object>(),
-
             PracticeStats = await _context.Practices
                 .AsNoTracking()
                 .Where(p => p.IsActive)
@@ -100,6 +67,46 @@ public class StatsService : IStatsService
                 .OrderBy(g => g.Date)
                 .ToListAsync<object>()
         };
+
+        var scopedNotes = await _context.Notes
+            .AsNoTracking()
+            .Where(n => n.UserId == userId && n.Date >= startDate)
+            .Select(n => new { n.Date, n.CreatedAt, n.Tags, n.Activity })
+            .ToListAsync();
+
+        vm.WeeklyStats = scopedNotes
+            .GroupBy(n => n.Date.DayOfWeek)
+            .Select(g => new { DayOfWeek = g.Key, Count = g.Count() })
+            .Cast<object>()
+            .ToList();
+
+        vm.HourlyStats = scopedNotes
+            .GroupBy(n => n.CreatedAt.Hour)
+            .Select(g => new { Hour = g.Key, Count = g.Count() })
+            .Cast<object>()
+            .ToList();
+
+        vm.TagStats = scopedNotes
+            .Where(n => !string.IsNullOrWhiteSpace(n.Tags))
+            .SelectMany(n => (n.Tags ?? string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => t.Trim())
+                .Where(t => !string.IsNullOrWhiteSpace(t)))
+            .GroupBy(t => t, StringComparer.OrdinalIgnoreCase)
+            .Select(g => new { Tag = g.Key, Count = g.Count() })
+            .OrderByDescending(g => g.Count)
+            .Take(10)
+            .Cast<object>()
+            .ToList();
+
+        vm.ActivityStats = scopedNotes
+            .Where(n => !string.IsNullOrWhiteSpace(n.Activity))
+            .GroupBy(n => n.Activity!)
+            .Select(g => new { Activity = g.Key, Count = g.Count() })
+            .OrderByDescending(g => g.Count)
+            .Take(10)
+            .Cast<object>()
+            .ToList();
 
         return vm;
     }
@@ -164,12 +171,42 @@ public class StatsService : IStatsService
             .Where(g => g.UserId == userId)
             .ToListAsync();
 
-        var reportData = new
+        var emotionStats = notes
+            .GroupBy(n => n.Emotion)
+            .Select(g => new EmotionStatItem { Emotion = g.Key, Count = g.Count() })
+            .OrderByDescending(g => g.Count)
+            .ToList();
+
+        var activityStats = notes
+            .Where(n => !string.IsNullOrWhiteSpace(n.Activity))
+            .GroupBy(n => n.Activity!)
+            .Select(g => new ActivityStatItem { Activity = g.Key, Count = g.Count() })
+            .OrderByDescending(g => g.Count)
+            .ToList();
+
+        var reportData = new StatsReportData
         {
-            Period = new { Start = start, End = end, Days = daysBack },
-            Notes = notes,
+            Period = new ReportPeriod { Start = start, End = end, Days = daysBack },
+            GeneratedAt = DateTime.UtcNow,
+            EmotionStats = emotionStats,
+            ActivityStats = activityStats,
             Goals = goals,
-            GeneratedAt = DateTime.UtcNow
+            Summary = new ReportSummary
+            {
+                TotalNotes = notes.Count,
+                CompletedGoals = goals.Count(g => g.Status == GoalStatus.Completed),
+                ActiveGoals = goals.Count(g => g.Status == GoalStatus.Active),
+                AverageMood = notes.Count == 0 ? 0 : notes.Average(n => (int)n.Emotion),
+                MostFrequentEmotion = emotionStats.FirstOrDefault()?.Emotion,
+                MostFrequentActivity = activityStats.FirstOrDefault()?.Activity
+            },
+            GoalStats = new GoalStats
+            {
+                Total = goals.Count,
+                Completed = goals.Count(g => g.Status == GoalStatus.Completed),
+                Active = goals.Count(g => g.Status == GoalStatus.Active),
+                AverageProgress = goals.Count == 0 ? 0 : goals.Average(g => g.Progress)
+            }
         };
 
         return new ReportViewModel

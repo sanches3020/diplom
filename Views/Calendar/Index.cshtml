@@ -2,11 +2,11 @@
 
 @{
     ViewData["Title"] = "Эмоциональный календарь";
-    var currentMonth = (DateTime)ViewBag.CurrentMonth;
-    var previousMonth = (DateTime)ViewBag.PreviousMonth;
-    var nextMonth = (DateTime)ViewBag.NextMonth;
-    var calendarData = ViewBag.CalendarData as Dictionary<DateTime, List<Sofia.Web.Models.Note>>;
-    var emotionData = ViewBag.EmotionData as Dictionary<DateTime, List<Sofia.Web.Models.EmotionEntry>>;
+    var currentMonth = ViewBag.CurrentMonth is DateTime cm ? cm : DateTime.Today;
+    var previousMonth = ViewBag.PreviousMonth is DateTime pm ? pm : currentMonth.AddMonths(-1);
+    var nextMonth = ViewBag.NextMonth is DateTime nm ? nm : currentMonth.AddMonths(1);
+    var calendarData = ViewBag.CalendarData as Dictionary<DateTime, List<Sofia.Web.Models.Note>> ?? new();
+    var emotionData = ViewBag.EmotionData as Dictionary<DateTime, List<Sofia.Web.Models.EmotionEntry>> ?? new();
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">

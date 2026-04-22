@@ -1,10 +1,10 @@
 @{
     ViewData["Title"] = "Управление расписанием";
     var psychologist = ViewBag.Psychologist as Sofia.Web.Models.Psychologist;
-    var schedules = ViewBag.Schedules as List<Sofia.Web.Models.PsychologistSchedule>;
-    var existingSlots = ViewBag.ExistingSlots as List<Sofia.Web.Models.PsychologistTimeSlot>;
-    var startDate = (DateTime)ViewBag.StartDate;
-    var endDate = (DateTime)ViewBag.EndDate;
+    var schedules = ViewBag.Schedules as List<Sofia.Web.Models.PsychologistSchedule> ?? new List<Sofia.Web.Models.PsychologistSchedule>();
+    var existingSlots = ViewBag.ExistingSlots as List<Sofia.Web.Models.PsychologistTimeSlot> ?? new List<Sofia.Web.Models.PsychologistTimeSlot>();
+    var startDate = ViewBag.StartDate is DateTime start ? start : DateTime.Today;
+    var endDate = ViewBag.EndDate is DateTime end ? end : DateTime.Today.AddDays(14);
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">

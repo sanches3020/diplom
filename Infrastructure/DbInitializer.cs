@@ -15,7 +15,14 @@ public static class DbInitializer
 
         await context.Database.MigrateAsync();
 
-        await DatabaseSeeder.SeedAsync(context);
+        try
+        {
+            await DatabaseSeeder.SeedAsync(context);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DbInitializer] Seed skipped: {ex.Message}");
+        }
 
         await SeedAdmin(userManager, roleManager);
     }

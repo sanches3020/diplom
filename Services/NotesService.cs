@@ -124,7 +124,7 @@ public class NotesService : INotesService
         return (true, todayNotes, pinnedNotes, sharedNotes);
     }
 
-    public async Task<Note> GetNoteAsync(string userId, int id)
+    public async Task<Note?> GetNoteAsync(string userId, int id)
     {
         return await _context.Notes
             .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);

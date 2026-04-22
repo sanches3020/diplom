@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Sofia.Web.Services;
+using System.Collections.Concurrent;
 
 namespace Sofia.Web.Hubs;
 
 public class ChatHub : Hub
 {
     private readonly IChatService _chatService;
+    private static readonly ConcurrentDictionary<string, string> ConnectionRooms = new();
 
     public ChatHub(IChatService chatService)
     {
@@ -15,14 +17,19 @@ public class ChatHub : Hub
     // Подключение к комнате
     public override async Task OnConnectedAsync()
     {
-        // по умолчанию подключаем в "general"
-        await JoinRoom("general");
         await base.OnConnectedAsync();
     }
 
     public async Task JoinRoom(string room)
     {
+        room = string.IsNullOrWhiteSpace(room) ? "general" : room.Trim();
+        if (ConnectionRooms.TryGetValue(Context.ConnectionId, out var previousRoom) && previousRoom != room)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, previousRoom);
+        }
+
         await Groups.AddToGroupAsync(Context.ConnectionId, room);
+        ConnectionRooms[Context.ConnectionId] = room;
 
         var userId = GetUserId() ?? "guest";
         var userName = GetUserName();
@@ -44,7 +51,9 @@ public class ChatHub : Hub
 
     public async Task LeaveRoom(string room)
     {
+        room = string.IsNullOrWhiteSpace(room) ? "general" : room.Trim();
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, room);
+        ConnectionRooms.TryRemove(Context.ConnectionId, out _);
 
         var userName = GetUserName();
         var sys = _chatService.AddSystemMessage(room, $"{userName} покинул комнату.");
@@ -53,6 +62,12 @@ public class ChatHub : Hub
 
     public async Task SendMessage(string room, string text)
     {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        room = string.IsNullOrWhiteSpace(room) ? "general" : room.Trim();
         var userId = GetUserId() ?? "guest";
         var userName = GetUserName();
 
@@ -62,9 +77,22 @@ public class ChatHub : Hub
             return;
         }
 
-        var msg = _chatService.AddUserMessage(room, userId, userName, text);
+        var msg = _chatService.AddUserMessage(room, userId, userName, text.Trim());
 
         await Clients.Group(room).SendAsync("ReceiveMessage", room, msg);
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        if (ConnectionRooms.TryRemove(Context.ConnectionId, out var room))
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, room);
+            var userName = GetUserName();
+            var sys = _chatService.AddSystemMessage(room, $"{userName} отключился.");
+            await Clients.Group(room).SendAsync("ReceiveMessage", room, sys);
+        }
+
+        await base.OnDisconnectedAsync(exception);
     }
 
     private string? GetUserId()

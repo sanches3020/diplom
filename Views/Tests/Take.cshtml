@@ -4,6 +4,14 @@
     ViewData["Title"] = Model?.Name ?? "Тест";
 }
 
+@if (Model == null)
+{
+    <div class="alert alert-warning">
+        Тест не найден.
+    </div>
+    return;
+}
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h2>🧪 @Model.Name</h2>
@@ -15,7 +23,7 @@
 </div>
 
 <form id="testForm" style="padding-bottom: 100px;">
-    @foreach (var q in Model.Questions)
+    @foreach (var q in Model.Questions ?? Enumerable.Empty<Sofia.Web.Models.Question>())
     {
         <div class="card mb-3">
             <div class="card-body">

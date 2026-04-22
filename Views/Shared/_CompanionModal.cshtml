@@ -1,8 +1,8 @@
 <!-- Companion Level Modal -->
 <div id="companionModalOverlay" class="modal-overlay companion-modal-overlay">
     <div class="modal-dialog companion-modal-dialog">
-        <div class="modal-header">
-            <h3>🐾 Мой компаньон</h3>
+        <div class="modal-header companion-sheet-header">
+            <h3>✨ Уровень компаньона</h3>
             <button type="button" class="modal-close-btn" id="companionCloseBtn">&times;</button>
         </div>
         <div id="companionContent" class="modal-body companion-modal-body">
@@ -82,34 +82,38 @@
         }
 
         renderCompanionInfo(data) {
-            const levelEmojis = ['', '🌱', '🌿', '🌳', '🌲', '👑'];
-            const levelNames = ['', 'Росток', 'Саженец', 'Молодое дерево', 'Взрослое дерево', 'Величественное дерево'];
+            const levelVisual = this.getLevelVisual(data.currentLevel);
+            const levelCap = this.getLevelCap(data.currentLevel, !!data.maxLevel);
+            const daysDone = Math.max(0, levelCap.range - data.daysToNextLevel);
 
             const html = `
-                <div class="companion-content">
-                    <div class="companion-header">
-                        <div class="companion-level-badge">
-                            <span class="level-emoji">${levelEmojis[data.currentLevel]}</span>
-                            <span class="level-number">Уровень ${data.currentLevel}</span>
+                <div class="companion-content companion-level-surface ${levelVisual.className}">
+                    <div class="companion-header companion-level-head">
+                        <div class="companion-level-badge companion-level-pill">
+                            <span class="level-emoji">${levelVisual.emoji}</span>
+                            <div>
+                                <div class="level-number">Уровень ${data.currentLevel}${data.currentLevel >= 5 ? '+' : ''}</div>
+                                <div class="companion-level-state">${levelVisual.state}</div>
+                            </div>
                         </div>
-                        <div class="companion-name">${levelNames[data.currentLevel]}</div>
+                        <div class="companion-name">${levelVisual.name}</div>
                     </div>
 
-                    <div class="companion-stats">
+                    <div class="companion-stats companion-stats-compact">
                         <div class="stat-item">
-                            <span class="stat-label">📅 Дней в системе</span>
+                            <span class="stat-label">📅 В системе</span>
                             <span class="stat-value">${data.daysInSystem}</span>
                         </div>
 
                         <div class="stat-item">
-                            <span class="stat-label">🎯 До следующего уровня</span>
-                            <span class="stat-value">${data.daysToNextLevel} дней</span>
+                            <span class="stat-label">⏭ До next</span>
+                            <span class="stat-value">${data.maxLevel ? 'MAX' : data.daysToNextLevel + ' дн'}</span>
                         </div>
                     </div>
 
                     <div class="companion-progress">
                         <div class="progress-label">
-                            <span>Прогресс уровня</span>
+                            <span>Прогресс уровня · ${daysDone}/${levelCap.range} дней</span>
                             <span>${data.progressPercent}%</span>
                         </div>
                         <div class="progress-bar">
@@ -117,22 +121,44 @@
                         </div>
                     </div>
 
+                    <div class="companion-mini-achievements">
+                        <span>🏁</span>
+                        <span>🎯</span>
+                        <span>💜</span>
+                        <span>🔥</span>
+                    </div>
+
                     ${data.maxLevel ? `
                         <div class="companion-message">
-                            🌟 Вы достигли максимального уровня! Отличная работа!
+                            🌟 Мастер‑уровень достигнут. Вы в топовой форме.
                         </div>
                     ` : ''}
 
                     <div class="companion-info-text">
                         <p>
-                            Благодарю вас за внимание к себе! Ваш компаньон растёт вместе с вами.
-                            Чем чаще вы пользуетесь приложением, тем выше его уровень.
+                            Чем стабильнее ваша активность, тем ярче визуальный уровень компаньона: от нейтрального к «master».
                         </p>
                     </div>
                 </div>
             `;
 
             this.content.innerHTML = html;
+        }
+
+        getLevelCap(level, maxLevel) {
+            if (maxLevel || level >= 5) return { range: 30 };
+            if (level === 1) return { range: 3 };
+            if (level === 2) return { range: 7 };
+            if (level === 3) return { range: 20 };
+            return { range: 30 };
+        }
+
+        getLevelVisual(level) {
+            if (level <= 1) return { emoji: '⚪', name: 'Base', state: 'Нейтральный старт', className: 'companion-level-1' };
+            if (level === 2) return { emoji: '🟣', name: 'Soft Glow', state: 'Мягкое свечение', className: 'companion-level-2' };
+            if (level === 3) return { emoji: '🔵', name: 'Active', state: 'Яркий режим', className: 'companion-level-3' };
+            if (level === 4) return { emoji: '🟪', name: 'Aura', state: 'Глубокая аура', className: 'companion-level-4' };
+            return { emoji: '🌈', name: 'Master', state: 'TikTok‑уровень', className: 'companion-level-5' };
         }
     }
 

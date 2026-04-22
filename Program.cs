@@ -8,6 +8,8 @@ builder.Services
 
 var app = builder.Build();
 
+await DbInitializer.InitializeAsync(app.Services);
+
 // Pipeline
 app.UseApplicationMiddleware();
 

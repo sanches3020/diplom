@@ -1,4 +1,4 @@
-@model IEnumerable<Sofia.Web.Models.Practice>
+@model Sofia.Web.ViewModels.Practices.PracticesListViewModel
 @{
     ViewData["Title"] = "Практики и медитации";
 }
@@ -23,9 +23,9 @@
                 <label class="form-label">Категория</label>
                 <select name="category" class="form-select" onchange="this.form.submit()">
                     <option value="">Все категории</option>
-                    @foreach (var cat in ViewBag.Categories)
+                    @foreach (var cat in Model.Categories)
                     {
-                        <option value="@cat" selected="@(ViewBag.SelectedCategory == cat.ToString())">
+                        <option value="@cat" selected="@(Model.SelectedCategory == cat.ToString())">
                             @GetCategoryEmoji(cat) @GetCategoryName(cat)
                         </option>
                     }
@@ -35,10 +35,10 @@
                 <label class="form-label">Максимальная длительность</label>
                 <select name="duration" class="form-select" onchange="this.form.submit()">
                     <option value="">Любая</option>
-                    <option value="5" selected="@(ViewBag.SelectedDuration == 5)">До 5 минут</option>
-                    <option value="10" selected="@(ViewBag.SelectedDuration == 10)">До 10 минут</option>
-                    <option value="15" selected="@(ViewBag.SelectedDuration == 15)">До 15 минут</option>
-                    <option value="20" selected="@(ViewBag.SelectedDuration == 20)">До 20 минут</option>
+                    <option value="5" selected="@(Model.SelectedDuration == 5)">До 5 минут</option>
+                    <option value="10" selected="@(Model.SelectedDuration == 10)">До 10 минут</option>
+                    <option value="15" selected="@(Model.SelectedDuration == 15)">До 15 минут</option>
+                    <option value="20" selected="@(Model.SelectedDuration == 20)">До 20 минут</option>
                 </select>
             </div>
             <div class="col-md-4 d-flex align-items-end">
@@ -49,7 +49,7 @@
     </div>
 </div>
 
-@if (!Model.Any())
+@if (!Model.Practices.Any())
 {
     <div class="text-center py-5">
         <div class="mb-3" style="font-size: 48px;">🧘</div>
@@ -60,7 +60,7 @@
 else
 {
     <div class="row g-3">
-        @foreach (var practice in Model)
+        @foreach (var practice in Model.Practices)
         {
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card h-100">

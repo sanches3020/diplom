@@ -1,18 +1,19 @@
+@model Sofia.Web.ViewModels.Stats.StatsIndexViewModel
 @{
     ViewData["Title"] = "Статистика и аналитика";
-    var daysBack = ViewBag.DaysBack as int? ?? 30;
-    var totalNotes = ViewBag.TotalNotes as int? ?? 0;
-    var recentNotes = ViewBag.RecentNotes as int? ?? 0;
-    var totalGoals = ViewBag.TotalGoals as int? ?? 0;
-    var activeGoals = ViewBag.ActiveGoals as int? ?? 0;
-    var completedGoals = ViewBag.CompletedGoals as int? ?? 0;
-    var emotionStats = ViewBag.EmotionStats as List<dynamic>;
-    var weeklyStats = ViewBag.WeeklyStats as List<dynamic>;
-    var hourlyStats = ViewBag.HourlyStats as List<dynamic>;
-    var tagStats = ViewBag.TagStats as List<dynamic>;
-    var activityStats = ViewBag.ActivityStats as List<dynamic>;
-    var practiceStats = ViewBag.PracticeStats as List<Sofia.Web.Models.Practice>;
-    var moodTrends = ViewBag.MoodTrends as List<dynamic>;
+    var daysBack = Model?.DaysBack ?? 30;
+    var totalNotes = Model?.TotalNotes ?? 0;
+    var recentNotes = Model?.RecentNotes ?? 0;
+    var totalGoals = Model?.TotalGoals ?? 0;
+    var activeGoals = Model?.ActiveGoals ?? 0;
+    var completedGoals = Model?.CompletedGoals ?? 0;
+    var emotionStats = Model?.EmotionStats?.Cast<dynamic>().ToList() ?? new List<dynamic>();
+    var weeklyStats = Model?.WeeklyStats?.Cast<dynamic>().ToList() ?? new List<dynamic>();
+    var hourlyStats = Model?.HourlyStats?.Cast<dynamic>().ToList() ?? new List<dynamic>();
+    var tagStats = Model?.TagStats?.Cast<dynamic>().ToList() ?? new List<dynamic>();
+    var activityStats = Model?.ActivityStats?.Cast<dynamic>().ToList() ?? new List<dynamic>();
+    var practiceStats = Model?.PracticeStats ?? new List<Sofia.Web.Models.Practice>();
+    var moodTrends = Model?.MoodTrends?.Cast<dynamic>().ToList() ?? new List<dynamic>();
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">

@@ -4,6 +4,6 @@ namespace Sofia.Web.Controllers
 {
     internal class NotesListViewModel
     {
-        public List<Note> Notes { get; set; }
+    public List<Note> Notes { get; set; } = new();
     }
 }

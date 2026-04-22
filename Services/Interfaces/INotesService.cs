@@ -11,5 +11,5 @@ public interface INotesService
     Task<(bool Success, string Message)> DeleteNoteAsync(string userId, int noteId);
     Task<(bool Success, string Message, bool? IsPinned)> TogglePinAsync(string userId, int noteId);
     Task<(bool Success, int TodayNotes, int PinnedNotes, int SharedNotes)> GetStatsAsync(string userId);
-    Task<Note> GetNoteAsync(string userId, int id);
+    Task<Note?> GetNoteAsync(string userId, int id);
 }

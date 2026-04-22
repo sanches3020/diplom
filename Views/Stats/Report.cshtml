@@ -1,9 +1,10 @@
+@model Sofia.Web.ViewModels.Stats.ReportViewModel
 @using Sofia.Web.Helpers
 
 @{
     ViewData["Title"] = "Отчет";
-    dynamic reportData = ViewBag.ReportData;
-    string format = ViewBag.Format as string;
+    var reportData = Model?.ReportData ?? new Sofia.Web.ViewModels.Stats.StatsReportData();
+    var format = Model?.Format ?? "html";
 }
 
 @if (format == "pdf")
@@ -78,7 +79,7 @@
         <h5 class="mb-0">🎭 Анализ эмоций</h5>
     </div>
     <div class="card-body">
-        @if (((IEnumerable<dynamic>)reportData.EmotionStats).Any())
+        @if (reportData.EmotionStats.Any())
         {
             <div class="row">
                 <div class="col-md-8">
@@ -113,8 +114,8 @@
                         {
                             <div class="alert alert-info">
                                 <strong>Самая частая эмоция:</strong><br>
-                                @EmotionHelper.GetEmotionEmoji(reportData.Summary.MostFrequentEmotion)
-                                @EmotionHelper.GetEmotionName(reportData.Summary.MostFrequentEmotion)
+                                @EmotionHelper.GetEmotionEmoji(reportData.Summary.MostFrequentEmotion.Value)
+                                @EmotionHelper.GetEmotionName(reportData.Summary.MostFrequentEmotion.Value)
                             </div>
                         }
                     </div>
@@ -132,7 +133,7 @@
 </div>
 
 <!-- Activity -->
-@if (((IEnumerable<dynamic>)reportData.ActivityStats).Any())
+@if (reportData.ActivityStats.Any())
 {
     <div class="card mb-4">
         <div class="card-header">
@@ -165,7 +166,7 @@
 }
 
 <!-- Goals -->
-@if (((IEnumerable<dynamic>)reportData.Goals).Any())
+@if (reportData.Goals.Any())
 {
     <div class="card mb-4">
         <div class="card-header">
@@ -194,7 +195,7 @@
             <div class="mt-4">
                 <h6>Активные цели:</h6>
                 <div class="row g-2">
-                    @foreach (var goal in ((IEnumerable<dynamic>)reportData.Goals)
+                    @foreach (var goal in reportData.Goals
                         .Where(g => g.Status == Sofia.Web.Models.GoalStatus.Active)
                         .Take(6))
                     {
@@ -215,7 +216,3 @@
         </div>
     </div>
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> f16d9d638339ecefc9454ffc3fa28f05066aabab

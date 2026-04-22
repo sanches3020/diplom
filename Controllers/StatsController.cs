@@ -54,12 +54,12 @@ public class StatsController : Controller
     }
 
     [HttpGet("report")]
-    public async Task<IActionResult> Report(int? days, string format)
+    public async Task<IActionResult> Report(int? days, string? format)
     {
         var userId = GetUserId();
         if (userId == null) return RedirectToAction("Login", "Auth");
 
-        var vm = await _statsService.GenerateReportAsync(userId, days ?? 30, format);
+        var vm = await _statsService.GenerateReportAsync(userId, days ?? 30, format ?? "html");
         return View("Report", vm);
     }
 }
