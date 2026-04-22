@@ -32,24 +32,32 @@
                 @{
                     var isAuthenticated = Context.User?.Identity?.IsAuthenticated ?? false;
                     var userRole = Context.Session.GetString("UserRole") ?? "";
+                    var isAdmin = string.Equals(userRole, "admin", StringComparison.OrdinalIgnoreCase);
+                    var isPsychologist = string.Equals(userRole, "psychologist", StringComparison.OrdinalIgnoreCase);
                 }
 
                 @if (isAuthenticated)
                 {
                     <!-- Для авторизованных пользователей -->
-                    <a asp-area="" asp-controller="Notes" asp-action="Index" class="@(currentPath.StartsWith("/notes") ? "active" : "")">Заметки</a>
-                    <a asp-area="" asp-controller="Calendar" asp-action="Index" class="@(currentPath.StartsWith("/calendar") ? "active" : "")">Календарь</a>
-                    <a asp-area="" asp-controller="Goals" asp-action="Index" class="@(currentPath.StartsWith("/goals") ? "active" : "")">Цели</a>
-                    <a asp-area="" asp-controller="Stats" asp-action="Index" class="@(currentPath.StartsWith("/stats") ? "active" : "")">Статистика</a>
-                    <a asp-area="" asp-controller="Practices" asp-action="Index" class="@(currentPath.StartsWith("/practices") ? "active" : "")">Практики</a>
-                    <a asp-area="" asp-controller="Psychologist" asp-action="Index" class="@(currentPath.StartsWith("/psychologist") ? "active" : "")">Психолог</a>
-                    <a asp-area="" asp-controller="Tests" asp-action="Index" class="@(currentPath.StartsWith("/tests") ? "active" : "")">Тесты</a>
-                    <a asp-area="" asp-controller="ChatPage" asp-action="Index" class="@(currentPath.StartsWith("/chat") ? "active" : "")">Чат</a>
-                    <a asp-area="" asp-controller="ForumPage" asp-action="Index" class="@(currentPath.StartsWith("/forum") ? "active" : "")">Форум</a>
-                    
-                    @if (string.Equals(userRole, "Admin", StringComparison.OrdinalIgnoreCase))
+                    @if (isAdmin)
                     {
                         <a asp-area="" asp-controller="Admin" asp-action="Index" class="@(currentPath.StartsWith("/admin") ? "active" : "") admin-link">Админ‑панель</a>
+                    }
+                    else if (isPsychologist)
+                    {
+                        <a asp-area="" asp-controller="Psychologist" asp-action="Index" class="@(currentPath.StartsWith("/psychologist") ? "active" : "")">Психолог</a>
+                    }
+                    else
+                    {
+                        <a asp-area="" asp-controller="Notes" asp-action="Index" class="@(currentPath.StartsWith("/notes") ? "active" : "")">Заметки</a>
+                        <a asp-area="" asp-controller="Calendar" asp-action="Index" class="@(currentPath.StartsWith("/calendar") ? "active" : "")">Календарь</a>
+                        <a asp-area="" asp-controller="Goals" asp-action="Index" class="@(currentPath.StartsWith("/goals") ? "active" : "")">Цели</a>
+                        <a asp-area="" asp-controller="Stats" asp-action="Index" class="@(currentPath.StartsWith("/stats") ? "active" : "")">Статистика</a>
+                        <a asp-area="" asp-controller="Practices" asp-action="Index" class="@(currentPath.StartsWith("/practices") ? "active" : "")">Практики</a>
+                        <a asp-area="" asp-controller="Psychologist" asp-action="Index" class="@(currentPath.StartsWith("/psychologist") ? "active" : "")">Психолог</a>
+                        <a asp-area="" asp-controller="Tests" asp-action="Index" class="@(currentPath.StartsWith("/tests") ? "active" : "")">Тесты</a>
+                        <a asp-area="" asp-controller="ChatPage" asp-action="Index" class="@(currentPath.StartsWith("/chat") ? "active" : "")">Чат</a>
+                        <a asp-area="" asp-controller="ForumPage" asp-action="Index" class="@(currentPath.StartsWith("/forum") ? "active" : "")">Форум</a>
                     }
                 }
                 else
@@ -77,11 +85,18 @@
                         <span class="profile-name">@(Context.Session.GetString("Username") ?? "Пользователь")</span>
                     </button>
                     <div class="profile-menu" id="profileMenu">
-                        <a asp-area="" asp-controller="Settings" asp-action="Profile" class="profile-item">Профиль</a>
-                        <a asp-area="" asp-controller="Settings" asp-action="Index" class="profile-item">Настройки</a>
-                        @if (string.Equals(userRole, "Admin", StringComparison.OrdinalIgnoreCase))
+                        @if (isAdmin)
                         {
                             <a asp-area="" asp-controller="Admin" asp-action="Index" class="profile-item">Админ‑панель</a>
+                        }
+                        else if (isPsychologist)
+                        {
+                            <a asp-area="" asp-controller="Psychologist" asp-action="Index" class="profile-item">Психолог</a>
+                        }
+                        else
+                        {
+                            <a asp-area="" asp-controller="Settings" asp-action="Profile" class="profile-item">Профиль</a>
+                            <a asp-area="" asp-controller="Settings" asp-action="Index" class="profile-item">Настройки</a>
                         }
                         <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" class="profile-logout">
                             <button type="submit" class="profile-item">Выход</button>

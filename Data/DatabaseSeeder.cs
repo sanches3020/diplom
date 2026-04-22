@@ -1,4 +1,4 @@
-﻿using Sofia.Web.Data;
+using Sofia.Web.Data;
 using Sofia.Web.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,261 +8,171 @@ public static class DatabaseSeeder
 {
     public static async Task SeedAsync(SofiaDbContext context)
     {
-        await SeedUsersAsync(context);
-        await SeedPsychologistsAsync(context);
-        await SeedPracticesAsync(context);
-        await SeedTestsAsync(context);
-        await SeedForumAsync(context);
-        await SeedEmotionsAndNotesAsync(context);
-    }
-
-    private static async Task SeedUsersAsync(SofiaDbContext context)
-    {
-        if (await context.Users.AnyAsync(u => u.Email != null && u.Email.StartsWith("seed-user")))
-            return;
-
-        var users = Enumerable.Range(1, 6)
-            .Select(i => new ApplicationUser
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = $"seed-user{i}@sofia.local",
-                NormalizedUserName = $"SEED-USER{i}@SOFIA.LOCAL",
-                Email = $"seed-user{i}@sofia.local",
-                NormalizedEmail = $"SEED-USER{i}@SOFIA.LOCAL",
-                EmailConfirmed = true,
-                SecurityStamp = Guid.NewGuid().ToString("N"),
-                FullName = $"Тестовый Пользователь {i}",
-                UserType = i <= 2 ? "psychologist" : "user",
-                CreatedAt = DateTime.UtcNow.AddDays(-20 + i),
-                CompanionJoinDate = DateTime.UtcNow.AddDays(-10 + i),
-                CompanionLevel = Math.Min(5, i)
-            })
-            .ToList();
-
-        await context.Users.AddRangeAsync(users);
-        await context.SaveChangesAsync();
-    }
-
-    private static async Task SeedPsychologistsAsync(SofiaDbContext context)
-    {
-        if (await context.Psychologists.AnyAsync())
-            return;
-
-        var specs = new[]
+        if (!context.Psychologists.Any())
         {
-            "КПТ", "Семейная терапия", "Работа с тревогой", "Детская психология",
-            "Кризисное консультирование", "Гештальт", "ПТСР", "Психосоматика",
-            "Эмоциональное выгорание", "Подростковая психология", "Mindfulness", "Коучинг"
-        };
-
-        var seedUsers = await context.Users
-            .Where(u => u.Email != null && u.Email.StartsWith("seed-user"))
-            .OrderBy(u => u.Email)
-            .ToListAsync();
-
-        var psychologists = Enumerable.Range(1, 12)
-            .Select(i => new Psychologist
+            var psychologists = new List<Psychologist>
             {
-                Name = $"Психолог {i}",
-                UserId = seedUsers[(i - 1) % seedUsers.Count].Id,
-                Specialization = specs[(i - 1) % specs.Length],
-                Description = $"Практикующий специалист №{i} с фокусом на {specs[(i - 1) % specs.Length].ToLowerInvariant()}.",
-                Education = "МГУ, факультет психологии",
-                Experience = $"{3 + i} лет практики",
-                Languages = "Русский, English",
-                Methods = "КПТ, майндфулнесс, поддерживающая терапия",
-                PhotoUrl = "/images/psychologists/default.png",
-                PricePerHour = 1800 + i * 100,
-                ContactEmail = $"psych{i}@sofia.local",
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow.AddDays(-30 + i)
-            })
-            .ToList();
+                new Psychologist
+                {
+                    Name = "Екатерина Васильева",
+                    Specialization = "Психология тревоги и сна",
+                    Description = "Помогаю находить внутреннюю устойчивость при постоянном стрессе, строить здоровый режим сна и восстанавливать эмоциональный баланс.",
+                    Education = "МГУ, психологический факультет",
+                    Experience = "8 лет практики",
+                    Languages = "русский, английский",
+                    Methods = "Когнитивно-поведенческая терапия, телесно-ориентированная терапия",
+                    PhotoUrl = "https://images.unsplash.com/photo-1556760749-887f6717d7e4?auto=format&fit=crop&w=600&q=80",
+                    PricePerHour = 150m,
+                    ContactPhone = "+7 921 123-45-67",
+                    ContactEmail = "katya@sofia-app.com",
+                    IsActive = true
+                },
+                new Psychologist
+                {
+                    Name = "Алексей Морозов",
+                    Specialization = "Работа с эмоциональным выгоранием",
+                    Description = "Специальный психолог для профессионалов, которые хотят снизить напряжение и вернуть смысл работы.",
+                    Education = "СПбГУ, клиническая психология",
+                    Experience = "10 лет",
+                    Languages = "русский",
+                    Methods = "Психоанализ, коучинг, майндфулнес",
+                    PhotoUrl = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80",
+                    PricePerHour = 180m,
+                    ContactPhone = "+7 911 234-56-78",
+                    ContactEmail = "aleksey@sofia-app.com",
+                    IsActive = true
+                },
+                new Psychologist
+                {
+                    Name = "Мария Сидорова",
+                    Specialization = "Семейная и подростковая терапия",
+                    Description = "Содействую восстановлению доверия в отношениях и помогаю подросткам становиться увереннее.",
+                    Education = "РГГУ, семейная терапия",
+                    Experience = "6 лет",
+                    Languages = "русский, французский",
+                    Methods = "Системная семейная терапия, арт-терапия",
+                    PhotoUrl = "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
+                    PricePerHour = 140m,
+                    ContactPhone = "+7 901 345-67-89",
+                    ContactEmail = "maria@sofia-app.com",
+                    IsActive = true
+                }
+            };
 
-        await context.Psychologists.AddRangeAsync(psychologists);
-        await context.SaveChangesAsync();
-    }
+            await context.Psychologists.AddRangeAsync(psychologists);
+            await context.SaveChangesAsync();
+        }
 
-    private static async Task SeedPracticesAsync(SofiaDbContext context)
-    {
-        if (await context.Practices.AnyAsync())
-            return;
-
-        var practices = Enumerable.Range(1, 12)
-            .Select(i => new Practice
+        if (!context.Tests.Any())
+        {
+            var stressTest = new Test
             {
-                Name = $"Практика #{i}",
-                Description = "Короткая техника для снижения стресса и стабилизации состояния.",
-                Category = (PracticeCategory)((i % 7) + 1),
-                DurationMinutes = 5 + (i % 4) * 5,
-                Instructions = "Сконцентрируйтесь на дыхании и выполните шаги по инструкции.",
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow.AddDays(-15 + i)
-            })
-            .ToList();
-
-        await context.Practices.AddRangeAsync(practices);
-        await context.SaveChangesAsync();
-    }
-
-    private static async Task SeedTestsAsync(SofiaDbContext context)
-    {
-        if (await context.Tests.AnyAsync())
-            return;
-
-        var tests = Enumerable.Range(1, 6)
-            .Select(i => new Test
-            {
-                Name = $"Психологический тест #{i}",
-                Description = "Оценка текущего состояния и факторов стресса.",
+                Name = "Тест на уровень стресса",
+                Description = "Определите, насколько вы испытываете стресс и какие области жизни требуют внимания.",
                 Type = TestType.BuiltIn,
-                CreatedAt = DateTime.UtcNow.AddDays(-20 + i)
-            })
-            .ToList();
+                Questions = new List<Question>
+                {
+                    new Question
+                    {
+                        Text = "Как часто вы чувствуете напряжение в теле или мышечное напряжение?",
+                        Type = AnswerType.SingleChoice,
+                        Answers = new List<Answer>
+                        {
+                            new Answer { Text = "Часто, почти каждый день", Value = 0, Order = 0 },
+                            new Answer { Text = "Иногда, несколько раз в неделю", Value = 1, Order = 1 },
+                            new Answer { Text = "Редко, только в трудные периоды", Value = 2, Order = 2 },
+                            new Answer { Text = "Почти никогда", Value = 3, Order = 3 }
+                        }
+                    },
+                    new Question
+                    {
+                        Text = "Насколько легко вы отдыхаете после рабочего дня?",
+                        Type = AnswerType.SingleChoice,
+                        Answers = new List<Answer>
+                        {
+                            new Answer { Text = "Мне сложно отойти от мыслей о работе", Value = 0, Order = 0 },
+                            new Answer { Text = "Отдыхаю не всегда полностью", Value = 1, Order = 1 },
+                            new Answer { Text = "Отдыхаю достаточно хорошо", Value = 2, Order = 2 },
+                            new Answer { Text = "Легко расслабляюсь", Value = 3, Order = 3 }
+                        }
+                    },
+                    new Question
+                    {
+                        Text = "Насколько часто вы испытываете проблемы со сном?",
+                        Type = AnswerType.SingleChoice,
+                        Answers = new List<Answer>
+                        {
+                            new Answer { Text = "Почти каждую ночь", Value = 0, Order = 0 },
+                            new Answer { Text = "Несколько раз в неделю", Value = 1, Order = 1 },
+                            new Answer { Text = "Редко", Value = 2, Order = 2 },
+                            new Answer { Text = "Почти никогда", Value = 3, Order = 3 }
+                        }
+                    }
+                }
+            };
 
-        await context.Tests.AddRangeAsync(tests);
-        await context.SaveChangesAsync();
-
-        var questions = new List<Question>();
-        foreach (var test in tests)
-        {
-            for (var q = 1; q <= 4; q++)
+            var moodTest = new Test
             {
-                questions.Add(new Question
+                Name = "Тест эмоционального состояния",
+                Description = "Проверьте, в каком эмоциональном состоянии вы находитесь и какие эмоции доминируют.",
+                Type = TestType.BuiltIn,
+                Questions = new List<Question>
                 {
-                    TestId = test.Id,
-                    Text = $"Вопрос {q} для теста \"{test.Name}\"",
-                    Type = AnswerType.SingleChoice
-                });
-            }
-        }
+                    new Question
+                    {
+                        Text = "Вы чувствуете себя бодрым и энергичным?",
+                        Type = AnswerType.SingleChoice,
+                        Answers = new List<Answer>
+                        {
+                            new Answer { Text = "Да, энергичен весь день", Value = 3, Order = 0 },
+                            new Answer { Text = "Иногда", Value = 2, Order = 1 },
+                            new Answer { Text = "Редко", Value = 1, Order = 2 },
+                            new Answer { Text = "Почти никогда", Value = 0, Order = 3 }
+                        }
+                    },
+                    new Question
+                    {
+                        Text = "Насколько часто вы испытываете тревогу или беспокойство?",
+                        Type = AnswerType.SingleChoice,
+                        Answers = new List<Answer>
+                        {
+                            new Answer { Text = "Очень часто", Value = 0, Order = 0 },
+                            new Answer { Text = "Иногда", Value = 1, Order = 1 },
+                            new Answer { Text = "Редко", Value = 2, Order = 2 },
+                            new Answer { Text = "Почти никогда", Value = 3, Order = 3 }
+                        }
+                    },
+                    new Question
+                    {
+                        Text = "Уровень мотивации в последнее время:",
+                        Type = AnswerType.SingleChoice,
+                        Answers = new List<Answer>
+                        {
+                            new Answer { Text = "Очень низкий", Value = 0, Order = 0 },
+                            new Answer { Text = "Низкий", Value = 1, Order = 1 },
+                            new Answer { Text = "Средний", Value = 2, Order = 2 },
+                            new Answer { Text = "Высокий", Value = 3, Order = 3 }
+                        }
+                    }
+                }
+            };
 
-        await context.Questions.AddRangeAsync(questions);
-        await context.SaveChangesAsync();
-
-        var answers = new List<Answer>();
-        foreach (var question in questions)
-        {
-            for (var a = 1; a <= 4; a++)
+            stressTest.Interpretations = new List<TestInterpretation>
             {
-                answers.Add(new Answer
-                {
-                    QuestionId = question.Id,
-                    Text = $"Вариант {a}",
-                    Value = a,
-                    Order = a
-                });
-            }
-        }
+                new TestInterpretation { MinPercent = 0, MaxPercent = 33, Level = "Низкий", InterpretationText = "Уровень стресса низкий, продолжайте поддерживать баланс." },
+                new TestInterpretation { MinPercent = 34, MaxPercent = 66, Level = "Средний", InterpretationText = "Вы находитесь в зоне умеренного стресса — полезно выделить время на восстановление." },
+                new TestInterpretation { MinPercent = 67, MaxPercent = 100, Level = "Высокий", InterpretationText = "Уровень стресса высокий — рекомендовано обратиться за помощью и снизить нагрузку." }
+            };
 
-        await context.Answers.AddRangeAsync(answers);
-        await context.SaveChangesAsync();
-    }
-
-    private static async Task SeedForumAsync(SofiaDbContext context)
-    {
-        if (await context.ForumCategories.AnyAsync())
-            return;
-
-        var users = await context.Users
-            .Where(u => u.Email != null && u.Email.StartsWith("seed-user"))
-            .Take(4)
-            .ToListAsync();
-
-        var categories = new List<ForumCategory>
-        {
-            new() { Title = "Тревожность", Description = "Обсуждение тревожных состояний" },
-            new() { Title = "Отношения", Description = "Поддержка и советы по отношениям" },
-            new() { Title = "Саморазвитие", Description = "Привычки, цели, рост" }
-        };
-        await context.ForumCategories.AddRangeAsync(categories);
-        await context.SaveChangesAsync();
-
-        var threads = new List<ForumThread>();
-        foreach (var category in categories)
-        {
-            for (var i = 1; i <= 2; i++)
+            moodTest.Interpretations = new List<TestInterpretation>
             {
-                threads.Add(new ForumThread
-                {
-                    CategoryId = category.Id,
-                    Title = $"{category.Title}: тема {i}",
-                    AuthorId = users[(i - 1) % users.Count].Id,
-                    CreatedAt = DateTime.UtcNow.AddDays(-i)
-                });
-            }
+                new TestInterpretation { MinPercent = 0, MaxPercent = 33, Level = "Низкое", InterpretationText = "Эмоциональное состояние в целом спокойное, но стоит прислушиваться к себе." },
+                new TestInterpretation { MinPercent = 34, MaxPercent = 66, Level = "Среднее", InterpretationText = "Вы чувствуете смешанные эмоции — важно уделить время собственным ощущениям." },
+                new TestInterpretation { MinPercent = 67, MaxPercent = 100, Level = "Высокое", InterpretationText = "Вы в хорошем эмоциональном состоянии, продолжайте поддерживать позитивные привычки." }
+            };
+
+            await context.Tests.AddRangeAsync(stressTest, moodTest);
+            await context.SaveChangesAsync();
         }
-        await context.ForumThreads.AddRangeAsync(threads);
-        await context.SaveChangesAsync();
-
-        var posts = new List<ForumPost>();
-        foreach (var thread in threads)
-        {
-            for (var i = 1; i <= 3; i++)
-            {
-                posts.Add(new ForumPost
-                {
-                    ThreadId = thread.Id,
-                    AuthorId = users[(i - 1) % users.Count].Id,
-                    Content = $"Пост {i} в теме \"{thread.Title}\"",
-                    CreatedAt = DateTime.UtcNow.AddHours(-i)
-                });
-            }
-        }
-        await context.ForumPosts.AddRangeAsync(posts);
-        await context.SaveChangesAsync();
-
-        // NOTE: like seeding is intentionally skipped for now because
-        // current relationship mapping in the project creates a shadow FK
-        // column (UserId1) in forum.PostLikes and breaks startup seeding.
-    }
-
-    private static async Task SeedEmotionsAndNotesAsync(SofiaDbContext context)
-    {
-        if (await context.EmotionEntries.AnyAsync() || await context.Notes.AnyAsync())
-            return;
-
-        var users = await context.Users
-            .Where(u => u.Email != null && u.Email.StartsWith("seed-user"))
-            .Take(3)
-            .ToListAsync();
-
-        var emotions = new[] { EmotionType.Happy, EmotionType.Calm, EmotionType.Anxious, EmotionType.Grateful };
-        var notes = new List<Note>();
-        var emotionEntries = new List<EmotionEntry>();
-
-        foreach (var user in users)
-        {
-            for (var i = 0; i < 6; i++)
-            {
-                var date = DateTime.UtcNow.Date.AddDays(-i);
-                var emotion = emotions[i % emotions.Length];
-
-                notes.Add(new Note
-                {
-                    UserId = user.Id,
-                    Content = $"Тестовая заметка {i + 1} пользователя {user.UserName}",
-                    Tags = "стресс,сон,работа",
-                    Emotion = emotion,
-                    Activity = i % 2 == 0 ? "Прогулка" : "Чтение",
-                    Date = date,
-                    CreatedAt = date.AddHours(9 + i),
-                    ShareWithPsychologist = i % 3 == 0
-                });
-
-                emotionEntries.Add(new EmotionEntry
-                {
-                    UserId = user.Id,
-                    Date = date,
-                    Emotion = emotion,
-                    Note = $"Запись эмоции {i + 1}",
-                    CreatedAt = date.AddHours(8 + i)
-                });
-            }
-        }
-
-        await context.Notes.AddRangeAsync(notes);
-        await context.EmotionEntries.AddRangeAsync(emotionEntries);
-        await context.SaveChangesAsync();
     }
 }

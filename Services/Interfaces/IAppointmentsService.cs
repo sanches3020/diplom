@@ -1,5 +1,5 @@
 ﻿using Sofia.Web.DTO.Psychologist;
-using Sofia.Web.ViewModels.Psychologists;
+using Sofia.Web.ViewModel.Psychologists;
 
 namespace Sofia.Web.Services.Interfaces;
 

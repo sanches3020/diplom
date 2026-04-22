@@ -10,7 +10,7 @@ public class TestsController : Controller
 {
     private readonly IUserTestService _service;
 
-    public UserTestController(IUserTestService service)
+    public TestsController(IUserTestService service)
     {
         _service = service;
     }

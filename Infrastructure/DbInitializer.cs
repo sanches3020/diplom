@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Sofia.Web.Data;
 using Sofia.Web.Models;
 
+namespace Sofia.Web.Data;
+
 public static class DbInitializer
 {
     public static async Task InitializeAsync(IServiceProvider services)

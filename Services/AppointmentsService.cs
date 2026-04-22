@@ -3,7 +3,7 @@ using Sofia.Web.Data;
 using Sofia.Web.DTO.Psychologist;
 using Sofia.Web.Models;
 using Sofia.Web.Services.Interfaces;
-using Sofia.Web.ViewModels.Psychologists;
+using Sofia.Web.ViewModel.Psychologists;
 
 namespace Sofia.Web.Services;
 
