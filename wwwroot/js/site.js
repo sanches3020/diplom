@@ -372,6 +372,7 @@ class SofiaCompanion {
     this.bindEvents();
     this.startRandomMessages();
     this.checkAchievements();
+    this.updateCompanionVisualState();
   }
   
   createCompanion() {
@@ -379,6 +380,8 @@ class SofiaCompanion {
     container.className = 'companion-container';
     container.innerHTML = `
       <div class="companion" id="sofia-companion">
+        <div class="companion-progress-ring" aria-hidden="true"></div>
+        <div class="companion-level-chip" id="companion-level-chip">${this.stats.level}</div>
         <div class="companion-body">
           <div class="companion-face">
             <div class="companion-eyes">
@@ -605,6 +608,8 @@ class SofiaCompanion {
     if (achievementsGrid) {
       achievementsGrid.innerHTML = this.renderAchievements();
     }
+
+    this.updateCompanionVisualState();
   }
 
   addMessage(message) {
@@ -699,6 +704,8 @@ class SofiaCompanion {
     if (this.stats.level >= 3) {
       this.addMessage("Я стала мудрее! Могу помочь с медитацией! 🧘‍♀️");
     }
+
+    this.updateCompanionVisualState(true);
   }
 
   // Achievement system
@@ -804,6 +811,36 @@ class SofiaCompanion {
     const savedAchievements = localStorage.getItem('sofiaCompanionAchievements');
     if (savedAchievements) {
       this.achievements = { ...this.achievements, ...JSON.parse(savedAchievements) };
+    }
+  }
+
+  getCurrentLevelClass() {
+    const level = Number(this.stats.level) || 1;
+    if (level >= 5) return 'level-5';
+    if (level <= 1) return 'level-1';
+    return `level-${level}`;
+  }
+
+  updateCompanionVisualState(withGrowthAnimation = false) {
+    if (!this.companion) return;
+
+    const levelClass = this.getCurrentLevelClass();
+    this.companion.classList.remove('level-1', 'level-2', 'level-3', 'level-4', 'level-5', 'master-level');
+    this.companion.classList.add(levelClass);
+    if ((Number(this.stats.level) || 1) > 5) {
+      this.companion.classList.add('master-level');
+    }
+
+    const chip = document.getElementById('companion-level-chip');
+    if (chip) {
+      chip.textContent = (Number(this.stats.level) || 1).toString();
+    }
+
+    if (withGrowthAnimation) {
+      this.companion.classList.remove('level-growth');
+      void this.companion.offsetWidth;
+      this.companion.classList.add('level-growth');
+      setTimeout(() => this.companion.classList.remove('level-growth'), 700);
     }
   }
 
