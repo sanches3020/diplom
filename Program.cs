@@ -8,7 +8,7 @@ builder.Services
 
 var app = builder.Build();
 
-await DbInitializer.InitializeAsync(app.Services);
+await Sofia.Web.Data.DbInitializer.InitializeAsync(app.Services);
 
 // Pipeline
 app.UseApplicationMiddleware();

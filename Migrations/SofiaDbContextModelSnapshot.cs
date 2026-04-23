@@ -1734,7 +1734,7 @@ namespace Sofia.Web.Migrations
             modelBuilder.Entity("Sofia.Web.Models.TestInterpretation", b =>
                 {
                     b.HasOne("Sofia.Web.Models.Test", "Test")
-                        .WithMany()
+                        .WithMany("Interpretations")
                         .HasForeignKey("TestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1844,6 +1844,8 @@ namespace Sofia.Web.Migrations
 
             modelBuilder.Entity("Sofia.Web.Models.Test", b =>
                 {
+                    b.Navigation("Interpretations");
+
                     b.Navigation("Questions");
                 });
 #pragma warning restore 612, 618

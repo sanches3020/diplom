@@ -12,8 +12,8 @@ using Sofia.Web.Data;
 namespace Sofia.Web.Migrations
 {
     [DbContext(typeof(SofiaDbContext))]
-    [Migration("20260422201207_RemoveUserId1FromGoals")]
-    partial class RemoveUserId1FromGoals
+    [Migration("20260423074138_FinalSync")]
+    partial class FinalSync
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -656,6 +656,9 @@ namespace Sofia.Web.Migrations
                     b.Property<int>("Progress")
                         .HasColumnType("integer");
 
+                    b.Property<string>("PsychologistId")
+                        .HasColumnType("text");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -679,6 +682,8 @@ namespace Sofia.Web.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PsychologistId");
 
                     b.HasIndex("UserId");
 
@@ -1576,6 +1581,11 @@ namespace Sofia.Web.Migrations
 
             modelBuilder.Entity("Sofia.Web.Models.Goal", b =>
                 {
+                    b.HasOne("Sofia.Web.Models.ApplicationUser", "Psychologist")
+                        .WithMany()
+                        .HasForeignKey("PsychologistId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Sofia.Web.Models.ApplicationUser", null)
                         .WithMany("Goals")
                         .HasForeignKey("UserId")
@@ -1587,6 +1597,8 @@ namespace Sofia.Web.Migrations
                         .HasForeignKey("UserId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Psychologist");
 
                     b.Navigation("User");
                 });
@@ -1725,7 +1737,7 @@ namespace Sofia.Web.Migrations
             modelBuilder.Entity("Sofia.Web.Models.TestInterpretation", b =>
                 {
                     b.HasOne("Sofia.Web.Models.Test", "Test")
-                        .WithMany()
+                        .WithMany("Interpretations")
                         .HasForeignKey("TestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1835,6 +1847,8 @@ namespace Sofia.Web.Migrations
 
             modelBuilder.Entity("Sofia.Web.Models.Test", b =>
                 {
+                    b.Navigation("Interpretations");
+
                     b.Navigation("Questions");
                 });
 #pragma warning restore 612, 618

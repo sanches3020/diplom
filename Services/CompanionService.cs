@@ -22,6 +22,11 @@ public class CompanionService : ICompanionService
     // -------------------------------------------------------
     public async Task<CompanionViewModel> GetCompanionDataAsync(string userId)
     {
+        var user = await _context.Users
+            .Where(u => u.Id == userId)
+            .Select(u => new { u.CompanionLevel })
+            .FirstOrDefaultAsync();
+
         var recentNotes = await _context.Notes
             .Where(n => n.UserId == userId)
             .OrderByDescending(n => n.CreatedAt)
@@ -31,13 +36,33 @@ public class CompanionService : ICompanionService
         var lastEmotion = recentNotes.FirstOrDefault()?.Emotion ?? EmotionType.Neutral;
         var totalNotes = await _context.Notes.CountAsync(n => n.UserId == userId);
 
+        // Рассчитываем happiness на основе последней эмоции
+        var happiness = lastEmotion switch
+        {
+            EmotionType.VeryHappy => 90,
+            EmotionType.Happy => 80,
+            EmotionType.Excited => 85,
+            EmotionType.Calm => 70,
+            EmotionType.Grateful => 80,
+            EmotionType.Neutral => 50,
+            EmotionType.Anxious => 40,
+            EmotionType.Frustrated => 35,
+            EmotionType.Sad => 30,
+            EmotionType.VerySad => 20,
+            _ => 50
+        };
+
         return new CompanionViewModel
         {
             LastEmotion = lastEmotion,
             PetMood = GetPetMood(lastEmotion),
             PetMessage = GetPetMessage(lastEmotion, totalNotes),
             RecentNotes = recentNotes,
-            NotesCount = totalNotes
+            NotesCount = totalNotes,
+            CompanionLevel = user?.CompanionLevel ?? 1,
+            Happiness = happiness,
+            Energy = 50,
+            Comfort = 50
         };
     }
 
