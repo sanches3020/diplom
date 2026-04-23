@@ -1,8 +1,9 @@
+@model Sofia.Web.ViewModels.Calendar.DayDetailsViewModel
 @{
-    var date = ViewBag.Date is DateTime dayDate ? dayDate : DateTime.Today;
-    var notes = ViewBag.Notes as List<Sofia.Web.Models.Note> ?? new List<Sofia.Web.Models.Note>();
-    var emotions = ViewBag.Emotions as List<Sofia.Web.Models.EmotionEntry> ?? new List<Sofia.Web.Models.EmotionEntry>();
-    var goals = ViewBag.Goals as List<Sofia.Web.Models.Goal> ?? new List<Sofia.Web.Models.Goal>();
+    var date = Model?.Date ?? DateTime.Today;
+    var notes = Model?.Notes ?? new List<Sofia.Web.Models.Note>();
+    var emotions = Model?.Emotions ?? new List<Sofia.Web.Models.EmotionEntry>();
+    var goals = Model?.Goals ?? new List<Sofia.Web.Models.Goal>();
 }
 
 <div class="day-details">

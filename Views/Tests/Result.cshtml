@@ -1,17 +1,26 @@
-@model Sofia.Web.Models.TestResult
+@model Sofia.Web.ViewModels.UserTest.UserTestResultViewModel
 
 @{
     ViewData["Title"] = "Результат теста";
-    var history = ViewBag.History as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var result = Model?.Result;
+    var history = (Model?.History ?? new List<object>())
+        .Select(h => (dynamic)h)
+        .ToList();
 }
 
-<h2>Результат — @Model.Test?.Name</h2>
+@if (result == null)
+{
+    <div class="alert alert-warning">Результат не найден.</div>
+    return;
+}
+
+<h2>Результат — @result.Test?.Name</h2>
 
 <div class="card mb-3">
     <div class="card-body">
-        <h5>Итоговый балл: <strong>@Model.Score</strong></h5>
-        <p>Уровень: <strong>@Model.Level</strong></p>
-        <p>@Model.Interpretation</p>
+        <h5>Итоговый балл: <strong>@result.Score</strong></h5>
+        <p>Уровень: <strong>@result.Level</strong></p>
+        <p>@result.Interpretation</p>
     </div>
 </div>
 

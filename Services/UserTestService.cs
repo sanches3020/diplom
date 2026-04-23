@@ -194,7 +194,7 @@ public class UserTestService : IUserTestService
         return new UserTestSubmitResult
         {
             Success = true,
-            RedirectUrl = $"/user-tests/result/{result.Id}"
+            RedirectUrl = $"/tests/result/{result.Id}"
         };
     }
 

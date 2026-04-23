@@ -1,10 +1,10 @@
-@model Sofia.Web.Models.Test
+@model Sofia.Web.ViewModels.UserTest.UserTestTakeViewModel
 
 @{
-    ViewData["Title"] = Model?.Name ?? "Тест";
+    ViewData["Title"] = Model?.Test?.Name ?? "Тест";
 }
 
-@if (Model == null)
+@if (Model?.Test == null)
 {
     <div class="alert alert-warning">
         Тест не найден.
@@ -14,8 +14,8 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2>🧪 @Model.Name</h2>
-        <p class="text-muted">@Model.Description</p>
+        <h2>🧪 @Model.Test.Name</h2>
+        <p class="text-muted">@Model.Test.Description</p>
     </div>
     <div class="d-flex gap-2 align-items-center">
         <a href="/tests" class="btn btn-outline-secondary btn-sm">← Все тесты</a>
@@ -23,7 +23,7 @@
 </div>
 
 <form id="testForm" style="padding-bottom: 100px;">
-    @foreach (var q in Model.Questions ?? Enumerable.Empty<Sofia.Web.Models.Question>())
+    @foreach (var q in Model.Test.Questions ?? Enumerable.Empty<Sofia.Web.Models.Question>())
     {
         <div class="card mb-3">
             <div class="card-body">
@@ -78,7 +78,7 @@ document.getElementById('submitBtn').addEventListener('click', function(){
         payload.append(k, map[k].join(','));
     }
 
-    fetch('@Url.Action("Submit","Tests", new { id = Model.Id })', {
+    fetch('@Url.Action("Submit","Tests", new { id = Model.Test.Id })', {
         method: 'POST',
         body: payload,
         headers: { 'Accept': 'application/json' }

@@ -1,7 +1,8 @@
-@model List<Sofia.Web.Models.TestResult>
+@model Sofia.Web.ViewModels.UserTest.UserTestHistoryViewModel
 
 @{
-    var test = ViewBag.Test as Sofia.Web.Models.Test;
+    var test = Model?.Test;
+    var results = Model?.Results ?? new List<Sofia.Web.Models.TestResult>();
     ViewData["Title"] = "История теста";
 }
 
@@ -15,7 +16,7 @@
 
 <div class="card mb-3">
     <div class="card-body">
-        @if (!Model.Any())
+        @if (!results.Any())
         {
             <p class="text-muted">Вы ещё не проходили этот тест.</p>
         }
@@ -34,7 +35,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var r in Model)
+                        @foreach (var r in results)
                         {
                             <tr>
                                 <td>@r.TakenAt.ToString("dd.MM.yyyy HH:mm")</td>
@@ -56,7 +57,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    var history = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrderBy(r => r.TakenAt).Select(r => new { date = r.TakenAt.ToString("yyyy-MM-dd"), score = r.Score })));
+    var history = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(results.OrderBy(r => r.TakenAt).Select(r => new { date = r.TakenAt.ToString("yyyy-MM-dd"), score = r.Score })));
 
     var labels = history.map(h => h.date);
     var data = history.map(h => h.score);

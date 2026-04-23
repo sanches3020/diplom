@@ -1,4 +1,4 @@
-@model IEnumerable<Sofia.Web.Models.Test>
+@model Sofia.Web.ViewModels.UserTest.UserTestListViewModel
 
 @{
     ViewData["Title"] = "Тесты";
@@ -12,9 +12,9 @@
 </div>
 
 <div class="row g-4 pb-5">
-    @if (Model != null && Model.Any())
+    @if (Model?.Tests != null && Model.Tests.Any())
     {
-        @foreach (var t in Model)
+        @foreach (var t in Model.Tests)
         {
                 <div class="col-md-6 col-lg-4">
                 <div class="card h-100 test-card">

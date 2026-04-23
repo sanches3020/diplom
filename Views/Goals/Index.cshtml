@@ -1,4 +1,4 @@
-@model IEnumerable<Sofia.Web.Models.Goal>
+@model Sofia.Web.ViewModels.Goals.GoalsListViewModel
 @{
     ViewData["Title"] = "Цели";
 }
@@ -6,7 +6,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>🎯 Цели</h2>
     <div class="d-flex gap-2 align-items-center">
-        <select id="sortSelect" class="form-select form-select-sm" data-current-sort="@(ViewBag.CurrentSort ?? String.Empty)">
+        <select id="sortSelect" class="form-select form-select-sm" data-current-sort="@(Model?.CurrentSort ?? String.Empty)">
             <option value="">Сортировка: По умолчанию (активные сверху)</option>
             <option value="created_desc">По дате (новые сначала)</option>
             <option value="created_asc">По дате (старые сначала)</option>
@@ -19,7 +19,7 @@
     </div>
 </div>
 
-@if (!Model.Any())
+@if (Model == null || !Model.Goals.Any())
 {
     <div class="row g-3">
         <div class="col-12 col-md-6 col-lg-4">
@@ -164,7 +164,7 @@
 else
 {
     <div class="row g-3">
-        @foreach (var goal in Model)
+        @foreach (var goal in Model.Goals)
         {
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card h-100 @GetStatusClass(goal.Status)">

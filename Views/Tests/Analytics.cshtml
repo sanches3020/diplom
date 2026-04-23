@@ -1,6 +1,7 @@
+@model Sofia.Web.ViewModels.UserTest.UserTestAnalyticsViewModel
 @{
     ViewData["Title"] = "Аналитика тестов";
-    var tests = ViewBag.Tests as IEnumerable<Sofia.Web.Models.Test> ?? Enumerable.Empty<Sofia.Web.Models.Test>();
+    var tests = Model?.Tests ?? new List<Sofia.Web.Models.Test>();
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
