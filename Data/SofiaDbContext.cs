@@ -89,14 +89,14 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
         // Note → User
         // -----------------------------
         builder.Entity<Note>()
-            .HasOne<ApplicationUser>()
+            .HasOne(n => n.User)
             .WithMany(u => u.Notes)
             .HasForeignKey(n => n.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Goal → User
         builder.Entity<Goal>()
-            .HasOne<ApplicationUser>()
+            .HasOne(g => g.User)
             .WithMany(u => u.Goals)
             .HasForeignKey(g => g.UserId)
             .OnDelete(DeleteBehavior.Cascade);
@@ -131,14 +131,14 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
 
         // TestResult → User
         builder.Entity<TestResult>()
-            .HasOne<ApplicationUser>()
+            .HasOne(r => r.User)
             .WithMany()
             .HasForeignKey(r => r.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // UserAnswer → User
         builder.Entity<UserAnswer>()
-            .HasOne<ApplicationUser>()
+            .HasOne(a => a.User)
             .WithMany()
             .HasForeignKey(a => a.UserId)
             .OnDelete(DeleteBehavior.Cascade);
@@ -184,7 +184,7 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
                 .HasForeignKey(t => t.CategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne<ApplicationUser>()
+            entity.HasOne(t => t.Author)
                 .WithMany()
                 .HasForeignKey(t => t.AuthorId)
                 .OnDelete(DeleteBehavior.Restrict);
@@ -202,7 +202,7 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
                 .HasForeignKey(p => p.ThreadId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne<ApplicationUser>()
+            entity.HasOne(p => p.Author)
                 .WithMany()
                 .HasForeignKey(p => p.AuthorId)
                 .OnDelete(DeleteBehavior.Restrict);
@@ -222,7 +222,7 @@ public class SofiaDbContext : IdentityDbContext<ApplicationUser, ApplicationRole
                 .HasForeignKey(l => l.PostId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne<ApplicationUser>()
+            entity.HasOne(l => l.User)
                 .WithMany()
                 .HasForeignKey(l => l.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
