@@ -20,6 +20,8 @@
 
 		<!-- PostgreSQL provider -->
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
+		<!-- SQLite for development -->
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.10" />
 	</ItemGroup>
 
 	<ItemGroup>
