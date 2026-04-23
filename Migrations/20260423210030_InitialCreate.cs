@@ -1,13 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace Sofia.Web.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialClean : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,12 +18,12 @@ namespace Sofia.Web.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -36,10 +35,10 @@ namespace Sofia.Web.Migrations
                 schema: "forum",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -47,14 +46,32 @@ namespace Sofia.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatMessage",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", maxLength: 36, nullable: false),
+                    Room = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    UserName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    AvatarCode = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
+                    Text = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsSystem = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatMessage", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MediaFiles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FileName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    FilePath = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    ContentType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    UploadDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    FileName = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
+                    FilePath = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    ContentType = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    UploadDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,20 +82,20 @@ namespace Sofia.Web.Migrations
                 name: "NotificationSettings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DailyReminder = table.Column<bool>(type: "boolean", nullable: false),
-                    DailyReminderTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    GoalReminder = table.Column<bool>(type: "boolean", nullable: false),
-                    MoodCheckReminder = table.Column<bool>(type: "boolean", nullable: false),
-                    MoodCheckTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    WeeklyReport = table.Column<bool>(type: "boolean", nullable: false),
-                    WeeklyReportDay = table.Column<int>(type: "integer", nullable: false),
-                    PracticeReminder = table.Column<bool>(type: "boolean", nullable: false),
-                    PsychologistReminder = table.Column<bool>(type: "boolean", nullable: false),
-                    EmailNotifications = table.Column<bool>(type: "boolean", nullable: false),
-                    PushNotifications = table.Column<bool>(type: "boolean", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    DailyReminder = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DailyReminderTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
+                    GoalReminder = table.Column<bool>(type: "INTEGER", nullable: false),
+                    MoodCheckReminder = table.Column<bool>(type: "INTEGER", nullable: false),
+                    MoodCheckTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
+                    WeeklyReport = table.Column<bool>(type: "INTEGER", nullable: false),
+                    WeeklyReportDay = table.Column<int>(type: "INTEGER", nullable: false),
+                    PracticeReminder = table.Column<bool>(type: "INTEGER", nullable: false),
+                    PsychologistReminder = table.Column<bool>(type: "INTEGER", nullable: false),
+                    EmailNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
+                    PushNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -89,16 +106,16 @@ namespace Sofia.Web.Migrations
                 name: "Practices",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    Category = table.Column<int>(type: "integer", nullable: false),
-                    DurationMinutes = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    Category = table.Column<int>(type: "INTEGER", nullable: false),
+                    DurationMinutes = table.Column<int>(type: "INTEGER", nullable: false),
                     Instructions = table.Column<string>(type: "text", nullable: true),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -109,22 +126,22 @@ namespace Sofia.Web.Migrations
                 name: "Psychologists",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true),
-                    Specialization = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Education = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Experience = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Languages = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Methods = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    PhotoUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true),
+                    Specialization = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    Education = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
+                    Experience = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
+                    Languages = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    Methods = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
+                    PhotoUrl = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
                     PricePerHour = table.Column<decimal>(type: "numeric(10,2)", nullable: true),
-                    ContactPhone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    ContactEmail = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ContactPhone = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
+                    ContactEmail = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -135,11 +152,11 @@ namespace Sofia.Web.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RoleId = table.Column<string>(type: "text", nullable: false),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    RoleId = table.Column<string>(type: "TEXT", nullable: false),
+                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
+                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -156,28 +173,30 @@ namespace Sofia.Web.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    FullName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Bio = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    IsBlocked = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    PsychologistId = table.Column<int>(type: "integer", nullable: true),
-                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    FullName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    Bio = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsBlocked = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UserType = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    PsychologistId = table.Column<int>(type: "INTEGER", nullable: true),
+                    CompanionJoinDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    CompanionLevel = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "TEXT", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -194,14 +213,14 @@ namespace Sofia.Web.Migrations
                 name: "PsychologistSchedules",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PsychologistId = table.Column<int>(type: "integer", nullable: false),
-                    DayOfWeek = table.Column<int>(type: "integer", nullable: false),
-                    StartTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    EndTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PsychologistId = table.Column<int>(type: "INTEGER", nullable: false),
+                    DayOfWeek = table.Column<int>(type: "INTEGER", nullable: false),
+                    StartTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
+                    EndTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -218,14 +237,14 @@ namespace Sofia.Web.Migrations
                 name: "Tests",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    CreatedByPsychologistId = table.Column<int>(type: "integer", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedByPsychologistId = table.Column<int>(type: "INTEGER", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -241,15 +260,15 @@ namespace Sofia.Web.Migrations
                 name: "AdminLogs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AdminId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Action = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    TargetUserId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Details = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    IpAddress = table.Column<string>(type: "character varying(45)", maxLength: 45, nullable: true),
-                    UserAgent = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    AdminId = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Action = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    TargetUserId = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    Details = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    IpAddress = table.Column<string>(type: "TEXT", maxLength: 45, nullable: true),
+                    UserAgent = table.Column<string>(type: "TEXT", maxLength: 300, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -266,11 +285,11 @@ namespace Sofia.Web.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
+                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -287,10 +306,10 @@ namespace Sofia.Web.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    ProviderKey = table.Column<string>(type: "text", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
+                    ProviderKey = table.Column<string>(type: "TEXT", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "TEXT", nullable: true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -307,8 +326,8 @@ namespace Sofia.Web.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    RoleId = table.Column<string>(type: "text", nullable: false)
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    RoleId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -331,10 +350,10 @@ namespace Sofia.Web.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: true)
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Value = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -351,14 +370,14 @@ namespace Sofia.Web.Migrations
                 name: "EmotionEntries",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Emotion = table.Column<int>(type: "integer", nullable: false),
-                    Note = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Notes = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Emotion = table.Column<int>(type: "INTEGER", nullable: false),
+                    Note = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Notes = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -375,32 +394,32 @@ namespace Sofia.Web.Migrations
                 name: "Goals",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TargetDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Progress = table.Column<int>(type: "integer", nullable: false),
-                    IsFromPsychologist = table.Column<bool>(type: "boolean", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    UserId1 = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    TargetDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Progress = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsFromPsychologist = table.Column<bool>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    PsychologistId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Goals", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Goals_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Goals_AspNetUsers_PsychologistId",
+                        column: x => x.PsychologistId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_Goals_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Goals_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -410,19 +429,18 @@ namespace Sofia.Web.Migrations
                 name: "Notes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Content = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
-                    Tags = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    Emotion = table.Column<int>(type: "integer", nullable: false),
-                    Activity = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsPinned = table.Column<bool>(type: "boolean", nullable: false),
-                    ShareWithPsychologist = table.Column<bool>(type: "boolean", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    UserId1 = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Content = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: false),
+                    Tags = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    Emotion = table.Column<int>(type: "INTEGER", nullable: false),
+                    Activity = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    IsPinned = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ShareWithPsychologist = table.Column<bool>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -433,32 +451,26 @@ namespace Sofia.Web.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Notes_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Notifications",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Message = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    Priority = table.Column<int>(type: "integer", nullable: false),
-                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ScheduledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ActionUrl = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    ActionText = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    Message = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    Priority = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsRead = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ScheduledAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ExpiresAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ActionUrl = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    ActionText = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -475,14 +487,14 @@ namespace Sofia.Web.Migrations
                 name: "PsychologistAppointments",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PsychologistId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    AppointmentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Notes = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PsychologistId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    AppointmentDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Notes = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -505,17 +517,17 @@ namespace Sofia.Web.Migrations
                 name: "PsychologistReviews",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: true),
-                    PsychologistId = table.Column<int>(type: "integer", nullable: false),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Comment = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    Rating = table.Column<int>(type: "integer", nullable: false),
-                    IsApproved = table.Column<bool>(type: "boolean", nullable: false),
-                    IsVisible = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true),
+                    PsychologistId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
+                    Comment = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false),
+                    Rating = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsApproved = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsVisible = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -537,16 +549,16 @@ namespace Sofia.Web.Migrations
                 name: "PsychologistTimeSlots",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PsychologistId = table.Column<int>(type: "integer", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    StartTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    EndTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
-                    IsBooked = table.Column<bool>(type: "boolean", nullable: false),
-                    BookedByUserId = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PsychologistId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    StartTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
+                    EndTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsBooked = table.Column<bool>(type: "INTEGER", nullable: false),
+                    BookedByUserId = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -569,13 +581,12 @@ namespace Sofia.Web.Migrations
                 schema: "forum",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    AuthorId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    AuthorId1 = table.Column<string>(type: "text", nullable: true),
-                    CategoryId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    AuthorId = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    CategoryId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -586,11 +597,6 @@ namespace Sofia.Web.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Threads_AspNetUsers_AuthorId1",
-                        column: x => x.AuthorId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Threads_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -604,11 +610,11 @@ namespace Sofia.Web.Migrations
                 name: "Questions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TestId = table.Column<int>(type: "integer", nullable: false),
-                    Text = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    TestId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Text = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false),
+                    Type = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -625,14 +631,14 @@ namespace Sofia.Web.Migrations
                 name: "TestInterpretations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TestId = table.Column<int>(type: "integer", nullable: false),
-                    MinPercent = table.Column<double>(type: "double precision", nullable: false),
-                    MaxPercent = table.Column<double>(type: "double precision", nullable: false),
-                    Level = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    InterpretationText = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    TestId = table.Column<int>(type: "INTEGER", nullable: false),
+                    MinPercent = table.Column<double>(type: "REAL", nullable: false),
+                    MaxPercent = table.Column<double>(type: "REAL", nullable: false),
+                    Level = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    InterpretationText = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -649,15 +655,14 @@ namespace Sofia.Web.Migrations
                 name: "TestResults",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    UserId1 = table.Column<string>(type: "text", nullable: false),
-                    TestId = table.Column<int>(type: "integer", nullable: false),
-                    TakenAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Score = table.Column<int>(type: "integer", nullable: false),
-                    Level = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    Interpretation = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    TestId = table.Column<int>(type: "INTEGER", nullable: false),
+                    TakenAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Score = table.Column<int>(type: "INTEGER", nullable: false),
+                    Level = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
+                    Interpretation = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -665,12 +670,6 @@ namespace Sofia.Web.Migrations
                     table.ForeignKey(
                         name: "FK_TestResults_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TestResults_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -683,18 +682,46 @@ namespace Sofia.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GoalActions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    GoalId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", maxLength: 450, nullable: false),
+                    ActionText = table.Column<string>(type: "TEXT", nullable: false),
+                    ResultText = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GoalActions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GoalActions_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GoalActions_Goals_GoalId",
+                        column: x => x.GoalId,
+                        principalTable: "Goals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Posts",
                 schema: "forum",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Content = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    AuthorId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    AuthorId1 = table.Column<string>(type: "text", nullable: true),
-                    ThreadId = table.Column<int>(type: "integer", nullable: false),
-                    MediaFileId = table.Column<Guid>(type: "uuid", nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Content = table.Column<string>(type: "TEXT", maxLength: 5000, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    AuthorId = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    ThreadId = table.Column<int>(type: "INTEGER", nullable: false),
+                    MediaFileId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -705,11 +732,6 @@ namespace Sofia.Web.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Posts_AspNetUsers_AuthorId1",
-                        column: x => x.AuthorId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Posts_MediaFiles_MediaFileId",
                         column: x => x.MediaFileId,
@@ -729,12 +751,12 @@ namespace Sofia.Web.Migrations
                 name: "Answers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    QuestionId = table.Column<int>(type: "integer", nullable: false),
-                    Text = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    Value = table.Column<int>(type: "integer", nullable: false),
-                    Order = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    QuestionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Text = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false),
+                    Value = table.Column<int>(type: "INTEGER", nullable: false),
+                    Order = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -748,15 +770,71 @@ namespace Sofia.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Complaints",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    SenderUserId = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    TargetUserId = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    MessageId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: true),
+                    PostId = table.Column<int>(type: "INTEGER", nullable: true),
+                    Reason = table.Column<int>(type: "INTEGER", nullable: false),
+                    ReasonText = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    ReviewedByAdminId = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    ReviewedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    AdminComment = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    IsBanned = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsWarned = table.Column<bool>(type: "INTEGER", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Complaints", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Complaints_AspNetUsers_ReviewedByAdminId",
+                        column: x => x.ReviewedByAdminId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Complaints_AspNetUsers_SenderUserId",
+                        column: x => x.SenderUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Complaints_AspNetUsers_TargetUserId",
+                        column: x => x.TargetUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Complaints_ChatMessage_MessageId",
+                        column: x => x.MessageId,
+                        principalTable: "ChatMessage",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Complaints_Posts_PostId",
+                        column: x => x.PostId,
+                        principalSchema: "forum",
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PostLikes",
                 schema: "forum",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PostId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    UserId1 = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PostId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -764,12 +842,6 @@ namespace Sofia.Web.Migrations
                     table.ForeignKey(
                         name: "FK_PostLikes_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PostLikes_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -786,14 +858,13 @@ namespace Sofia.Web.Migrations
                 name: "UserAnswers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    UserId1 = table.Column<string>(type: "text", nullable: false),
-                    QuestionId = table.Column<int>(type: "integer", nullable: false),
-                    AnswerId = table.Column<int>(type: "integer", nullable: true),
-                    TextAnswer = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    QuestionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    AnswerId = table.Column<int>(type: "INTEGER", nullable: true),
+                    TextAnswer = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -806,12 +877,6 @@ namespace Sofia.Web.Migrations
                     table.ForeignKey(
                         name: "FK_UserAnswers_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserAnswers_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -877,9 +942,64 @@ namespace Sofia.Web.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Complaints_CreatedAt",
+                table: "Complaints",
+                column: "CreatedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Complaints_MessageId",
+                table: "Complaints",
+                column: "MessageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Complaints_PostId",
+                table: "Complaints",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Complaints_ReviewedByAdminId",
+                table: "Complaints",
+                column: "ReviewedByAdminId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Complaints_SenderUserId",
+                table: "Complaints",
+                column: "SenderUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Complaints_Status",
+                table: "Complaints",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Complaints_TargetUserId",
+                table: "Complaints",
+                column: "TargetUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Complaints_TargetUserId_Status",
+                table: "Complaints",
+                columns: new[] { "TargetUserId", "Status" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EmotionEntries_UserId",
                 table: "EmotionEntries",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GoalActions_GoalId",
+                table: "GoalActions",
+                column: "GoalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GoalActions_UserId",
+                table: "GoalActions",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Goals_PsychologistId",
+                table: "Goals",
+                column: "PsychologistId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Goals_UserId",
@@ -887,19 +1007,9 @@ namespace Sofia.Web.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Goals_UserId1",
-                table: "Goals",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Notes_UserId",
                 table: "Notes",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notes_UserId1",
-                table: "Notes",
-                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
@@ -920,22 +1030,10 @@ namespace Sofia.Web.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PostLikes_UserId1",
-                schema: "forum",
-                table: "PostLikes",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Posts_AuthorId",
                 schema: "forum",
                 table: "Posts",
                 column: "AuthorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Posts_AuthorId1",
-                schema: "forum",
-                table: "Posts",
-                column: "AuthorId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Posts_MediaFileId",
@@ -1005,11 +1103,6 @@ namespace Sofia.Web.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TestResults_UserId1",
-                table: "TestResults",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Tests_CreatedByPsychologistId",
                 table: "Tests",
                 column: "CreatedByPsychologistId");
@@ -1019,12 +1112,6 @@ namespace Sofia.Web.Migrations
                 schema: "forum",
                 table: "Threads",
                 column: "AuthorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Threads_AuthorId1",
-                schema: "forum",
-                table: "Threads",
-                column: "AuthorId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Threads_CategoryId",
@@ -1046,11 +1133,6 @@ namespace Sofia.Web.Migrations
                 name: "IX_UserAnswers_UserId",
                 table: "UserAnswers",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserAnswers_UserId1",
-                table: "UserAnswers",
-                column: "UserId1");
         }
 
         /// <inheritdoc />
@@ -1075,10 +1157,13 @@ namespace Sofia.Web.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Complaints");
+
+            migrationBuilder.DropTable(
                 name: "EmotionEntries");
 
             migrationBuilder.DropTable(
-                name: "Goals");
+                name: "GoalActions");
 
             migrationBuilder.DropTable(
                 name: "Notes");
@@ -1119,6 +1204,12 @@ namespace Sofia.Web.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "ChatMessage");
+
+            migrationBuilder.DropTable(
+                name: "Goals");
 
             migrationBuilder.DropTable(
                 name: "Posts",
