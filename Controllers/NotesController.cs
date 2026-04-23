@@ -54,7 +54,7 @@ public class NotesController : Controller
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Create([FromForm] CreateNoteRequest? request)
+    public async Task<IActionResult> Create([FromBody] CreateNoteRequest? request)
     {
         var userId = GetUserId();
         if (userId == null)
@@ -88,7 +88,7 @@ public class NotesController : Controller
     }
 
     [HttpPost("edit/{id}")]
-    public async Task<IActionResult> Edit(int id, [FromForm] UpdateNoteRequest? request)
+    public async Task<IActionResult> Edit(int id, [FromBody] UpdateNoteRequest? request)
     {
         var userId = GetUserId();
         if (userId == null)

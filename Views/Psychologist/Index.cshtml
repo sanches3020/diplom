@@ -1,7 +1,9 @@
+@model Sofia.Web.ViewModels.PsychologistArea.PsychologistIndexViewModel
+
 @{
     ViewData["Title"] = "Психологи";
-    var psychologists = ViewBag.Psychologists as List<Sofia.Web.Models.Psychologist>;
-    var recentNotes = ViewBag.RecentNotes as List<Sofia.Web.Models.Note>;
+    var psychologists = Model?.Psychologists;
+    var recentNotes = Model?.RecentNotes;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">

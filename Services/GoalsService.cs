@@ -136,6 +136,10 @@ public class GoalsService : IGoalsService
         var goal = await GetGoalAsync(userId, id);
         if (goal == null) return false;
 
+        // Delete related GoalActions
+        var actions = await _context.GoalActions.Where(ga => ga.GoalId == id).ToListAsync();
+        _context.GoalActions.RemoveRange(actions);
+
         _context.Goals.Remove(goal);
         await _context.SaveChangesAsync();
         return true;

@@ -34,7 +34,7 @@ public class CalendarController : Controller
     }
 
     [HttpPost("save-emotion")]
-    public async Task<IActionResult> SaveEmotion([FromForm] SaveEmotionRequest? request)
+    public async Task<IActionResult> SaveEmotion([FromBody] SaveEmotionRequest? request)
     {
         var userId = GetUserId();
         if (userId == null)
