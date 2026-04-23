@@ -83,12 +83,16 @@ public static class EmotionHelper
     {
         return emotion switch
         {
-            0 => "😊",
             1 => "😢",
-            2 => "😨",
-            3 => "😡",
-            4 => "😲",
-            5 => "🤢",
+            2 => "😔",
+            3 => "😐",
+            4 => "😊",
+            5 => "😄",
+            6 => "😰",
+            7 => "😌",
+            8 => "🤩",
+            9 => "😤",
+            10 => "🙏",
             _ => "❓"
         };
     }
@@ -104,19 +108,16 @@ public static class EmotionHelper
     {
         return emotion.ToLower() switch
         {
-            "happy" => "Радость",
-            "joy" => "Радость",
-
-            "sad" => "Грусть",
-            "sorrow" => "Грусть",
-
-            "angry" => "Злость",
-            "anger" => "Злость",
-
-            "fear" => "Страх",
-            "surprise" => "Удивление",
+            "verysad" => "Очень грустно",
+            "sad" => "Грустно",
             "neutral" => "Нейтрально",
-
+            "happy" => "Радостно",
+            "veryhappy" => "Очень радостно",
+            "anxious" => "Тревожно",
+            "calm" => "Спокойно",
+            "excited" => "Взволнованно",
+            "frustrated" => "Раздражённо",
+            "grateful" => "Благодарно",
             _ => "Неизвестно"
         };
     }
@@ -128,12 +129,16 @@ public static class EmotionHelper
     {
         return emotion switch
         {
-            0 => "Радость",
-            1 => "Грусть",
-            2 => "Страх",
-            3 => "Злость",
-            4 => "Удивление",
-            5 => "Отвращение",
+            1 => "Очень грустно",
+            2 => "Грустно",
+            3 => "Нейтрально",
+            4 => "Радостно",
+            5 => "Очень радостно",
+            6 => "Тревожно",
+            7 => "Спокойно",
+            8 => "Взволнованно",
+            9 => "Раздражённо",
+            10 => "Благодарно",
             _ => "Неизвестно"
         };
     }
@@ -149,20 +154,17 @@ public static class EmotionHelper
     {
         return emotion.ToLower() switch
         {
-            "happy" => "#90EE90",
-            "joy" => "#90EE90",
-
-            "sad" => "#1E90FF",
-            "sorrow" => "#1E90FF",
-
-            "angry" => "#FF4500",
-            "anger" => "#FF4500",
-
-            "fear" => "#8A2BE2",
-            "surprise" => "#00CED1",
-            "neutral" => "#A9A9A9",
-
-            _ => "#CCCCCC"
+            "verysad" => "#1e3a8a",
+            "sad" => "#3b82f6",
+            "neutral" => "#64748b",
+            "happy" => "#22c55e",
+            "veryhappy" => "#16a34a",
+            "anxious" => "#f59e0b",
+            "calm" => "#14b8a6",
+            "excited" => "#8b5cf6",
+            "frustrated" => "#f97316",
+            "grateful" => "#0ea5e9",
+            _ => "#e2e8f0"
         };
     }
 
@@ -173,13 +175,17 @@ public static class EmotionHelper
     {
         return emotion switch
         {
-            0 => "#90EE90",
-            1 => "#1E90FF",
-            2 => "#8A2BE2",
-            3 => "#FF4500",
-            4 => "#00CED1",
-            5 => "#6B7280",
-            _ => "#CCCCCC"
+            1 => "#2563eb",
+            2 => "#3b82f6",
+            3 => "#64748b",
+            4 => "#22c55e",
+            5 => "#16a34a",
+            6 => "#f59e0b",
+            7 => "#14b8a6",
+            8 => "#8b5cf6",
+            9 => "#f97316",
+            10 => "#0ea5e9",
+            _ => "#e2e8f0"
         };
     }
 

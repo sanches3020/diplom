@@ -20,8 +20,7 @@ public class EmotionEntry
 
     [Required]
     public EmotionType Emotion { get; set; }
-[Required]
-    [StringLength(1000)]
+[StringLength(1000)]
     public string? Note { get; set; }
 
     [Required]

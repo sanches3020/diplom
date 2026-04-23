@@ -3,6 +3,7 @@ using Sofia.Web.DTO.Notes;
 using Sofia.Web.Services.Interfaces;
 using Sofia.Web.ViewModels.Notes;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace Sofia.Web.Controllers;
 
@@ -54,12 +55,13 @@ public class NotesController : Controller
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Create([FromBody] CreateNoteRequest? request)
+    public async Task<IActionResult> Create()
     {
         var userId = GetUserId();
         if (userId == null)
             return Json(new { success = false, message = "Пользователь не авторизован" });
 
+        var request = await ReadRequestAsync<CreateNoteRequest>();
         if (request == null)
             return Json(new { success = false, message = "Некорректные данные" });
 
@@ -79,27 +81,47 @@ public class NotesController : Controller
         if (note == null)
             return NotFound();
 
-        var vm = new NoteEditViewModel
-        {
-            Note = note
-        };
-
-        return View(vm);
+        return View(note);
     }
 
     [HttpPost("edit/{id}")]
-    public async Task<IActionResult> Edit(int id, [FromBody] UpdateNoteRequest? request)
+    public async Task<IActionResult> EditPost(int id)
     {
         var userId = GetUserId();
         if (userId == null)
             return Json(new { success = false, message = "Пользователь не авторизован" });
 
+        var request = await ReadRequestAsync<UpdateNoteRequest>();
         if (request == null)
             return Json(new { success = false, message = "Некорректные данные" });
 
         var result = await _notesService.UpdateNoteAsync(userId, id, request);
 
         return Json(new { success = result.Success, message = result.Message });
+    }
+
+    private async Task<T?> ReadRequestAsync<T>() where T : class
+    {
+        if (Request.ContentType?.Contains("application/json", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            return await JsonSerializer.DeserializeAsync<T>(Request.Body, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        }
+
+        if (Request.HasFormContentType)
+        {
+            var form = await Request.ReadFormAsync();
+            var values = form.ToDictionary(k => k.Key, v => (object?)v.Value.ToString());
+            var json = JsonSerializer.Serialize(values);
+            return JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        }
+
+        return null;
     }
 
     [HttpPost("delete/{id}")]

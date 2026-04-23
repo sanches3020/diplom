@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sofia.Web.DTO.Calendar;
 using Sofia.Web.Services.Interfaces;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace Sofia.Web.Controllers;
 
@@ -34,18 +35,43 @@ public class CalendarController : Controller
     }
 
     [HttpPost("save-emotion")]
-    public async Task<IActionResult> SaveEmotion([FromBody] SaveEmotionRequest? request)
+    public async Task<IActionResult> SaveEmotion()
     {
         var userId = GetUserId();
         if (userId == null)
             return Json(new { success = false, message = "Пользователь не авторизован" });
 
+        var request = await ReadRequestAsync<SaveEmotionRequest>();
         if (request == null)
             return Json(new { success = false, message = "Некорректные данные" });
 
         var result = await _calendarService.SaveEmotionAsync(userId, request);
 
         return Json(new { success = result.Success, message = result.Message });
+    }
+
+    private async Task<T?> ReadRequestAsync<T>() where T : class
+    {
+        if (Request.ContentType?.Contains("application/json", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            return await JsonSerializer.DeserializeAsync<T>(Request.Body, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        }
+
+        if (Request.HasFormContentType)
+        {
+            var form = await Request.ReadFormAsync();
+            var values = form.ToDictionary(k => k.Key, v => (object?)v.Value.ToString());
+            var json = JsonSerializer.Serialize(values);
+            return JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        }
+
+        return null;
     }
 
     [HttpGet("day-details")]
