@@ -11,4 +11,5 @@ public class CreateGoalRequest
     public int Progress { get; set; }
     public DateTime Date { get; set; }
     public DateTime? TargetDate { get; set; }
+    public bool IsFromPsychologist { get; set; }
 }

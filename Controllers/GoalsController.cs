@@ -35,7 +35,7 @@ public class GoalsController : Controller
     [HttpGet("create")]
     public IActionResult Create()
     {
-        return View(new GoalCreateViewModel());
+        return View(new CreateGoalRequest());
     }
 
     [HttpPost("create")]

@@ -37,7 +37,6 @@
   width: 90%;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  animation: slideUp 0.3s ease;
   overflow: hidden;
 }
 

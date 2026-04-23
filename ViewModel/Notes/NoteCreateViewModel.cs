@@ -1,4 +1,4 @@
-﻿namespace Sofia.Web.ViewModel.Notes
+﻿namespace Sofia.Web.ViewModels.Notes
 {
     public class NoteCreateViewModel
     {

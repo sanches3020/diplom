@@ -1,6 +1,6 @@
 ﻿namespace Sofia.Web.ViewModels.Notes;
 
-public class NoteCreateViewModel
+public class NoteEditViewModel
 {
-    public DateTime TargetDate { get; set; }
+    public Models.Note Note { get; set; } = null!;
 }

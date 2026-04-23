@@ -2,7 +2,7 @@
 
 namespace Sofia.Web.ViewModels.Notes;
 
-public class NoteEditViewModel
+public class NotesListViewModel
 {
-    public Note Note { get; set; } = null!;
+    public List<Note> Notes { get; set; } = new();
 }

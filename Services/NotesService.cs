@@ -31,11 +31,19 @@ public class NotesService : INotesService
         if (string.IsNullOrWhiteSpace(request.Content))
             return (false, "Содержание заметки обязательно");
 
+        if (!Enum.TryParse<EmotionType>(request.Emotion, true, out var emotionType))
+            return (false, "Неверный тип эмоции");
+
         var note = new Note
         {
             UserId = userId,
             Content = request.Content,
+            Tags = request.Tags,
+            Emotion = emotionType,
+            Activity = request.Activity,
             Date = request.Date,
+            IsPinned = request.IsPinned,
+            ShareWithPsychologist = request.ShareWithPsychologist,
             CreatedAt = DateTime.UtcNow
         };
 
