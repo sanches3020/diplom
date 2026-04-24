@@ -57,17 +57,13 @@ public class AppointmentsService : IAppointmentsService
             else
             {
                 // Ищем ближайший в будущем
-                var futureSlots = await _context.PsychologistTimeSlots
+                selectedSlot = await _context.PsychologistTimeSlots
                     .Where(t => t.PsychologistId == request.PsychologistId &&
                                 t.Date.Date > dateOnly &&
                                 t.IsAvailable && !t.IsBooked)
                     .OrderBy(t => t.Date)
-                    .ToListAsync();
-
-                selectedSlot = futureSlots
-                    .OrderBy(t => t.Date)
                     .ThenBy(t => t.StartTime)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
         }
 

@@ -61,12 +61,8 @@ public class PsychologistProfileService : IPsychologistProfileService
                         t.IsAvailable &&
                         !t.IsBooked)
             .OrderBy(t => t.Date)
-            .ToListAsync();
-
-        availableSlots = availableSlots
-            .OrderBy(t => t.Date)
             .ThenBy(t => t.StartTime)
-            .ToList();
+            .ToListAsync();
 
         return new PsychologistProfileViewModel
         {

@@ -32,12 +32,8 @@ public class ScheduleService : IScheduleService
             .AsNoTracking()
             .Where(s => s.PsychologistId == psychologist.Id)
             .OrderBy(s => s.DayOfWeek)
-            .ToListAsync();
-
-        schedules = schedules
-            .OrderBy(s => s.DayOfWeek)
             .ThenBy(s => s.StartTime)
-            .ToList();
+            .ToListAsync();
 
         var slots = await _context.PsychologistTimeSlots
             .AsNoTracking()
@@ -45,12 +41,8 @@ public class ScheduleService : IScheduleService
                         t.Date >= startDate &&
                         t.Date <= endDate)
             .OrderBy(t => t.Date)
-            .ToListAsync();
-
-        slots = slots
-            .OrderBy(t => t.Date)
             .ThenBy(t => t.StartTime)
-            .ToList();
+            .ToListAsync();
 
         return new ScheduleViewModel
         {
