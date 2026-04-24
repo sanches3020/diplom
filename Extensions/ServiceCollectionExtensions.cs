@@ -53,7 +53,7 @@ public static class ServiceCollectionExtensions
         IConfiguration config)
     {
         services.AddDbContext<SofiaDbContext>(options =>
-            options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
+            options.UseSqlite(config.GetConnectionString("DefaultConnection")));
 
         services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<SofiaDbContext>()
