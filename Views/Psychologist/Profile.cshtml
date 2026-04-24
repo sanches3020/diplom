@@ -1,9 +1,8 @@
-@model Sofia.Web.ViewModels.PsychologistArea.PsychologistProfileViewModel
 @{
     ViewData["Title"] = "Профиль психолога";
-    var psychologist = Model.Psychologist;
-    var reviews = Model.Reviews;
-    var availableSlots = Model.AvailableSlots;
+    var psychologist = ViewBag.Psychologist as Sofia.Web.Models.Psychologist;
+    var reviews = ViewBag.Reviews as List<Sofia.Web.Models.PsychologistReview>;
+    var availableSlots = ViewBag.AvailableSlots as List<Sofia.Web.Models.PsychologistTimeSlot>;
 
     // Заполнения по умолчанию для профиля (Республика Беларусь)
     var displayName = psychologist?.Name ?? "Иван Иванов";
@@ -21,7 +20,7 @@
     var pricePerHour = (rawPrice < 1) ? 1 : (rawPrice > 1000 ? 1000 : rawPrice);
 
     // Prepare reviews for display — используем только реальные отзывы
-    var approvedReviews = reviews?.Where(r => r.Review.IsApproved && r.Review.IsVisible).ToList();
+    var approvedReviews = reviews?.Where(r => r.IsApproved && r.IsVisible).ToList();
     var displayReviews = new List<dynamic>();
     if (approvedReviews != null && approvedReviews.Any()) {
         foreach (var r in approvedReviews) displayReviews.Add(r);
@@ -29,7 +28,7 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>👨‍⚕️ @displayName</h2>
+    <h2>👨‍⚕️ @psychologist?.Name</h2>
     <a href="/psychologist" class="btn btn-outline-secondary">← Назад к списку</a>
 </div>
 
@@ -85,7 +84,7 @@
         <!-- Reviews -->
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">⭐ Отзывы (@reviews?.Count(r => r.Review.IsApproved && r.Review.IsVisible))</h5>
+                <h5 class="mb-0">⭐ Отзывы (@reviews?.Count(r => r.IsApproved && r.IsVisible))</h5>
             </div>
             <div class="card-body">
                 @if (displayReviews != null && displayReviews.Any())
@@ -99,24 +98,24 @@
                                         <div class="rating me-2">
                                             @for (int i = 1; i <= 5; i++)
                                             {
-                                                <span class="star @(i <= (int)review.Review.Rating ? "filled" : "")">⭐</span>
+                                                <span class="star @(i <= (int)review.Rating ? "filled" : "")">⭐</span>
                                             }
                                         </div>
-                                        @if (!string.IsNullOrEmpty(review.Review.Title))
+                                        @if (!string.IsNullOrEmpty((string)review.Title))
                                         {
-                                            <strong>@review.Review.Title</strong>
+                                            <strong>@review.Title</strong>
                                         }
                                     </div>
                                     @if (review.User != null)
                                     {
-                                        <small class="text-muted">От: @review.User.UserName</small>
+                                        <small class="text-muted">От: @review.User.Username</small>
                                     }
-                                    <small class="text-muted ms-2">@((DateTime)review.Review.CreatedAt).ToString("dd.MM.yyyy")</small>
+                                    <small class="text-muted ms-2">@((DateTime)review.CreatedAt).ToString("dd.MM.yyyy")</small>
                                 </div>
                             </div>
-                            @if (!string.IsNullOrEmpty(review.Review.Comment))
+                            @if (!string.IsNullOrEmpty((string)review.Comment))
                             {
-                                <p class="mb-0">@review.Review.Comment</p>
+                                <p class="mb-0">@review.Comment</p>
                             }
                         </div>
                     }
@@ -147,7 +146,7 @@
                                 <label for="reviewComment" class="form-label">Комментарий</label>
                                 <textarea class="form-control" id="reviewComment" rows="4" placeholder="Поделитесь своим опытом..." required></textarea>
                             </div>
-                            <button type="button" class="btn btn-primary" onclick="submitReview(@Model.Psychologist?.Id)">Отправить отзыв</button>
+                            <button type="button" class="btn btn-primary" onclick="submitReview(@psychologist?.Id)">Отправить отзыв</button>
                         </form>
                     </div>
                 }
@@ -163,7 +162,7 @@
             </div>
             <div class="card-body">
                 <form id="bookingForm">
-                    <input type="hidden" id="psychologistId" value="@Model.Psychologist?.Id">
+                    <input type="hidden" id="psychologistId" value="@psychologist?.Id">
                     
                     <div class="mb-3">
                         <label for="appointmentDate" class="form-label">Выберите удобное время</label>

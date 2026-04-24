@@ -503,6 +503,7 @@ namespace Sofia.Web.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Note")
+                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 
